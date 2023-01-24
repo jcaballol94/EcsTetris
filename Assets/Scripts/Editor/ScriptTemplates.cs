@@ -24,5 +24,11 @@ namespace Tetris
         {
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/AuthoringTemplate.cs", "NewAuthoring.cs");
         }
+
+        [MenuItem("Assets/Create/Scripts/ECS/ISystem", priority = 0)]
+        public static void CreateISystem()
+        {
+            ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/ISystemTemplate.cs", "NewSystem.cs");
+        }
     }
 }
