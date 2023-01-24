@@ -12,5 +12,11 @@ namespace Tetris
         {
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/ComponentTemplate.cs", "NewComponent.cs");
         }
+
+        [MenuItem("Assets/Create/Scripts/ECS/Aspect", priority = 0)]
+        public static void CreateAspect()
+        {
+            ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/AspectTemplate.cs", "NewAspect.cs");
+        }
     }
 }
