@@ -9,5 +9,6 @@ namespace Tetris
     public struct BlockPrefab : IComponentData
     {
         public Entity value;
+        public int2 spawnPos;
     }
 }

@@ -8,6 +8,7 @@ namespace Tetris
 {
     public class TetriminoDataAuthoring : MonoBehaviour
     {
+        public Vector2Int spawnPos = new Vector2Int(4, 9);
         public GameObject blockPrefab;
         public TetriminoDefinition[] availableTetriminos;
     }
@@ -18,7 +19,10 @@ namespace Tetris
         {
             // Add the prefab
             if (authoring.blockPrefab)
-                AddComponent(new BlockPrefab { value = GetEntity(authoring.blockPrefab) });
+                AddComponent(new BlockPrefab 
+                { value = GetEntity(authoring.blockPrefab), 
+                    spawnPos = new int2(authoring.spawnPos.x, authoring.spawnPos.y) 
+                });
 
             // Create the entities for all the definitions
             foreach (var tetrimino in authoring.availableTetriminos)
