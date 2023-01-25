@@ -8,7 +8,6 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [UpdateBefore(typeof(GridToWorldSystem))]
     public partial struct SpawnTetrimino : ISystem
     {
         EntityQuery tetriminoQuery;
@@ -56,6 +55,7 @@ namespace Tetris
             {
                 var blockEntity = ecb.Instantiate(blockPrefab.value);
                 ecb.AddComponent(blockEntity, new LocalBlock { position = blockPos.Value });
+                ecb.AddComponent(blockEntity, new ParentTetrimino { value = entity });
                 ecb.AppendToBuffer(entity, new TetriminoBlockList { Value = blockEntity });
             }
 

@@ -198,6 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13204ce254a3b8f4f84a63b2a252fbcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnPos: {x: 4, y: 9}
   blockPrefab: {fileID: 7046177515751513494, guid: 1a3f16d587cd12f4b918a04e3a88df82,
     type: 3}
   availableTetriminos:
