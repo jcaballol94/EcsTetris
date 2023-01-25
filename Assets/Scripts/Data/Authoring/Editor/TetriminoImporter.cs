@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [ScriptedImporter(0, "tetrimino")]
+    [ScriptedImporter(1, "tetrimino")]
     public class TetriminoImporter : ScriptedImporter
     {
         public override void OnImportAsset(AssetImportContext ctx)
@@ -27,7 +27,7 @@ namespace Tetris
                         for (int j = 0; j < line.Length; ++j)
                         {
                             if (line[j] == 'X')
-                                tetrimino.blocks[blockIdx++] = new Vector2Int(j, 4 - i);
+                                tetrimino.blocks[blockIdx++] = new Vector2Int(j - 2, 2 - i);
                         }
                     }
                     Debug.Assert(blockIdx == 4, "A tetrimino should have 4 blocks!");
