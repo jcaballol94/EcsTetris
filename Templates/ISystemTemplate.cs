@@ -7,6 +7,7 @@ using UnityEngine;
 
     #ROOTNAMESPACEBEGIN#
 [BurstCompile]
+[RequireMatchingQueriesForUpdate]
 public partial struct #SCRIPTNAME# : ISystem
 {
     [BurstCompile]
@@ -21,6 +22,15 @@ public partial struct #SCRIPTNAME# : ISystem
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
+    {
+    }
+}
+
+[BurstCompile]
+public partial struct #SCRIPTNAME#Job : IJobEntity
+{
+    [BurstCompile]
+    private void Execute()
     {
     }
 }
