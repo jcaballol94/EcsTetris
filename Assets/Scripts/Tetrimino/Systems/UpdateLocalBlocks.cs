@@ -29,32 +29,24 @@ namespace Tetris
         {
             new UpdateLocalBlocksJob
             {
-                positionLookup = SystemAPI.GetComponentLookup<PositionInGrid>(false),
-                localPositionLookup = SystemAPI.GetComponentLookup<LocalBlock>(true)
-            }.Run();
+                positionLookup = SystemAPI.GetComponentLookup<PositionInGrid>(false)
+            }.ScheduleParallel();
         }
     }
 
     [BurstCompile]
-    [WithChangeFilter(typeof(PositionInGrid))]
     [WithAll(typeof(PositionInGrid))]
     public partial struct UpdateLocalBlocksJob : IJobEntity
     {
-        public ComponentLookup<PositionInGrid> positionLookup;
-        [ReadOnly] public ComponentLookup<LocalBlock> localPositionLookup;
+        [NativeDisableParallelForRestriction] public ComponentLookup<PositionInGrid> positionLookup;
 
         [BurstCompile]
-        private void Execute(Entity parent, in DynamicBuffer<TetriminoBlockList> children)
+        private void Execute(Entity entity, in LocalBlock localPos, in ParentTetrimino parent)
         {
-            var parentPos = positionLookup.GetRefRO(parent);
+            var parentPos = positionLookup.GetRefRO(parent.value);
+            var pos = positionLookup.GetRefRW(entity, false);
 
-            foreach (var child in children)
-            {
-                var localPos = localPositionLookup.GetRefRO(child.Value);
-                var pos = positionLookup.GetRefRW(child.Value, false);
-
-                pos.ValueRW.value = parentPos.ValueRO.value + localPos.ValueRO.position;
-            }
+            pos.ValueRW.value = parentPos.ValueRO.value + localPos.position;
         }
     }
 }
