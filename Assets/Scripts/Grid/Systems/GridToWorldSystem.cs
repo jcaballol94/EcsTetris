@@ -14,15 +14,9 @@ namespace Tetris
     [RequireMatchingQueriesForUpdate]
     public partial struct GridToWorldSystem : ISystem
     {
-        EntityQuery query;
-
+        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            query = new EntityQueryBuilder(Unity.Collections.Allocator.Temp)
-                .WithAll<LocalToWorld>()
-                .WithAllRW<PositionInGrid>()
-                .Build(ref state);
-            query.AddChangedVersionFilter(typeof(PositionInGrid));
         }
 
         [BurstCompile]
@@ -41,16 +35,18 @@ namespace Tetris
             {
                 blockSize = grid.BlockSize,
                 bottomLeft = grid.BottomLeft
-            }.ScheduleParallel(query);
+            }.ScheduleParallel();
         }
     }
 
+    [BurstCompile]
     public partial struct GridToWorldJob : IJobEntity
     {
         public float blockSize;
         public float3 bottomLeft;
 
-        private void Execute(in PositionInGrid pos, ref TransformAspect transform)
+        [BurstCompile]
+        private void Execute([WithChangeFilter] in PositionInGrid pos, ref TransformAspect transform)
         {
             transform.WorldPosition = bottomLeft + new float3(blockSize * pos.value.x, blockSize * pos.value.y, 0);
         }
