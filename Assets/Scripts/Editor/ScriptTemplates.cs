@@ -13,6 +13,12 @@ namespace Tetris
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/ComponentTemplate.cs", "NewComponent.cs");
         }
 
+        [MenuItem("Assets/Create/Scripts/ECS/Buffer", priority = 0)]
+        public static void CreateEcsBuffer()
+        {
+            ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/BufferTemplate.cs", "NewBuffer.cs");
+        }
+
         [MenuItem("Assets/Create/Scripts/ECS/Aspect", priority = 0)]
         public static void CreateAspect()
         {
