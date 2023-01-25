@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Tetris
 {
+    [UpdateBefore(typeof(GridToWorldSystem))]
     public partial struct SpawnTetrimino : ISystem
     {
         EntityQuery tetriminoQuery;
@@ -28,19 +30,38 @@ namespace Tetris
             if (tetriminoQuery.CalculateEntityCount() > 0)
                 return;
 
+            // Try to get the block data
+            if (!SystemAPI.TryGetSingleton(out BlockPrefab blockPrefab))
+                return;
+
             // Get the available pieces
-            var definitions = definitionsQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
+            var definitions = definitionsQuery.ToEntityArray(Allocator.Temp);
             if (definitions.Length == 0)
                 return;
 
             // Get a random one
-            var idx = UnityEngine.Random.Range(0, definitions.Length);
+            var definition = definitions[UnityEngine.Random.Range(0, definitions.Length)];
+
+            EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             // Create the entity
-            var entity = state.EntityManager.CreateEntity(typeof(Tetrimino));
-            SystemAPI.SetComponent(entity, new Tetrimino { definition = definitions[idx] });
+            var entity = ecb.CreateEntity();
+            ecb.AddComponent(entity, new Tetrimino { definition = definition });
+            ecb.AddComponent(entity, new PositionInGrid { value = blockPrefab.spawnPos });
+
+            var blockBuffer = ecb.AddBuffer<TetriminoBlockList>(entity);
+
+            // Iterate over all the blocks in the definition
+            foreach (var blockPos in SystemAPI.GetBuffer<TetriminoBlockDefinition>(definition))
+            {
+                var blockEntity = ecb.Instantiate(blockPrefab.value);
+                ecb.AddComponent(blockEntity, new LocalBlock { position = blockPos.Value });
+                ecb.AppendToBuffer(entity, new TetriminoBlockList { Value = blockEntity });
+            }
 
             definitions.Dispose();
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 }
