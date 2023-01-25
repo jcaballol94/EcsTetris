@@ -6,9 +6,8 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [InternalBufferCapacity(4)]
-    public struct TetriminoBlockList : IBufferElementData
+    public struct BlockPrefab : IComponentData
     {
-        public Entity Value;
+        public Entity value;
     }
 }

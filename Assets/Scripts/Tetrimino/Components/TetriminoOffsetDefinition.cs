@@ -7,8 +7,8 @@ using UnityEngine;
 namespace Tetris
 {
     [InternalBufferCapacity(4)]
-    public struct TetriminoBlockList : IBufferElementData
+    public struct TetriminoOffsetDefinition : IBufferElementData
     {
-        public Entity Value;
+        public int2 value;
     }
 }

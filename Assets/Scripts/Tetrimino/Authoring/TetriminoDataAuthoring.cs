@@ -1,0 +1,45 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
+
+namespace Tetris
+{
+    public class TetriminoDataAuthoring : MonoBehaviour
+    {
+        public GameObject blockPrefab;
+        public TetriminoDefinition[] availableTetriminos;
+    }
+
+    public class TetriminoDataBaking : Baker<TetriminoDataAuthoring>
+    {
+        public override void Bake(TetriminoDataAuthoring authoring)
+        {
+            // Add the prefab
+            if (authoring.blockPrefab)
+                AddComponent(new BlockPrefab { value = GetEntity(authoring.blockPrefab) });
+
+            // Create the entities for all the definitions
+            foreach (var tetrimino in authoring.availableTetriminos)
+            {
+                if (!tetrimino)
+                    continue;
+
+                var entity = CreateAdditionalEntity(TransformUsageFlags.None);
+
+                var blocks = AddBuffer<TetriminoBlockDefinition>(entity);
+                foreach (var block in tetrimino.blocks)
+                {
+                    blocks.Add(new TetriminoBlockDefinition { Value = new int2(block.x, block.y) });
+                }
+
+                var offsets = AddBuffer<TetriminoOffsetDefinition>(entity);
+                foreach (var offset in tetrimino.rotationOffsets)
+                {
+                    offsets.Add(new TetriminoOffsetDefinition { value = new int2(offset.x, offset.y) });
+                }
+            }
+        }
+    }
+}
