@@ -36,5 +36,11 @@ namespace Tetris
         {
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/ISystemTemplate.cs", "NewSystem.cs");
         }
+
+        [MenuItem("Assets/Create/Scripts/ECS/SystemGroup", priority = 0)]
+        public static void CreateSystemGroup()
+        {
+            ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/SystemGroupTemplate.cs", "NewSystemGroup.cs");
+        }
     }
 }
