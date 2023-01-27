@@ -49,6 +49,7 @@ namespace Tetris
             var entity = ecb.CreateEntity();
             ecb.AddComponent(entity, new Tetrimino { definition = definition });
             ecb.AddComponent(entity, new PositionInGrid { value = blockPrefab.spawnPos });
+            ecb.AddComponent(entity, new Orientation { value = 0 });
 
             var blockBuffer = ecb.AddBuffer<TetriminoBlockList>(entity);
 

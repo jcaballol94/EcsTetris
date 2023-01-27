@@ -39,13 +39,14 @@ namespace Tetris
     [BurstCompile]
     [WithAll(typeof(PositionInGrid))]
     [WithChangeFilter(typeof(PositionInGrid))]
+    [WithChangeFilter(typeof(Orientation))]
     public partial struct UpdateLocalBlocksJob : IJobEntity
     {
         [NativeDisableParallelForRestriction] public ComponentLookup<PositionInGrid> positionLookup;
         [ReadOnly] public ComponentLookup<LocalBlock> localLookup;
 
         [BurstCompile]
-        private void Execute(Entity entity, in DynamicBuffer<TetriminoBlockList> blocks)
+        private void Execute(Entity entity, in Orientation orientation, in DynamicBuffer<TetriminoBlockList> blocks)
         {
             var parentPos = positionLookup.GetRefRO(entity);
 
