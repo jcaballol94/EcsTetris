@@ -35,8 +35,12 @@ namespace Tetris
             if (!input.changed || input.value == 0)
                 return;
 
+            if (!SystemAPI.TryGetSingleton(out GridSize gridSize))
+                return;
+
             new TryRotateJob
             {
+                gridSize = gridSize.value,
                 rotation = GetRotation(input.value),
                 localPosLookup = SystemAPI.GetComponentLookup<LocalBlock>(false)
             }.ScheduleParallel();
@@ -59,14 +63,27 @@ namespace Tetris
     [BurstCompile]
     public partial struct TryRotateJob : IJobEntity
     {
+        public int2 gridSize;
         public int2x2 rotation;
         public int rotationInput;
         [NativeDisableParallelForRestriction] 
         public ComponentLookup<LocalBlock> localPosLookup;
 
         [BurstCompile]
-        private void Execute(ref Orientation orientation, in DynamicBuffer<TetriminoBlockList> blocks)
+        private void Execute(ref Orientation orientation, in PositionInGrid parentPos, in DynamicBuffer<TetriminoBlockList> blocks)
         {
+            var canRotate = true;
+            for (int i = 0; canRotate && i < blocks.Length; ++i)
+            {
+                var localPos = localPosLookup.GetRefRO(blocks[i].Value);
+                var futurePos = parentPos.value + math.mul(localPos.ValueRO.position, rotation);
+                if (futurePos.x < 0 || futurePos.y < 0 || futurePos.x >= gridSize.x || futurePos.y >= gridSize.y)
+                    canRotate = false;
+            }
+
+            if (!canRotate)
+                return;
+
             foreach (var block in blocks)
             {
                 var localPos = localPosLookup.GetRefRW(block.Value, false);
