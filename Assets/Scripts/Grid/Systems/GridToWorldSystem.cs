@@ -10,7 +10,9 @@ using UnityEngine;
 namespace Tetris
 {
     [BurstCompile]
-    [UpdateBefore(typeof(TransformSystemGroup))]
+    [UpdateInGroup(typeof(TetrisGameLogic))]
+    [UpdateAfter(typeof(PlayerMovement))]
+    [UpdateAfter(typeof(UpdateLocalBlocks))]
     [RequireMatchingQueriesForUpdate]
     public partial struct GridToWorldSystem : ISystem
     {

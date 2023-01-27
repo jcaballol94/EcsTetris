@@ -9,8 +9,9 @@ using UnityEngine;
 namespace Tetris
 {
     [BurstCompile]
+    [UpdateInGroup(typeof(TetrisGameLogic))]
     [UpdateAfter(typeof(SpawnTetrimino))]
-    [UpdateBefore(typeof(GridToWorldSystem))]
+    [UpdateAfter(typeof(PlayerMovement))]
     [RequireMatchingQueriesForUpdate]
     public partial struct UpdateLocalBlocks : ISystem
     {

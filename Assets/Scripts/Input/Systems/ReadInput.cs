@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Tetris
 {
+    [UpdateInGroup(typeof(PlayerMovement))]
     public partial class ReadInput : SystemBase
     {
         private TetrisInput inputActions;

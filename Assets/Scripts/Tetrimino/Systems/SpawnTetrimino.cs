@@ -8,6 +8,8 @@ using UnityEngine;
 
 namespace Tetris
 {
+    [UpdateBefore(typeof(PlayerMovement))]
+    [UpdateInGroup(typeof(TetrisGameLogic))]
     public partial struct SpawnTetrimino : ISystem
     {
         EntityQuery tetriminoQuery;
