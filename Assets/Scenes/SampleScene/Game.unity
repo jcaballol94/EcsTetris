@@ -202,7 +202,13 @@ MonoBehaviour:
   blockPrefab: {fileID: 7046177515751513494, guid: 1a3f16d587cd12f4b918a04e3a88df82,
     type: 3}
   availableTetriminos:
+  - {fileID: -2861790179287625895, guid: c0ddabd82bb0e354e8144b521d967819, type: 3}
+  - {fileID: -2861790179287625895, guid: 855d775a6bb72aa4bb29f2057bc476ef, type: 3}
+  - {fileID: -2861790179287625895, guid: 03c0bdd7975b77a44940ebe4c032a61d, type: 3}
+  - {fileID: -2861790179287625895, guid: 6d8f930d6af17a34da21af5b030b7f2c, type: 3}
+  - {fileID: -2861790179287625895, guid: 0a032fc21450c7c4589a673cf090ae25, type: 3}
   - {fileID: -2861790179287625895, guid: 532a12c4c8d072d4881f661c99c74dd9, type: 3}
+  - {fileID: -2861790179287625895, guid: 6e44b48c912918844a725e495308922e, type: 3}
 --- !u!4 &1447822299
 Transform:
   m_ObjectHideFlags: 0
