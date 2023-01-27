@@ -41,8 +41,10 @@ namespace Tetris
             new TryRotateJob
             {
                 gridSize = gridSize.value,
+                rotationInput = input.value,
                 rotation = GetRotation(input.value),
-                localPosLookup = SystemAPI.GetComponentLookup<LocalBlock>(false)
+                localPosLookup = SystemAPI.GetComponentLookup<LocalBlock>(false),
+                offsetLookup = SystemAPI.GetBufferLookup<TetriminoOffsetDefinition>(true)
             }.ScheduleParallel();
         }
 
@@ -68,18 +70,37 @@ namespace Tetris
         public int rotationInput;
         [NativeDisableParallelForRestriction] 
         public ComponentLookup<LocalBlock> localPosLookup;
+        [ReadOnly] public BufferLookup<TetriminoOffsetDefinition> offsetLookup;
 
         [BurstCompile]
-        private void Execute(ref Orientation orientation, in PositionInGrid parentPos, in DynamicBuffer<TetriminoBlockList> blocks)
+        private void Execute(ref Orientation orientation, ref PositionInGrid parentPos, in Tetrimino tetrimino,
+            in DynamicBuffer<TetriminoBlockList> blocks)
         {
-            var canRotate = true;
-            for (int i = 0; canRotate && i < blocks.Length; ++i)
+            offsetLookup.TryGetBuffer(tetrimino.definition, out var offsets);
+
+            var newOrientation = orientation.value + rotationInput;
+            if (newOrientation < 0)
+                newOrientation += 4;
+            if (newOrientation > 3)
+                newOrientation -= 4;
+
+            var canRotate = false;
+            int step = 0;
+            for (; !canRotate && step < 5; ++step)
             {
-                var localPos = localPosLookup.GetRefRO(blocks[i].Value);
-                var futurePos = parentPos.value + math.mul(localPos.ValueRO.position, rotation);
-                if (futurePos.x < 0 || futurePos.y < 0 || futurePos.x >= gridSize.x || futurePos.y >= gridSize.y)
-                    canRotate = false;
+                canRotate = true;
+                for (int j = 0; canRotate && j < blocks.Length; ++j)
+                {
+                    var initialOffset = offsets[orientation.value * 5 + step];
+                    var targetOffset = offsets[newOrientation * 5 + step];
+
+                    var localPos = localPosLookup.GetRefRO(blocks[j].Value);
+                    var futurePos = parentPos.value + math.mul(localPos.ValueRO.position, rotation) + (initialOffset.value - targetOffset.value);
+                    if (futurePos.x < 0 || futurePos.y < 0 || futurePos.x >= gridSize.x || futurePos.y >= gridSize.y)
+                        canRotate = false;
+                }
             }
+            step--; // When we exit the loop, the step will have increased
 
             if (!canRotate)
                 return;
@@ -89,12 +110,10 @@ namespace Tetris
                 var localPos = localPosLookup.GetRefRW(block.Value, false);
                 localPos.ValueRW.position = math.mul(localPos.ValueRO.position, rotation);
             }
-
-            orientation.value += rotationInput;
-            if (orientation.value < 0)
-                orientation.value += 4;
-            if (orientation.value > 3)
-                orientation.value -= 4;
+            var stepInitial = offsets[orientation.value * 5 + step];
+            var stepFinal = offsets[newOrientation * 5 + step];
+            parentPos.value += (stepInitial.value - stepFinal.value);
+            orientation.value = newOrientation;
         }
     }
 }
