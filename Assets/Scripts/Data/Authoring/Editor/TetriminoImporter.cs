@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [ScriptedImporter(1, "tetrimino")]
+    [ScriptedImporter(2, "tetrimino")]
     public class TetriminoImporter : ScriptedImporter
     {
         public override void OnImportAsset(AssetImportContext ctx)
@@ -41,7 +41,7 @@ namespace Tetris
                     for (int j = 0; j < 5; ++j)
                     {
                         var nums = offsets[j].Split(',');
-                        tetrimino.rotationOffsets[i * 4 + j] = new Vector2Int(int.Parse(nums[0]), int.Parse(nums[1]));
+                        tetrimino.rotationOffsets[i * 5 + j] = new Vector2Int(int.Parse(nums[0]), int.Parse(nums[1]));
                     }
                 }
             }
