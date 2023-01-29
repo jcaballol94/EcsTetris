@@ -17,6 +17,7 @@ namespace Tetris
             inputActions = new TetrisInput();
             inputActions.Enable();
             EntityManager.AddComponentData(SystemHandle, new RotateInput { value = 0, changed = false });
+            EntityManager.AddComponentData(SystemHandle, new MoveInput { value = 0, changed = false });
         }
 
         protected override void OnStartRunning()
@@ -41,6 +42,7 @@ namespace Tetris
 
         protected override void OnUpdate()
         {
+            // Read rotation
             var rotate = SystemAPI.GetComponentRW<RotateInput>(SystemHandle);
             var newRotate = Mathf.RoundToInt(inputActions.Game.Rotate.ReadValue<float>());
             if (rotate.ValueRO.value != newRotate)
@@ -51,6 +53,19 @@ namespace Tetris
             else if (rotate.ValueRO.changed)
             {
                 rotate.ValueRW.changed = false;
+            }
+
+            // Read movement
+            var movement = SystemAPI.GetComponentRW<MoveInput>(SystemHandle);
+            var newMovement = Mathf.RoundToInt(inputActions.Game.Move.ReadValue<float>());
+            if (movement.ValueRO.value != newMovement)
+            {
+                movement.ValueRW.value = newMovement;
+                movement.ValueRW.changed = true;
+            }
+            else if (movement.ValueRO.changed)
+            {
+                movement.ValueRW.changed = false;
             }
         }
     }
