@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
+using Unity.Rendering;
 using UnityEngine;
 
 namespace Tetris
@@ -54,9 +54,11 @@ namespace Tetris
             var blockBuffer = ecb.AddBuffer<TetriminoBlockList>(entity);
 
             // Iterate over all the blocks in the definition
+            var data = SystemAPI.GetComponent<TetriminoData>(definition);
             foreach (var blockPos in SystemAPI.GetBuffer<TetriminoBlockDefinition>(definition))
             {
                 var blockEntity = ecb.Instantiate(blockPrefab.value);
+                ecb.AddComponent(blockEntity, new URPMaterialPropertyBaseColor { Value = data.color });
                 ecb.AddComponent(blockEntity, new LocalBlock { position = blockPos.Value });
                 ecb.AddComponent(blockEntity, new ParentTetrimino { value = entity });
                 ecb.AppendToBuffer(entity, new TetriminoBlockList { Value = blockEntity });
