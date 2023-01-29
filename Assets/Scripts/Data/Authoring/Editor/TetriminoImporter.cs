@@ -8,6 +8,8 @@ namespace Tetris
     [ScriptedImporter(2, "tetrimino")]
     public class TetriminoImporter : ScriptedImporter
     {
+        [ColorUsage(false)] public Color color;
+
         public override void OnImportAsset(AssetImportContext ctx)
         {
             var fileStream = System.IO.File.OpenText(assetPath);
@@ -16,6 +18,8 @@ namespace Tetris
                 var tetrimino = ScriptableObject.CreateInstance<TetriminoDefinition>();
                 ctx.AddObjectToAsset("tetrimino", tetrimino);
                 ctx.SetMainObject(tetrimino);
+
+                tetrimino.color = color;
 
                 // Import the block positions
                 tetrimino.blocks = new Vector2Int[4];
