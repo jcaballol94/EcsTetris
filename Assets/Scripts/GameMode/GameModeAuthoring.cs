@@ -23,4 +23,19 @@ namespace Tetris
             Gizmos.DrawSphere(mainGrid.transform.TransformPoint(new Vector3(spawnPoint.x + 0.5f, spawnPoint.y + 0.5f) * mainGrid.BlockSize), 0.1f);
         }
     }
+
+    public class GameModeBaking : Baker<GameModeAuthoring>
+    {
+        public override void Bake(GameModeAuthoring authoring)
+        {
+            if (!authoring.mainGrid || !authoring.blockPrefab)
+                return;
+
+            AddComponent(new TetrisGameMode
+            {
+                blockPrefab = GetEntity(authoring.blockPrefab),
+                mainGrid = GetEntity(authoring.mainGrid)
+            });
+        }
+    }
 }
