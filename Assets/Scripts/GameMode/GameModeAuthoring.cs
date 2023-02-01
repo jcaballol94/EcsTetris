@@ -34,7 +34,8 @@ namespace Tetris
             AddComponent(new TetrisGameMode
             {
                 blockPrefab = GetEntity(authoring.blockPrefab),
-                mainGrid = GetEntity(authoring.mainGrid)
+                mainGrid = GetEntity(authoring.mainGrid),
+                spawnPosition = new int2(authoring.spawnPoint.x, authoring.spawnPoint.y)
             });
         }
     }

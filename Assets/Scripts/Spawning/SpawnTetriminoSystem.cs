@@ -43,6 +43,8 @@ namespace Tetris
             ecb.AddComponent<FallingBlockTag>(blockEntity);
             // Link a reference to the grid
             ecb.AddComponent(blockEntity, new GridReference { value = gameMode.mainGrid });
+            // Put it in the right position
+            ecb.AddComponent(blockEntity, new Position { value = gameMode.spawnPosition });
         }
     }
 }

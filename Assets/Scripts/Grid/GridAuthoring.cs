@@ -11,4 +11,20 @@ namespace Tetris
     {
         public float BlockSize = 1f;
     }
+
+    public class GridBaking : Baker<GridAuthoring>
+    {
+        public override void Bake(GridAuthoring authoring)
+        {
+            var transform = GetComponent<Transform>();
+
+            AddComponent(new GridToWorldData
+            {
+                blockSize = authoring.BlockSize,
+                origin = transform.position,
+                up = transform.up,
+                right = transform.right,
+            });
+        }
+    }
 }
