@@ -12,4 +12,9 @@ namespace Tetris
         public Entity mainGrid;
         public int2 spawnPosition;
     }
+
+    public struct AvailableTetrimino : IBufferElementData
+    {
+        public Entity value;
+    }
 }

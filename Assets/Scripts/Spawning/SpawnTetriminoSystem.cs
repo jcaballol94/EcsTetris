@@ -7,7 +7,11 @@ using UnityEngine;
 
 namespace Tetris
 {
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    public class SpawnSystemGroup : ComponentSystemGroup { }
+
     [BurstCompile]
+    [UpdateInGroup(typeof(SpawnSystemGroup))]
     public partial struct SpawnTetriminoSystem : ISystem
     {
         private EntityQuery m_blocksQuery;

@@ -12,6 +12,7 @@ namespace Tetris
         public GridAuthoring mainGrid;
         public Vector2Int spawnPoint = new Vector2Int(4,10);
         public GameObject blockPrefab;
+        public TetriminoDefinition[] availableTetriminos;
 
         private void OnDrawGizmosSelected()
         {
@@ -37,6 +38,22 @@ namespace Tetris
                 mainGrid = GetEntity(authoring.mainGrid),
                 spawnPosition = new int2(authoring.spawnPoint.x, authoring.spawnPoint.y)
             });
+
+            if (authoring.availableTetriminos == null)
+                return;
+
+            var buffer = AddBuffer<AvailableTetrimino>();
+            foreach (var tetrimino in authoring.availableTetriminos)
+            {
+                var entity = CreateAdditionalEntity(TransformUsageFlags.None);
+                buffer.Add(new AvailableTetrimino { value = entity });
+
+                var blockBuffer = AddBuffer<TetriminoBlockDefinition>(entity);
+                foreach (var block in tetrimino.blocks)
+                {
+                    blockBuffer.Add(new TetriminoBlockDefinition { value = new int2(block.x, block.y) });
+                }
+            }
         }
     }
 }
