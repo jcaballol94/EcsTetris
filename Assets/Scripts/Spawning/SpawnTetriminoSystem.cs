@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Rendering;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -84,6 +85,7 @@ namespace Tetris
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
             var blockLookup = SystemAPI.GetBufferLookup<TetriminoBlockDefinition>(true);
+            var colorLookup = SystemAPI.GetComponentLookup<TetriminoColorDefinition>(true);
 
             // For all the tetriminoes that don't have children
             foreach (var (tetriminoDefinition, gridRef, tetriminoEntity) 
@@ -91,6 +93,9 @@ namespace Tetris
             {
                 // Add the list of children
                 ecb.AddBuffer<ChildRef>(tetriminoEntity);
+
+                // Get the color of the blocks
+                var color = colorLookup[tetriminoDefinition.ValueRO.value];
 
                 // Iterate over all the required blocks
                 var blocksDefinition = blockLookup[tetriminoDefinition.ValueRO.value];
@@ -105,6 +110,8 @@ namespace Tetris
                     ecb.AddComponent(block, new LocalPosition { value = blocksDefinition[i].value });
                     // Set a reference to the grid to be able to compute its position
                     ecb.AddComponent(block, gridRef.ValueRO);
+                    // Set the color
+                    ecb.AddComponent(block, new URPMaterialPropertyBaseColor { Value = color.value });
                 }
             }
 

@@ -34,4 +34,9 @@ namespace Tetris
     {
         public int2 value;
     }
+
+    public struct TetriminoColorDefinition : IComponentData
+    {
+        public float4 value;
+    }
 }

@@ -48,6 +48,11 @@ namespace Tetris
                 var entity = CreateAdditionalEntity(TransformUsageFlags.None);
                 buffer.Add(new AvailableTetrimino { value = entity });
 
+                AddComponent(entity, new TetriminoColorDefinition 
+                { 
+                    value = new float4(tetrimino.color.r, tetrimino.color.g, tetrimino.color.b, tetrimino.color.a) 
+                });
+
                 var blockBuffer = AddBuffer<TetriminoBlockDefinition>(entity);
                 foreach (var block in tetrimino.blocks)
                 {
