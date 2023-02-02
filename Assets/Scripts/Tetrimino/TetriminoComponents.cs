@@ -8,6 +8,7 @@ namespace Tetris
 {
     public struct TetriminoTag : IComponentData { }
 
+    [InternalBufferCapacity(4)]
     public struct ChildRef : IBufferElementData
     {
         public Entity value;
@@ -28,6 +29,7 @@ namespace Tetris
         public int2 value;
     }
 
+    [InternalBufferCapacity(4)]
     public struct TetriminoBlockDefinition : IBufferElementData 
     {
         public int2 value;
