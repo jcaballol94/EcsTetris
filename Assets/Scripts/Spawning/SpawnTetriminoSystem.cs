@@ -9,7 +9,7 @@ using Unity.Collections;
 
 namespace Tetris
 {
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
     public class SpawnSystemGroup : ComponentSystemGroup { }
 
     [UpdateInGroup(typeof(SpawnSystemGroup))]
