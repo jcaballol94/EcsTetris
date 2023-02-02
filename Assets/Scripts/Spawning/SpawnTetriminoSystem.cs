@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Rendering;
 using Unity.Mathematics;
 using UnityEngine;
+using Unity.Collections;
 
 namespace Tetris
 {
@@ -65,11 +66,16 @@ namespace Tetris
 
     [UpdateInGroup(typeof(SpawnSystemGroup))]
     [UpdateAfter(typeof(SpawnTetriminoSystem))]
-    [RequireMatchingQueriesForUpdate]
     public partial struct SpawnBlocksSystem : ISystem
     {
+        private EntityQuery m_query;
+
         public void OnCreate(ref SystemState state)
         {
+            m_query = SystemAPI.QueryBuilder().WithAll<TetriminoDefinitionRef, GridReference>().WithNone<ChildRef>().Build();
+
+            state.RequireForUpdate(m_query);
+            state.RequireForUpdate<TetrisGameMode>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -82,41 +88,57 @@ namespace Tetris
             if (!SystemAPI.TryGetSingleton<TetrisGameMode>(out var gameMode))
                 return;
 
-            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.TempJob);
 
             var blockLookup = SystemAPI.GetBufferLookup<TetriminoBlockDefinition>(true);
             var colorLookup = SystemAPI.GetComponentLookup<TetriminoColorDefinition>(true);
 
-            // For all the tetriminoes that don't have children
-            foreach (var (tetriminoDefinition, gridRef, tetriminoEntity) 
-                in SystemAPI.Query<RefRO<TetriminoDefinitionRef>, RefRO<GridReference>>().WithNone<ChildRef>().WithEntityAccess())
+            new SpawnBlocksJob
             {
-                // Add the list of children
-                ecb.AddBuffer<ChildRef>(tetriminoEntity);
-
-                // Get the color of the blocks
-                var color = colorLookup[tetriminoDefinition.ValueRO.value];
-
-                // Iterate over all the required blocks
-                var blocksDefinition = blockLookup[tetriminoDefinition.ValueRO.value];
-                for (int i= 0; i < blocksDefinition.Length; i++)
-                {
-                    // Create the block and link it with the tetrimino
-                    var block = ecb.Instantiate(gameMode.blockPrefab);
-                    ecb.AppendToBuffer(tetriminoEntity, new ChildRef { value = block });
-                    ecb.AddComponent(block, new TetriminoRef { value = tetriminoEntity });
-
-                    // Set the position based on the definition
-                    ecb.AddComponent(block, new LocalPosition { value = blocksDefinition[i].value });
-                    // Set a reference to the grid to be able to compute its position
-                    ecb.AddComponent(block, gridRef.ValueRO);
-                    // Set the color
-                    ecb.AddComponent(block, new URPMaterialPropertyBaseColor { Value = color.value });
-                }
-            }
+                blockLookup = blockLookup,
+                colorLookup = colorLookup,
+                ecb = ecb,
+                gameMode = gameMode
+            }.Run(m_query);
 
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
+        }
+    }
+
+    [BurstCompile]
+    public partial struct SpawnBlocksJob : IJobEntity
+    {
+        [ReadOnly] public ComponentLookup<TetriminoColorDefinition> colorLookup;
+        [ReadOnly] public BufferLookup<TetriminoBlockDefinition> blockLookup;
+        public EntityCommandBuffer ecb;
+        public TetrisGameMode gameMode;
+
+        [BurstCompile]
+        public void Execute(Entity tetriminoEntity, in TetriminoDefinitionRef tetriminoDefinition, in GridReference gridRef)
+        {
+            // Add the list of children
+            ecb.AddBuffer<ChildRef>(tetriminoEntity);
+
+            // Get the color of the blocks
+            var color = colorLookup[tetriminoDefinition.value];
+
+            // Iterate over all the required blocks
+            var blocksDefinition = blockLookup[tetriminoDefinition.value];
+            for (int i = 0; i < blocksDefinition.Length; i++)
+            {
+                // Create the block and link it with the tetrimino
+                var block = ecb.Instantiate(gameMode.blockPrefab);
+                ecb.AppendToBuffer(tetriminoEntity, new ChildRef { value = block });
+                ecb.AddComponent(block, new TetriminoRef { value = tetriminoEntity });
+
+                // Set the position based on the definition
+                ecb.AddComponent(block, new LocalPosition { value = blocksDefinition[i].value });
+                // Set a reference to the grid to be able to compute its position
+                ecb.AddComponent(block, gridRef);
+                // Set the color
+                ecb.AddComponent(block, new URPMaterialPropertyBaseColor { Value = color.value });
+            }
         }
     }
 }
