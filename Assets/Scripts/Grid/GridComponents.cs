@@ -23,4 +23,9 @@ namespace Tetris
         public float3 right;
         public float blockSize;
     }
+
+    public struct GridBounds : IComponentData
+    {
+        public int2 value;
+    }
 }

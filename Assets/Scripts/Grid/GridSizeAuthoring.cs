@@ -35,4 +35,12 @@ namespace Tetris
             }
         }
     }
+
+    public class GridSizeBaking : Baker<GridSizeAuthoring>
+    {
+        public override void Bake(GridSizeAuthoring authoring)
+        {
+            AddComponent(new GridBounds { value = new int2(authoring.bounds.x, authoring.bounds.y) });
+        }
+    }
 }
