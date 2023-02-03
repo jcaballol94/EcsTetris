@@ -7,6 +7,7 @@ namespace Tetris
 {
     [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
     [UpdateAfter(typeof(SpawnSystemGroup))]
+    [UpdateAfter(typeof(InputSystemGroup))]
     public class TetriminoMovementSystemGroup : ComponentSystemGroup
     {
     }
