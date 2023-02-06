@@ -35,6 +35,12 @@ namespace Tetris
         public int2 value;
     }
 
+    [InternalBufferCapacity(20)]
+    public struct TetriminoRotationOffsets : IBufferElementData 
+    {
+        public int2 value;
+    }
+
     public struct TetriminoColorDefinition : IComponentData
     {
         public float4 value;

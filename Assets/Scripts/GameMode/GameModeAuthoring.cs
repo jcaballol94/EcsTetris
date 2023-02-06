@@ -58,6 +58,12 @@ namespace Tetris
                 {
                     blockBuffer.Add(new TetriminoBlockDefinition { value = new int2(block.x, block.y) });
                 }
+
+                var offsetsBuffer = AddBuffer<TetriminoRotationOffsets>(entity);
+                foreach (var offset in tetrimino.rotationOffsets)
+                {
+                    offsetsBuffer.Add(new TetriminoRotationOffsets { value = new int2(offset.x, offset.y) });
+                }
             }
         }
     }
