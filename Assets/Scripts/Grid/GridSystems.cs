@@ -37,10 +37,72 @@ namespace Tetris
             state.EntityManager.AddComponent<Position>(m_query);
         }
     }
+    [UpdateInGroup(typeof(GridToWorldSystemGroup))]
+    [BurstCompile]
+    public partial struct AddRotationMatrixComponents : ISystem
+    {
+        private EntityQuery m_query;
+
+        [BurstCompile]
+        public void OnCreate(ref SystemState state)
+        {
+            m_query = SystemAPI.QueryBuilder().WithAll<Rotation>().WithNone<RotationMatrix>().Build();
+
+            state.RequireForUpdate(m_query);
+        }
+
+        [BurstCompile]
+        public void OnDestroy(ref SystemState state)
+        {
+        }
+
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            state.EntityManager.AddComponent<RotationMatrix>(m_query);
+        }
+    }
+
+    [BurstCompile]
+    [UpdateInGroup(typeof(GridToWorldSystemGroup))]
+    [UpdateAfter(typeof(AddRotationMatrixComponents))]
+    [UpdateBefore(typeof(GridToWorld))]
+    [RequireMatchingQueriesForUpdate]
+    public partial struct FillRotationMatrix : ISystem
+    {
+        [BurstCompile]
+        public void OnCreate(ref SystemState state)
+        {
+        }
+
+        [BurstCompile]
+        public void OnDestroy(ref SystemState state)
+        {
+        }
+
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            new UpdateRotationMatrixJob().ScheduleParallel();
+        }
+    }
+
+    [BurstCompile]
+    [WithChangeFilter(typeof(Rotation))]
+    public partial struct UpdateRotationMatrixJob : IJobEntity
+    {
+        [BurstCompile]
+        public void Execute(in Rotation rotation, ref RotationMatrix matrix)
+        {
+            matrix.value = rotation.GetMatrix();
+        }
+    }
 
     [BurstCompile]
     [UpdateInGroup(typeof(GridToWorldSystemGroup))]
     [UpdateAfter(typeof(AddPositionComponents))]
+    [UpdateAfter(typeof(FillRotationMatrix))]
+    [UpdateAfter(typeof(AddRotationMatrixComponents))]
     [UpdateBefore(typeof(GridToWorld))]
     [RequireMatchingQueriesForUpdate]
     public partial struct LocalToPosSystem : ISystem
@@ -59,10 +121,12 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             var positionLookup = SystemAPI.GetComponentLookup<Position>(false);
+            var rotationLookup = SystemAPI.GetComponentLookup<RotationMatrix>(true);
 
             new LocalToPosJob
             {
-                positionLookup = positionLookup
+                positionLookup = positionLookup,
+                rotationLookup = rotationLookup
             }.ScheduleParallel();
         }
     }
@@ -70,6 +134,7 @@ namespace Tetris
     [BurstCompile]
     public partial struct LocalToPosJob : IJobEntity
     {
+        [ReadOnly] public ComponentLookup<RotationMatrix> rotationLookup;
         [NativeDisableParallelForRestriction] public ComponentLookup<Position> positionLookup;
 
         [BurstCompile]
@@ -77,8 +142,9 @@ namespace Tetris
         {
             var parentPos = positionLookup.GetRefRO(tetrimino.value);
             var position = positionLookup.GetRefRW(block, false);
+            var rotation = rotationLookup.GetRefRO(tetrimino.value);
 
-            position.ValueRW.value = parentPos.ValueRO.value + local.value;
+            position.ValueRW.value = parentPos.ValueRO.value + math.mul(local.value, rotation.ValueRO.value);
         }
     }
 

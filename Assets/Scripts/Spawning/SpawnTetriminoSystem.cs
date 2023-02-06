@@ -58,6 +58,8 @@ namespace Tetris
             ecb.AddComponent(newTetrimino, new GridReference { value = gameMode.mainGrid });
             // Put it in the right position
             ecb.AddComponent(newTetrimino, new Position { value = gameMode.spawnPosition });
+            // And with the right rotation
+            ecb.AddComponent(newTetrimino, new Rotation { value = 0 });
 
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
