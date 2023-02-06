@@ -17,4 +17,10 @@ namespace Tetris
     {
         public Entity value;
     }
+
+    public struct RepeatMoveData : IComponentData
+    {
+        public float startDelay;
+        public float time;
+    }
 }

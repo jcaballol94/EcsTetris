@@ -13,6 +13,8 @@ namespace Tetris
         public Vector2Int spawnPoint = new Vector2Int(4,10);
         public GameObject blockPrefab;
         public TetriminoDefinition[] availableTetriminos;
+        public float repeatMoveDelay = 0.5f;
+        public float repeatMoveTime = 0.1f;
 
         private void OnDrawGizmosSelected()
         {
@@ -65,6 +67,12 @@ namespace Tetris
                     offsetsBuffer.Add(new TetriminoRotationOffsets { value = new int2(offset.x, offset.y) });
                 }
             }
+
+            AddComponent(new RepeatMoveData
+            {
+                startDelay = authoring.repeatMoveDelay,
+                time = authoring.repeatMoveTime
+            });
         }
     }
 }
