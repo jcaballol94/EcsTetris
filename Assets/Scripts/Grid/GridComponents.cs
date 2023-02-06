@@ -24,6 +24,18 @@ namespace Tetris
         {
             return RotationMatrix.FromRotation(value);
         }
+
+        public int GetRotated (int delta)
+        {
+            var newVal = value;
+            newVal += delta;
+            if (newVal < 0)
+                newVal += 4;
+            else if (newVal > 3)
+                newVal -= 4;
+
+            return newVal;
+        }
     }
 
     public struct RotationMatrix : IComponentData
