@@ -10,5 +10,7 @@ namespace Tetris
     {
         public int value;
         public bool changed;
+        public bool repeating;
+        public float elapsedTime;
     }
 }
