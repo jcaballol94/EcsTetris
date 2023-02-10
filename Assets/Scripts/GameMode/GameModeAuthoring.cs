@@ -13,8 +13,11 @@ namespace Tetris
         public Vector2Int spawnPoint = new Vector2Int(4,10);
         public GameObject blockPrefab;
         public TetriminoDefinition[] availableTetriminos;
+        [Header("Move")]
         public float repeatMoveDelay = 0.5f;
         public float repeatMoveTime = 0.1f;
+        [Header("Drop")]
+        public float dropSpeed = 2f;
 
         private void OnDrawGizmosSelected()
         {
@@ -72,6 +75,11 @@ namespace Tetris
             {
                 startDelay = authoring.repeatMoveDelay,
                 time = authoring.repeatMoveTime
+            });
+
+            AddComponent(new DropData
+            {
+                dropSpeed = authoring.dropSpeed
             });
         }
     }

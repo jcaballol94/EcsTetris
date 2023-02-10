@@ -45,4 +45,9 @@ namespace Tetris
     {
         public float4 value;
     }
+
+    public struct TetriminoDropState : IComponentData
+    {
+        public float timeSinceLastDrop;
+    }
 }

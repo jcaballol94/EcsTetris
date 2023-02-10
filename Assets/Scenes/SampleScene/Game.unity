@@ -225,6 +225,7 @@ MonoBehaviour:
   - {fileID: -2861790179287625895, guid: 6e44b48c912918844a725e495308922e, type: 3}
   repeatMoveDelay: 0.25
   repeatMoveTime: 0.05
+  dropSpeed: 2
 --- !u!4 &1059911065
 Transform:
   m_ObjectHideFlags: 0

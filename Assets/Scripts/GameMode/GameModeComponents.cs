@@ -23,4 +23,9 @@ namespace Tetris
         public float startDelay;
         public float time;
     }
+
+    public struct DropData : IComponentData
+    {
+        public float dropSpeed;
+    }
 }
