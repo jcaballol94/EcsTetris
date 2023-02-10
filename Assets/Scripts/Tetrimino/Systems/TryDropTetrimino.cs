@@ -44,7 +44,7 @@ namespace Tetris
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            m_query = SystemAPI.QueryBuilder().WithAllRW<Position, TetriminoDropState>().WithAll<Rotation, ChildRef, MoveInput>().Build();
+            m_query = SystemAPI.QueryBuilder().WithAllRW<Position, TetriminoDropState>().WithAll<Rotation, ChildRef, DropInput>().Build();
 
             state.RequireForUpdate(m_query);
             state.RequireForUpdate<GridBounds>();
@@ -89,11 +89,15 @@ namespace Tetris
         [ReadOnly] public ComponentLookup<LocalPosition> blocksLookup;
 
         [BurstCompile]
-        private void Execute(ref TetriminoDropState state, ref Position pos, in Rotation rot, in DynamicBuffer<ChildRef> blocks)
+        private void Execute(ref TetriminoDropState state, in DropInput input, ref Position pos, in Rotation rot, in DynamicBuffer<ChildRef> blocks)
         {
             state.timeSinceLastDrop += deltaTime;
+            var speed = data.dropSpeed;
+            if (input.fast)
+                speed *= data.fastDropMultiplier;
+
             // Check that it needs to fall
-            if ((1f / data.dropSpeed) > state.timeSinceLastDrop)
+            if ((1f / speed) > state.timeSinceLastDrop)
                 return;
 
             state.timeSinceLastDrop = 0;
