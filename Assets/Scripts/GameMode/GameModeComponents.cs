@@ -27,5 +27,6 @@ namespace Tetris
     public struct DropData : IComponentData
     {
         public float dropSpeed;
+        public int fastDropMultiplier;
     }
 }

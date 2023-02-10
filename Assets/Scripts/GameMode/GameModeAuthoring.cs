@@ -18,6 +18,7 @@ namespace Tetris
         public float repeatMoveTime = 0.1f;
         [Header("Drop")]
         public float dropSpeed = 2f;
+        public int fastDropMultiplier = 2;
 
         private void OnDrawGizmosSelected()
         {
@@ -79,7 +80,8 @@ namespace Tetris
 
             AddComponent(new DropData
             {
-                dropSpeed = authoring.dropSpeed
+                dropSpeed = authoring.dropSpeed,
+                fastDropMultiplier = authoring.fastDropMultiplier
             });
         }
     }
