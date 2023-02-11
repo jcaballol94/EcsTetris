@@ -21,8 +21,6 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            Debug.Log("Running spawn players");
-
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             foreach (var (playerDefinitions, gameModeEntity) in 
                 SystemAPI.Query<DynamicBuffer<PlayerDefinitionBuffer>>()
@@ -38,7 +36,6 @@ namespace Tetris
                 int i = 0;
                 foreach (var playerDef in playerDefinitions)
                 {
-                    Debug.Log("Creating player " + i);
                     var playerEntity = ecb.CreateEntity();
                     ecb.SetName(playerEntity, "Player_" + i++);
                     playerBuffer.Add(new ActivePlayerBuffer { value = playerEntity });

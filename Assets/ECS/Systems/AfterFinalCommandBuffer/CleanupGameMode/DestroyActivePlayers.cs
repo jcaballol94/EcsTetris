@@ -21,24 +21,22 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            Debug.Log("Running DestroyActivePlayers");
-
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
             foreach (var (players, gameModeEntity) in 
                 SystemAPI.Query<DynamicBuffer<ActivePlayerBuffer>>()
                 .WithNone<PlayerDefinitionBuffer>().WithEntityAccess())
             {
-                Debug.Log("Cleanup game mode");
-
                 foreach (var player in players)
                 {
-                    Debug.Log("Destroying player");
                     ecb.DestroyEntity(player.value);
                 }
 
                 ecb.RemoveComponent<ActivePlayerBuffer>(gameModeEntity);
             }
+
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 }
