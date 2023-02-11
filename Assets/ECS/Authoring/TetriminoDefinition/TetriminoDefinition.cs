@@ -57,5 +57,17 @@ namespace Tetris
                 rotationOffsets[i].FillBlob(ref builder, ref rotationsArray[i]);
             }
         }
+
+        public BlobAssetReference<Blob> CreateBlobAsset()
+        {
+            var builder = new BlobBuilder(Unity.Collections.Allocator.Temp);
+            ref var data = ref builder.ConstructRoot<Blob>();
+
+            FillBlob(ref builder, ref data);
+
+            var result = builder.CreateBlobAssetReference<Blob>(Unity.Collections.Allocator.Persistent);
+            builder.Dispose();
+            return result;
+        }
     }
 }

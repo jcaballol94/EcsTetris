@@ -8,7 +8,7 @@ namespace Tetris
 {
     public class GameModeAuthoring : MonoBehaviour
     {
-        public int numPlayers = 1;
+        public TetriminoDefinition[] availableTetriminos;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -16,10 +16,24 @@ namespace Tetris
         public override void Bake(GameModeAuthoring authoring)
         {
             AddComponent<ActiveGameModeTag>();
-            var buffer = AddBuffer<PlayerDefinitionBuffer>();
-            for (int i = 0; i < authoring.numPlayers; ++i)
+
+            // Add the players
+            var playersBuffer = AddBuffer<PlayerDefinitionBuffer>();
+            playersBuffer.Add(new PlayerDefinitionBuffer());
+
+            if (authoring.availableTetriminos != null && authoring.availableTetriminos.Length > 0)
             {
-                buffer.Add(new PlayerDefinitionBuffer());
+                // Add the available blobs
+                var tetriminosBuffer = AddBuffer<AvailableTetriminoBuffer>();
+                foreach (var tetrimino in authoring.availableTetriminos)
+                {
+                    // Register the tetrimino as a dependency to update the blob assets
+                    DependsOn(tetrimino);
+                    // Create the asset
+                    var tetriminoBlob = tetrimino.CreateBlobAsset();
+                    AddBlobAsset(ref tetriminoBlob, out var hash);
+                    tetriminosBuffer.Add(new AvailableTetriminoBuffer { blob = tetriminoBlob });
+                }
             }
         }
     }
