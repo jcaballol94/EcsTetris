@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Tetris
 {
     [AddComponentMenu("Tetris/Game Mode")]
-    public class GameModeAuthoring : MonoBehaviour
+    public class GameModeAuthoringOld : MonoBehaviour
     {
         public GridAuthoring mainGrid;
         public Vector2Int spawnPoint = new Vector2Int(4,10);
@@ -31,9 +31,9 @@ namespace Tetris
         }
     }
 
-    public class GameModeBaking : Baker<GameModeAuthoring>
+    public class GameModeBaking : Baker<GameModeAuthoringOld>
     {
-        public override void Bake(GameModeAuthoring authoring)
+        public override void Bake(GameModeAuthoringOld authoring)
         {
             if (!authoring.mainGrid || !authoring.blockPrefab)
                 return;
