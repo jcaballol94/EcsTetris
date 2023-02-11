@@ -11,6 +11,7 @@ namespace Tetris
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(SpawnSystemGroup))]
     [UpdateAfter(typeof(SpawnTetriminoSystemOld))]
+    [DisableAutoCreation]
     public partial struct AddMoveInputToTetriminoSystem : ISystem
     {
         private EntityQuery m_query;
