@@ -33,12 +33,16 @@ namespace Tetris
             {
                 ref var gameData = ref gameDataRef.ValueRO.value.Value;
 
+                // Get a random tetrimino type
+                var type = UnityEngine.Random.Range(0, gameData.tetriminos.Length);
+
                 // Create and setup the entity
                 var tetriminoEntity = ecb.CreateEntity();
                 ecb.SetName(tetriminoEntity, "tetrimino");
 
                 ecb.AddComponent<TetriminoTag>(tetriminoEntity);
                 ecb.AddComponent(tetriminoEntity, gameDataRef.ValueRO);
+                ecb.AddComponent(tetriminoEntity, new TetriminoType { idx = type });
                 ecb.AddComponent(tetriminoEntity, new TetriminoOwner { value = playerEntity });
 
                 // Store a ref in the player entity
