@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [ScriptedImporter(2, "tetrimino")]
+    [ScriptedImporter(3, "tetrimino")]
     public class TetriminoImporter : ScriptedImporter
     {
         [ColorUsage(false)] public Color color;
@@ -37,15 +37,16 @@ namespace Tetris
                     Debug.Assert(blockIdx == 4, "A tetrimino should have 4 blocks!");
                 }
 
-                tetrimino.rotationOffsets = new Vector2Int[5 * 4];
-                for (int i = 0; i < 4; ++i)
+                tetrimino.rotationOffsets = new OrientationOffsets[4];
+                for (int i = 0; i < tetrimino.rotationOffsets.Length; ++i)
                 {
                     var line = fileStream.ReadLine();
                     var offsets = line.Split('\t');
-                    for (int j = 0; j < 5; ++j)
+                    tetrimino.rotationOffsets[i].offsets = new Vector2Int[offsets.Length];
+                    for (int j = 0; j < offsets.Length; ++j)
                     {
                         var nums = offsets[j].Split(',');
-                        tetrimino.rotationOffsets[i * 5 + j] = new Vector2Int(int.Parse(nums[0]), int.Parse(nums[1]));
+                        tetrimino.rotationOffsets[i].offsets[j] = new Vector2Int(int.Parse(nums[0]), int.Parse(nums[1]));
                     }
                 }
             }
