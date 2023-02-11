@@ -8,8 +8,18 @@ using UnityEngine;
     #ROOTNAMESPACEBEGIN#
 [BurstCompile]
 [RequireMatchingQueriesForUpdate]
-public partial struct #SCRIPTNAME# : ISystem
+[UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
+public partial struct #SCRIPTNAME#System : ISystem
 {
+    [BurstCompile]
+    public partial struct #SCRIPTNAME#Job : IJobEntity
+    {
+        [BurstCompile]
+        private void Execute()
+        {
+        }
+    }
+
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
@@ -22,15 +32,6 @@ public partial struct #SCRIPTNAME# : ISystem
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
-    {
-    }
-}
-
-[BurstCompile]
-public partial struct #SCRIPTNAME#Job : IJobEntity
-{
-    [BurstCompile]
-    private void Execute()
     {
     }
 }
