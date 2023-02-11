@@ -11,7 +11,7 @@ namespace Tetris
 {
     [BurstCompile]
     [UpdateInGroup(typeof(SpawnSystemGroup))]
-    [UpdateAfter(typeof(SpawnTetriminoSystem))]
+    [UpdateAfter(typeof(SpawnTetriminoSystemOld))]
     public partial struct IAddDropStateToTetrimino : ISystem
     {
         private EntityQuery m_query;

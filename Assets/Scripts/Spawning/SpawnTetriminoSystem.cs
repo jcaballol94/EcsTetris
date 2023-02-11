@@ -13,7 +13,7 @@ namespace Tetris
     public class SpawnSystemGroup : ComponentSystemGroup { }
 
     [UpdateInGroup(typeof(SpawnSystemGroup))]
-    public partial struct SpawnTetriminoSystem : ISystem
+    public partial struct SpawnTetriminoSystemOld : ISystem
     {
         private EntityQuery m_blocksQuery;
         private EntityQuery m_gameModeQuery;
@@ -67,7 +67,7 @@ namespace Tetris
     }
 
     [UpdateInGroup(typeof(SpawnSystemGroup))]
-    [UpdateAfter(typeof(SpawnTetriminoSystem))]
+    [UpdateAfter(typeof(SpawnTetriminoSystemOld))]
     public partial struct SpawnBlocksSystem : ISystem
     {
         private EntityQuery m_query;

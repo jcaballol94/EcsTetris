@@ -10,7 +10,7 @@ namespace Tetris
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(SpawnSystemGroup))]
-    [UpdateAfter(typeof(SpawnTetriminoSystem))]
+    [UpdateAfter(typeof(SpawnTetriminoSystemOld))]
     public partial struct AddMoveInputToTetriminoSystem : ISystem
     {
         private EntityQuery m_query;

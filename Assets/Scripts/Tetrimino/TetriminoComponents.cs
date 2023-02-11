@@ -6,8 +6,6 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct TetriminoTag : IComponentData { }
-
     [InternalBufferCapacity(4)]
     public struct ChildRef : IBufferElementData
     {

@@ -6,13 +6,14 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct AvailableTetrimnosBlob
+    public struct GameModeDataBlob
     {
         public BlobArray<TetriminoDefinition.Blob> tetriminos;
+        public BlobArray<PlayerDefinition> players;
     }
 
-    public struct AvailableTetriminos : IComponentData
+    public struct GameModeData : IComponentData
     {
-        public BlobAssetReference<AvailableTetrimnosBlob> value;
+        public BlobAssetReference<GameModeDataBlob> value;
     }
 }

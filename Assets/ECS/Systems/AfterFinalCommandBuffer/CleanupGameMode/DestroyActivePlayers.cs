@@ -25,7 +25,7 @@ namespace Tetris
 
             foreach (var (players, gameModeEntity) in 
                 SystemAPI.Query<DynamicBuffer<ActivePlayerBuffer>>()
-                .WithNone<PlayerDefinitionBuffer>().WithEntityAccess())
+                .WithNone<ActiveGameModeTag>().WithEntityAccess())
             {
                 foreach (var player in players)
                 {
