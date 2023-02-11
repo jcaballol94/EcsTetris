@@ -10,11 +10,13 @@ namespace Tetris
     {
         public readonly Entity Self;
 
-        private readonly RefRO<PlayerTag> m_tag;
+        private readonly TetriminoProviderAspect m_tetriminoProvider;
 
-        public static void SetupPlayer(Entity entity, EntityCommandBuffer buffer)
+        public static void SeetupEntity(Entity entity, ref EntityCommandBuffer ecb, 
+            in BlobAssetReference<AvailableTetrimnosBlob> availableTetriminos)
         {
-            buffer.AddComponent<PlayerTag>(entity);
+            ecb.AddComponent<PlayerTag>(entity);
+            TetriminoProviderAspect.SetupEntity(ref ecb, entity, availableTetriminos);
         }
     }
 }

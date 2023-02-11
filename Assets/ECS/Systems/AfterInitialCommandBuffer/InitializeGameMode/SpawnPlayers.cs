@@ -22,8 +22,8 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-            foreach (var (playerDefinitions, gameModeEntity) in 
-                SystemAPI.Query<DynamicBuffer<PlayerDefinitionBuffer>>()
+            foreach (var (playerDefinitions, availbleTetriminos, gameModeEntity) in 
+                SystemAPI.Query<DynamicBuffer<PlayerDefinitionBuffer>, RefRO<AvailableTetriminos>>()
                 .WithNone<ActivePlayerBuffer>()
                 .WithEntityAccess())
             {
@@ -38,7 +38,7 @@ namespace Tetris
                 {
                     var playerEntity = ecb.CreateEntity();
                     ecb.SetName(playerEntity, "Player_" + i++);
-                    PlayerAspect.SetupPlayer(playerEntity, ecb);
+                    PlayerAspect.SeetupEntity(playerEntity, ref ecb, availbleTetriminos.ValueRO.value);
                     playerBuffer.Add(new ActivePlayerBuffer { value = playerEntity });
                 }
             }
