@@ -38,6 +38,7 @@ namespace Tetris
                 {
                     var playerEntity = ecb.CreateEntity();
                     ecb.SetName(playerEntity, "Player_" + i++);
+                    PlayerAspect.SetupPlayer(playerEntity, ecb);
                     playerBuffer.Add(new ActivePlayerBuffer { value = playerEntity });
                 }
             }
