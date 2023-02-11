@@ -23,17 +23,25 @@ namespace Tetris
 
             if (authoring.availableTetriminos != null && authoring.availableTetriminos.Length > 0)
             {
-                // Add the available blobs
-                var tetriminosBuffer = AddBuffer<AvailableTetriminoBuffer>();
-                foreach (var tetrimino in authoring.availableTetriminos)
+                // Allocate everything
+                var blobBuilder = new BlobBuilder(Unity.Collections.Allocator.Temp);
+                ref var blobRoot = ref blobBuilder.ConstructRoot<AvailableTetrimnosBlob>();
+                var array = blobBuilder.Allocate(ref blobRoot.tetriminos, authoring.availableTetriminos.Length);
+                
+                // Fill the data
+                for (int i = 0; i < authoring.availableTetriminos.Length; ++i)
                 {
-                    // Register the tetrimino as a dependency to update the blob assets
-                    DependsOn(tetrimino);
-                    // Create the asset
-                    var tetriminoBlob = tetrimino.CreateBlobAsset();
-                    AddBlobAsset(ref tetriminoBlob, out var hash);
-                    tetriminosBuffer.Add(new AvailableTetriminoBuffer { blob = tetriminoBlob });
+                    DependsOn(authoring.availableTetriminos[i]);
+                    authoring.availableTetriminos[i].FillBlob(ref blobBuilder, ref array[i]);
                 }
+
+                // Finish up the asset
+                var blobAsset = blobBuilder.CreateBlobAssetReference<AvailableTetrimnosBlob>(Unity.Collections.Allocator.Persistent);
+                blobBuilder.Dispose();
+
+                // Set up the entity
+                AddBlobAsset(ref blobAsset, out var hash);
+                AddComponent(new AvailableTetriminos { value = blobAsset });
             }
         }
     }
