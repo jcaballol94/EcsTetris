@@ -11,11 +11,6 @@ namespace Tetris
         public Entity value;
     }
 
-    public struct Position : IComponentData
-    {
-        public int2 value;
-    }
-
     public struct Rotation : IComponentData
     {
         public int value;

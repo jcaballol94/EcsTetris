@@ -44,6 +44,7 @@ namespace Tetris
                 ecb.AddComponent(tetriminoEntity, gameDataRef.ValueRO);
                 ecb.AddComponent(tetriminoEntity, new TetriminoType { idx = type });
                 ecb.AddComponent(tetriminoEntity, new TetriminoOwner { value = playerEntity });
+                ecb.AddComponent(tetriminoEntity, new Position { value = gameData.spawnPosition });
 
                 // Store a ref in the player entity
                 ecb.AddComponent(playerEntity, new CurrentTetrimino { value = tetriminoEntity });

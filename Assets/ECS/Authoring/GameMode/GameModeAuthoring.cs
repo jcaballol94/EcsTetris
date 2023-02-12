@@ -9,6 +9,7 @@ namespace Tetris
     public class GameModeAuthoring : MonoBehaviour
     {
         public TetriminoDefinition[] availableTetriminos;
+        public Vector2Int spawnPosition;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -20,6 +21,8 @@ namespace Tetris
             // Allocate everything
             var blobBuilder = new BlobBuilder(Unity.Collections.Allocator.Temp);
             ref var blobRoot = ref blobBuilder.ConstructRoot<GameModeDataBlob>();
+
+            blobRoot.spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y);
 
             {
                 var array = blobBuilder.Allocate(ref blobRoot.players, 1);

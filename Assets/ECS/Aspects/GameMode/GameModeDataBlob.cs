@@ -10,6 +10,7 @@ namespace Tetris
     {
         public BlobArray<TetriminoDefinition.Blob> tetriminos;
         public BlobArray<PlayerDefinition> players;
+        public int2 spawnPosition;
     }
 
     public struct GameModeData : IComponentData
