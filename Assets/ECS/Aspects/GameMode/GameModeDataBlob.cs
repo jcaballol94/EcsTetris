@@ -16,5 +16,15 @@ namespace Tetris
     public struct GameModeData : IComponentData
     {
         public BlobAssetReference<GameModeDataBlob> value;
+
+        public ref TetriminoDefinition.Blob GetTetriminoDefinition(int idx)
+        {
+            return ref value.Value.tetriminos[idx];
+        }
+
+        public ref TetriminoDefinition.Blob GetTetriminoDefinition(in TetriminoType type)
+        {
+            return ref GetTetriminoDefinition(type.idx);
+        }
     }
 }
