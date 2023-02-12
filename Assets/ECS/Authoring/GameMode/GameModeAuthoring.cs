@@ -9,6 +9,7 @@ namespace Tetris
     public class GameModeAuthoring : MonoBehaviour
     {
         public TetriminoDefinition[] availableTetriminos;
+        public GridAuthoring[] playerGrids;
         public Vector2Int spawnPosition;
         public GameObject blockPrefab;
     }
@@ -24,8 +25,15 @@ namespace Tetris
 
             AddComponent(new SpawnPosition { value = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y) });
 
-            var playersBuffer = AddBuffer<PlayerDefinitionBuffer>();
-            playersBuffer.Add(new PlayerDefinitionBuffer());
+            if (authoring.playerGrids != null && authoring.playerGrids.Length > 0)
+            {
+                var playersBuffer = AddBuffer<PlayerDefinitionBuffer>();
+                foreach (var grid in authoring.playerGrids) 
+                {
+                    if (grid)
+                        playersBuffer.Add(new PlayerDefinitionBuffer { grid = GetEntity(grid.gameObject)});
+                }
+            }
 
             if (authoring.availableTetriminos != null && authoring.availableTetriminos.Length > 0)
             {

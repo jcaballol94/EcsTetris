@@ -26,8 +26,8 @@ namespace Tetris
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
             // Get all the tetriminos without blocks
-            foreach (var (blockPrefab, tetriminoType, entity)
-                in SystemAPI.Query<RefRO<BlockPrefab>, RefRO<TetriminoType>>()
+            foreach (var (blockPrefab, tetriminoType, grid, entity)
+                in SystemAPI.Query<RefRO<BlockPrefab>, RefRO<TetriminoType>, RefRO<GridRef>>()
                 .WithNone<ChildBlockBuffer>()
                 .WithEntityAccess())
             {
@@ -42,6 +42,7 @@ namespace Tetris
                     ecb.AddComponent(blockEntity, new ParentTetrimino { value = entity });
                     ecb.AddComponent(blockEntity, new LocalPosition { value = tetriminoData.blocks[i] });
                     ecb.AddComponent(blockEntity, new URPMaterialPropertyBaseColor { Value = tetriminoData.color });
+                    ecb.AddComponent(blockEntity, grid.ValueRO);
 
                     blockBuffer.Add(new ChildBlockBuffer { value = blockEntity });
                 }

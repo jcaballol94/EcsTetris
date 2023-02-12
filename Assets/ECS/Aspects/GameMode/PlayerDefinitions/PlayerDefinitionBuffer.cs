@@ -8,6 +8,6 @@ namespace Tetris
 {
     public struct PlayerDefinitionBuffer : IBufferElementData
     {
-        public int value;
+        public Entity grid;
     }
 }
