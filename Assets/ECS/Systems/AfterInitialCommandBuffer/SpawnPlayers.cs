@@ -22,31 +22,16 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-            foreach (var (playerDefinitions, tetriminos, blockPfefab, spawnPosition, gameModeEntity) in 
-                SystemAPI.Query<DynamicBuffer<PlayerDefinitionBuffer>, DynamicBuffer<AvailableTetriminoBuffer>, RefRO<BlockPrefab>, RefRO<SpawnPosition>>()
+            foreach (var (spawner, gameModeEntity) in 
+                SystemAPI.Query<PlayerSpawner>()
                 .WithNone<ActivePlayerBuffer>()
                 .WithEntityAccess())
             {
                 var playerBuffer = ecb.AddBuffer<ActivePlayerBuffer>(gameModeEntity);
 
-                foreach (var playerDef in playerDefinitions)
+                for (int i = 0; i < spawner.PlayersToCreate; ++i)
                 {
-                    var playerEntity = ecb.CreateEntity();
-                    ecb.SetName(playerEntity, "Player");
-
-                    // Create a player and give it a reference to the game mode so it can be initialized
-                    ecb.AddComponent<PlayerTag>(playerEntity);
-                    ecb.AddComponent(playerEntity, blockPfefab.ValueRO);
-                    ecb.AddComponent(playerEntity, spawnPosition.ValueRO);
-                    ecb.AddComponent(playerEntity, new GridRef { value = playerDef.grid });
-
-                    var tetriminoesBuffer = ecb.AddBuffer<AvailableTetriminoBuffer>(playerEntity);
-                    foreach (var tetrimino in tetriminos)
-                    {
-                        tetriminoesBuffer.Add(tetrimino);
-                    }
-
-                    playerBuffer.Add(new ActivePlayerBuffer { value = playerEntity });
+                    playerBuffer.Add(new ActivePlayerBuffer { value = spawner.SpawnEntity(ref ecb, i) });
                 }
             }
 
