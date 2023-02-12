@@ -39,6 +39,7 @@ namespace Tetris
                 {
                     var blockEntity = ecb.Instantiate(blockPrefab.ValueRO.value);
                     ecb.SetName(blockEntity, "Block");
+                    ecb.AddComponent(blockEntity, new ParentTetrimino { value = entity });
                     ecb.AddComponent(blockEntity, new LocalPosition { value = tetriminoData.blocks[i] });
                     ecb.AddComponent(blockEntity, new URPMaterialPropertyBaseColor { Value = tetriminoData.color });
 
