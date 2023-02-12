@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Tetris
 {
     [InternalBufferCapacity(0)]
-    public struct ActivePlayerBuffer : ICleanupBufferElementData
+    public struct ActivePlayerBuffer : IBufferElementData
     {
         public Entity value;
     }

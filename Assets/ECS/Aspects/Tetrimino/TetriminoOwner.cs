@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct TetriminoOwner : ICleanupComponentData
+    public struct TetriminoOwner : IComponentData
     {
         public Entity value;
     }
