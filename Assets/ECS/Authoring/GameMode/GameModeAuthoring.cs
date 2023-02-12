@@ -10,6 +10,7 @@ namespace Tetris
     {
         public TetriminoDefinition[] availableTetriminos;
         public Vector2Int spawnPosition;
+        public GameObject blockPrefab;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -17,6 +18,9 @@ namespace Tetris
         public override void Bake(GameModeAuthoring authoring)
         {
             AddComponent<ActiveGameModeTag>();
+
+            if (authoring.blockPrefab)
+                AddComponent(new BlockPrefab { value = GetEntity(authoring.blockPrefab) });
 
             // Allocate everything
             var blobBuilder = new BlobBuilder(Unity.Collections.Allocator.Temp);

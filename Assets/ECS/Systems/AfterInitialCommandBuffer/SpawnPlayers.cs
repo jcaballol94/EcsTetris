@@ -22,8 +22,8 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-            foreach (var (gameDataRef, gameModeEntity) in 
-                SystemAPI.Query<RefRO<GameModeData>>()
+            foreach (var (gameDataRef, blockPrefab, gameModeEntity) in 
+                SystemAPI.Query<RefRO<GameModeData>, RefRO<BlockPrefab>>()
                 .WithAll<ActiveGameModeTag>()
                 .WithNone<ActivePlayerBuffer>()
                 .WithEntityAccess())
@@ -43,6 +43,7 @@ namespace Tetris
 
                     ecb.AddComponent<PlayerTag>(playerEntity);
                     ecb.AddComponent(playerEntity, gameDataRef.ValueRO);
+                    ecb.AddComponent(playerEntity, blockPrefab.ValueRO);
 
                     playerBuffer.Add(new ActivePlayerBuffer { value = playerEntity });
                 }

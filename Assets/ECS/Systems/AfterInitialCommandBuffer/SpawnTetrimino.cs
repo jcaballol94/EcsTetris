@@ -25,8 +25,8 @@ namespace Tetris
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
             // Get all the players without tetriminoes
-            foreach (var (gameDataRef, playerEntity) in 
-                SystemAPI.Query<RefRO<GameModeData>>()
+            foreach (var (gameDataRef, blockPrefab, playerEntity) in 
+                SystemAPI.Query<RefRO<GameModeData>, RefRO<BlockPrefab>>()
                 .WithAll<PlayerTag>()
                 .WithNone<CurrentTetrimino>()
                 .WithEntityAccess())
@@ -42,6 +42,7 @@ namespace Tetris
 
                 ecb.AddComponent<TetriminoTag>(tetriminoEntity);
                 ecb.AddComponent(tetriminoEntity, gameDataRef.ValueRO);
+                ecb.AddComponent(tetriminoEntity, blockPrefab.ValueRO);
                 ecb.AddComponent(tetriminoEntity, new TetriminoType { idx = type });
                 ecb.AddComponent(tetriminoEntity, new TetriminoOwner { value = playerEntity });
                 ecb.AddComponent(tetriminoEntity, new Position { value = gameData.spawnPosition });
