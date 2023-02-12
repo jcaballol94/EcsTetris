@@ -37,6 +37,9 @@ namespace Tetris
                 for (int i = 0; i < tetriminoData.blocks.Length; ++i)
                 {
                     var blockEntity = ecb.Instantiate(blockPrefab.ValueRO.value);
+                    ecb.SetName(blockEntity, "Block");
+                    ecb.AddComponent(blockEntity, new LocalPosition { value = tetriminoData.blocks[i] });
+
                     blockBuffer.Add(new ChildBlockBuffer { value = blockEntity });
                 }
             }

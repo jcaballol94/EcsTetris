@@ -22,11 +22,6 @@ namespace Tetris
         public Entity value;
     }
 
-    public struct LocalPosition : IComponentData
-    {
-        public int2 value;
-    }
-
     [InternalBufferCapacity(4)]
     public struct TetriminoBlockDefinition : IBufferElementData 
     {
