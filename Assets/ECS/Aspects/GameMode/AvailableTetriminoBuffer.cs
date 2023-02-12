@@ -6,7 +6,8 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct TetriminoType : IComponentData
+    [InternalBufferCapacity(0)]
+    public struct AvailableTetriminoBuffer : IBufferElementData
     {
         public BlobAssetReference<TetriminoDefinition.Blob> asset;
     }

@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct TetriminoType : IComponentData
+    public struct GridRef : IComponentData
     {
-        public BlobAssetReference<TetriminoDefinition.Blob> asset;
+        public Entity value;
     }
 }

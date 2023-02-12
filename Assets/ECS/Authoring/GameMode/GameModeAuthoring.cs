@@ -22,36 +22,22 @@ namespace Tetris
             if (authoring.blockPrefab)
                 AddComponent(new BlockPrefab { value = GetEntity(authoring.blockPrefab) });
 
-            // Allocate everything
-            var blobBuilder = new BlobBuilder(Unity.Collections.Allocator.Temp);
-            ref var blobRoot = ref blobBuilder.ConstructRoot<GameModeDataBlob>();
+            AddComponent(new SpawnPosition { value = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y) });
 
-            blobRoot.spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y);
-
-            {
-                var array = blobBuilder.Allocate(ref blobRoot.players, 1);
-                array[0] = new PlayerDefinition();
-            }
+            var playersBuffer = AddBuffer<PlayerDefinitionBuffer>();
+            playersBuffer.Add(new PlayerDefinitionBuffer());
 
             if (authoring.availableTetriminos != null && authoring.availableTetriminos.Length > 0)
             {
-                var array = blobBuilder.Allocate(ref blobRoot.tetriminos, authoring.availableTetriminos.Length);
-                
-                // Fill the data
-                for (int i = 0; i < authoring.availableTetriminos.Length; ++i)
+                var tetriminosBuffer = AddBuffer<AvailableTetriminoBuffer>();
+                foreach (var tetrimino in authoring.availableTetriminos)
                 {
-                    DependsOn(authoring.availableTetriminos[i]);
-                    authoring.availableTetriminos[i].FillBlob(ref blobBuilder, ref array[i]);
+                    var blob = tetrimino.CreateBlobAsset();
+                    AddBlobAsset(ref blob, out var hash);
+
+                    tetriminosBuffer.Add(new AvailableTetriminoBuffer { asset = blob });
                 }
             }
-
-            // Finish up the asset
-            var blobAsset = blobBuilder.CreateBlobAssetReference<GameModeDataBlob>(Unity.Collections.Allocator.Persistent);
-            blobBuilder.Dispose();
-
-            // Set up the entity
-            AddBlobAsset(ref blobAsset, out var hash);
-            AddComponent(new GameModeData { value = blobAsset });
         }
     }
 }

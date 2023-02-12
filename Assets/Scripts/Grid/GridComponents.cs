@@ -55,14 +55,6 @@ namespace Tetris
         }
     }
 
-    public struct GridToWorldData : IComponentData
-    {
-        public float3 origin;
-        public float3 up;
-        public float3 right;
-        public float blockSize;
-    }
-
     public struct GridBounds : IComponentData
     {
         public int2 value;

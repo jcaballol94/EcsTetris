@@ -25,27 +25,24 @@ namespace Tetris
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
             // Get all the players without tetriminoes
-            foreach (var (gameDataRef, blockPrefab, playerEntity) in 
-                SystemAPI.Query<RefRO<GameModeData>, RefRO<BlockPrefab>>()
+            foreach (var (availableTetriminoes, blockPrefab, spawnPosition, playerEntity) in 
+                SystemAPI.Query<DynamicBuffer<AvailableTetriminoBuffer>, RefRO<BlockPrefab>, RefRO<SpawnPosition>>()
                 .WithAll<PlayerTag>()
                 .WithNone<CurrentTetrimino>()
                 .WithEntityAccess())
             {
-                ref var gameData = ref gameDataRef.ValueRO.value.Value;
-
                 // Get a random tetrimino type
-                var type = UnityEngine.Random.Range(0, gameData.tetriminos.Length);
+                var type = UnityEngine.Random.Range(0, availableTetriminoes.Length);
 
                 // Create and setup the entity
                 var tetriminoEntity = ecb.CreateEntity();
-                ecb.SetName(tetriminoEntity, "tetrimino");
-
+                ecb.SetName(tetriminoEntity, "Tetrimino");
                 ecb.AddComponent<TetriminoTag>(tetriminoEntity);
-                ecb.AddComponent(tetriminoEntity, gameDataRef.ValueRO);
+
                 ecb.AddComponent(tetriminoEntity, blockPrefab.ValueRO);
-                ecb.AddComponent(tetriminoEntity, new TetriminoType { idx = type });
+                ecb.AddComponent(tetriminoEntity, new TetriminoType { asset = availableTetriminoes[type].asset });
                 ecb.AddComponent(tetriminoEntity, new TetriminoOwner { value = playerEntity });
-                ecb.AddComponent(tetriminoEntity, new Position { value = gameData.spawnPosition });
+                ecb.AddComponent(tetriminoEntity, new Position { value = spawnPosition.ValueRO.value });
 
                 // Store a ref in the player entity
                 ecb.AddComponent(playerEntity, new CurrentTetrimino { value = tetriminoEntity });

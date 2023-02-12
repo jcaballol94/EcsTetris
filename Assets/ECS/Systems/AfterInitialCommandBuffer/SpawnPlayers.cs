@@ -22,28 +22,28 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-            foreach (var (gameDataRef, blockPrefab, gameModeEntity) in 
-                SystemAPI.Query<RefRO<GameModeData>, RefRO<BlockPrefab>>()
-                .WithAll<ActiveGameModeTag>()
+            foreach (var (playerDefinitions, tetriminos, blockPfefab, spawnPosition, gameModeEntity) in 
+                SystemAPI.Query<DynamicBuffer<PlayerDefinitionBuffer>, DynamicBuffer<AvailableTetriminoBuffer>, RefRO<BlockPrefab>, RefRO<SpawnPosition>>()
                 .WithNone<ActivePlayerBuffer>()
                 .WithEntityAccess())
             {
-                ref var gameData = ref gameDataRef.ValueRO.value.Value;
-                if (gameData.players.Length == 0)
-                    continue;
-
-                // Store the references to the players for the cleanup
                 var playerBuffer = ecb.AddBuffer<ActivePlayerBuffer>(gameModeEntity);
 
-                for (int i = 0; i < gameData.players.Length; i++)
+                foreach (var playerDef in playerDefinitions)
                 {
-                    var playerDef = gameData.players[i];
                     var playerEntity = ecb.CreateEntity();
-                    ecb.SetName(playerEntity, "Player_" + i++);
+                    ecb.SetName(playerEntity, "Player");
 
+                    // Create a player and give it a reference to the game mode so it can be initialized
                     ecb.AddComponent<PlayerTag>(playerEntity);
-                    ecb.AddComponent(playerEntity, gameDataRef.ValueRO);
-                    ecb.AddComponent(playerEntity, blockPrefab.ValueRO);
+                    ecb.AddComponent(playerEntity, blockPfefab.ValueRO);
+                    ecb.AddComponent(playerEntity, spawnPosition.ValueRO);
+
+                    var tetriminoesBuffer = ecb.AddBuffer<AvailableTetriminoBuffer>(playerEntity);
+                    foreach (var tetrimino in tetriminos)
+                    {
+                        tetriminoesBuffer.Add(tetrimino);
+                    }
 
                     playerBuffer.Add(new ActivePlayerBuffer { value = playerEntity });
                 }

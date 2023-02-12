@@ -26,12 +26,12 @@ namespace Tetris
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
             // Get all the tetriminos without blocks
-            foreach (var (gameModeDataRef, tetriminoType, blockPrefab, entity)
-                in SystemAPI.Query<RefRO<GameModeData>, RefRO<TetriminoType>, RefRO<BlockPrefab>>()
+            foreach (var (blockPrefab, tetriminoType, entity)
+                in SystemAPI.Query<RefRO<BlockPrefab>, RefRO<TetriminoType>>()
                 .WithNone<ChildBlockBuffer>()
                 .WithEntityAccess())
             {
-                ref var tetriminoData = ref gameModeDataRef.ValueRO.GetTetriminoDefinition(tetriminoType.ValueRO);
+                ref var tetriminoData = ref tetriminoType.ValueRO.asset.Value;
 
                 var blockBuffer = ecb.AddBuffer<ChildBlockBuffer>(entity);
 

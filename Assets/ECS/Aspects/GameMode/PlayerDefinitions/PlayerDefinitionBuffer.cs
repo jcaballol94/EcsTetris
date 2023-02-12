@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct PlayerDefinition
+    public struct PlayerDefinitionBuffer : IBufferElementData
     {
         public int value;
     }
