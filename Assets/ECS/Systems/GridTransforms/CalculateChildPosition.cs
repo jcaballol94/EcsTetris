@@ -11,7 +11,6 @@ namespace Tetris
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(GridTransformsSystemGroup))]
     [UpdateAfter(typeof(UpdateParentPositionSystem))]
-    [UpdateAfter(typeof(AddMissingPositionComponentSystem))]
     public partial struct CalculateChildPositionSystem : ISystem
     {
         [BurstCompile]
