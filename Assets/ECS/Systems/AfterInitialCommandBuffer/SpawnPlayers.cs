@@ -39,6 +39,7 @@ namespace Tetris
                     ecb.AddComponent(playerEntity, blockPfefab.ValueRO);
                     ecb.AddComponent(playerEntity, spawnPosition.ValueRO);
                     ecb.AddComponent(playerEntity, new GridRef { value = playerDef.grid });
+                    ecb.AddComponent<InputReader>(playerEntity);
 
                     var tetriminoesBuffer = ecb.AddBuffer<AvailableTetriminoBuffer>(playerEntity);
                     foreach (var tetrimino in tetriminos)
