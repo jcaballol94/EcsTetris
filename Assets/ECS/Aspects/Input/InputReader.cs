@@ -8,6 +8,7 @@ namespace Tetris
 {
     public struct InputReader : IComponentData
     {
-        public int move;
+        public int moveValue;
+        public bool movePressed;
     }
 }
