@@ -42,6 +42,7 @@ namespace Tetris
                 ecb.AddComponent(tetriminoEntity, blockPrefab.ValueRO);
                 ecb.AddComponent(tetriminoEntity, new TetriminoType { asset = availableTetriminoes[type].asset });
                 ecb.AddComponent(tetriminoEntity, new TetriminoOwner { value = playerEntity });
+                ecb.AddComponent(tetriminoEntity, new InputProvider { value = playerEntity });
                 ecb.AddComponent(tetriminoEntity, new Position { value = spawnPosition.ValueRO.value });
                 ecb.AddComponent(tetriminoEntity, grid.ValueRO);
 
