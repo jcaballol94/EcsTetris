@@ -39,6 +39,7 @@ namespace Tetris
                 ecb.SetName(tetriminoEntity, "Tetrimino");
                 ecb.AddComponent<TetriminoTag>(tetriminoEntity);
 
+                ecb.AddComponent<HasCollisionsTag>(tetriminoEntity);
                 ecb.AddComponent(tetriminoEntity, blockPrefab.ValueRO);
                 ecb.AddComponent(tetriminoEntity, new TetriminoType { asset = availableTetriminoes[type].asset });
                 ecb.AddComponent(tetriminoEntity, new TetriminoOwner { value = playerEntity });
