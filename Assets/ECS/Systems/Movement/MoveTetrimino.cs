@@ -9,6 +9,7 @@ namespace Tetris
 {
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(MovementSystemGroup))]
+    [UpdateBefore(typeof(RotateTetriminoSystem))]
     public partial struct MoveTetriminoSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
