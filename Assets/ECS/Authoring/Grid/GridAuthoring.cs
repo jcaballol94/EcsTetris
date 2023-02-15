@@ -16,7 +16,7 @@ namespace Tetris
     {
         public override void Bake(GridAuthoring authoring)
         {
-            var transform = GetComponent<Transform>();
+            var transform = GetComponent<UnityEngine.Transform>();
 
             AddComponent(new GridToWorldData
             {

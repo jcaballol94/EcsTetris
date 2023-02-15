@@ -44,7 +44,7 @@ namespace Tetris
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            m_query = SystemAPI.QueryBuilder().WithAllRW<Position, TetriminoDropState>().WithAll<Rotation, ChildRef, DropInput>().Build();
+            m_query = SystemAPI.QueryBuilder().WithAllRW<Transform, TetriminoDropState>().WithAll<Rotation, ChildRef, DropInput>().Build();
 
             state.RequireForUpdate(m_query);
             state.RequireForUpdate<GridBounds>();
@@ -89,7 +89,7 @@ namespace Tetris
         [ReadOnly] public ComponentLookup<LocalPosition> blocksLookup;
 
         [BurstCompile]
-        private void Execute(ref TetriminoDropState state, in DropInput input, ref Position pos, in Rotation rot, in DynamicBuffer<ChildRef> blocks)
+        private void Execute(ref TetriminoDropState state, in DropInput input, ref Transform pos, in Rotation rot, in DynamicBuffer<ChildRef> blocks)
         {
             state.timeSinceLastDrop += deltaTime;
             var speed = data.dropSpeed;
@@ -103,7 +103,7 @@ namespace Tetris
             state.timeSinceLastDrop = 0;
 
             var rotationMatrix = rot.GetMatrix();
-            var newPos = pos.value;
+            var newPos = pos.position;
             newPos.y -= 1;
 
             // Check if the blocks are touching anything
@@ -117,7 +117,7 @@ namespace Tetris
             }
 
             // Apply the new position
-            pos.value = newPos;
+            pos.position = newPos;
         }
     }
 }

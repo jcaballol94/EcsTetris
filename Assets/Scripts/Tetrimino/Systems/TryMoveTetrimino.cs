@@ -18,7 +18,7 @@ namespace Tetris
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            m_query = SystemAPI.QueryBuilder().WithAllRW<Position>().WithAll<Rotation, ChildRef, MoveInput>().Build();
+            m_query = SystemAPI.QueryBuilder().WithAllRW<Transform>().WithAll<Rotation, ChildRef, MoveInput>().Build();
 
             state.RequireForUpdate(m_query);
             state.RequireForUpdate<GridBounds>();
@@ -53,14 +53,14 @@ namespace Tetris
         [ReadOnly][NativeDisableUnsafePtrRestriction] public GridQueryAspect gridQuery;
 
         [BurstCompile]
-        private void Execute(ref Position pos, in Rotation rot, in DynamicBuffer<ChildRef> children, in MoveInput input)
+        private void Execute(ref Transform pos, in Rotation rot, in DynamicBuffer<ChildRef> children, in MoveInput input)
         {
             // Check if we have to move
             if (!input.changed || input.value == 0)
                 return;
 
             // Calculate the new position
-            var newPos = pos.value;
+            var newPos = pos.position;
             newPos.x += input.value;
 
             var rotationMatrix = rot.GetMatrix();
@@ -74,7 +74,7 @@ namespace Tetris
             }
 
             // Apply the movement
-            pos.value = newPos;
+            pos.position = newPos;
         }
     }
 }

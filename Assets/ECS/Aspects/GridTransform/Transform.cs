@@ -6,8 +6,9 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct Position : IComponentData
+    public struct Transform : IComponentData
     {
-        public int2 value;
+        public int2 position;
+        public int orientation;
     }
 }

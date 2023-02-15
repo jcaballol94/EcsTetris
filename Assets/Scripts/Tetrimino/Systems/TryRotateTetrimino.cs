@@ -18,7 +18,7 @@ namespace Tetris
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            m_query = SystemAPI.QueryBuilder().WithAllRW<Position, Rotation>()
+            m_query = SystemAPI.QueryBuilder().WithAllRW<Transform, Rotation>()
                 .WithAll<ChildRef, RotateInput, TetriminoDefinitionRef>().Build();
 
             state.RequireForUpdate(m_query);
@@ -57,7 +57,7 @@ namespace Tetris
         [ReadOnly][NativeDisableUnsafePtrRestriction] public GridQueryAspect gridQuery;
 
         [BurstCompile]
-        private void Execute(ref Position pos, ref Rotation rot, in DynamicBuffer<ChildRef> children, 
+        private void Execute(ref Transform pos, ref Rotation rot, in DynamicBuffer<ChildRef> children, 
             in RotateInput input, in TetriminoDefinitionRef definition)
         {
             // Check if we have to move
@@ -87,7 +87,7 @@ namespace Tetris
                 foreach (var child in children)
                 {
                     var childLocalPos = blocksLookup[child.value].value;
-                    if (!gridQuery.IsPositionAvailable(pos.value + offset + math.mul(childLocalPos, rotationMatrix)))
+                    if (!gridQuery.IsPositionAvailable(pos.position + offset + math.mul(childLocalPos, rotationMatrix)))
                     {
                         canRotate = false;
                         break;
@@ -98,7 +98,7 @@ namespace Tetris
             // If the rotation was possible, apply the rotation
             if (canRotate)
             {
-                pos.value += offset;
+                pos.position += offset;
                 rot.value = newRotation;
             }
         }

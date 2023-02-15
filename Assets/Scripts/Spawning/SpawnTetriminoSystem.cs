@@ -57,7 +57,7 @@ namespace Tetris
             // Link a reference to the grid
             ecb.AddComponent(newTetrimino, new GridReference { value = gameMode.mainGrid });
             // Put it in the right position
-            ecb.AddComponent(newTetrimino, new Position { value = gameMode.spawnPosition });
+            ecb.AddComponent(newTetrimino, new Transform { position = gameMode.spawnPosition });
             // And with the right rotation
             ecb.AddComponent(newTetrimino, new Rotation { value = 0 });
 

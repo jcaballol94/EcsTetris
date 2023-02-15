@@ -22,14 +22,14 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             foreach (var (input, position, definition, collider)
-                in SystemAPI.Query<RefRO<InputValues>, RefRW<Position>, RefRO<TetriminoType>, GridCollider>()
+                in SystemAPI.Query<RefRO<InputValues>, RefRW<Transform>, RefRO<TetriminoType>, GridCollider>()
                 .WithChangeFilter<InputValues>())
             {
                 if (!input.ValueRO.movePressed || input.ValueRO.moveValue == 0)
                     continue;
 
                 // The new desired pos
-                var newPos = position.ValueRO.value;
+                var newPos = position.ValueRO.position;
                 newPos.x += input.ValueRO.moveValue;
 
                 // Check that the movement is possible
@@ -41,7 +41,7 @@ namespace Tetris
                 }
 
                 if (canMove)
-                    position.ValueRW.value = newPos;
+                    position.ValueRW.position = newPos;
             }
         }
     }

@@ -11,21 +11,26 @@ namespace Tetris
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(GridTransformsSystemGroup))]
-    public partial struct UpdateParentPositionSystem : ISystem
+    public partial struct UpdateParentTransformSystem : ISystem
     {
         [BurstCompile]
-        [WithChangeFilter(typeof(Position))]
-        public partial struct UpdateParentPositionJob : IJobEntity
+        [WithChangeFilter(typeof(Transform))]
+        public partial struct UpdateParentTransformJob : IJobEntity
         {
-            [NativeDisableParallelForRestriction] public ComponentLookup<ParentPosition> parentPosLookup;
+            [NativeDisableParallelForRestriction] public ComponentLookup<ParentTransform> parentPosLookup;
 
             [BurstCompile]
-            private void Execute(in Position pos, in DynamicBuffer<ChildBlockBuffer> children)
+            private void Execute(in Transform pos, in OrientationMatrix matrix, in DynamicBuffer<ChildBlockBuffer> children)
             {
+                var newValue = new ParentTransform
+                {
+                    position = pos.position,
+                    matrix = matrix.value
+                };
                 foreach (var child in children)
                 {
                     var childPos = parentPosLookup.GetRefRW(child.value, false);
-                    childPos.ValueRW.value = pos.value;
+                    childPos.ValueRW = newValue;
                 }
             }
         }
@@ -43,8 +48,8 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var parentPosLookup = SystemAPI.GetComponentLookup<ParentPosition>();
-            new UpdateParentPositionJob
+            var parentPosLookup = SystemAPI.GetComponentLookup<ParentTransform>();
+            new UpdateParentTransformJob
             {
                 parentPosLookup = parentPosLookup
             }.ScheduleParallel();

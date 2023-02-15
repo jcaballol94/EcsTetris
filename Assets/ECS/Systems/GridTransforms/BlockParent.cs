@@ -21,14 +21,14 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            state.EntityManager.AddComponent<Position>(SystemAPI.QueryBuilder()
+            state.EntityManager.AddComponent<Transform>(SystemAPI.QueryBuilder()
                 .WithAll<LocalPosition>()
-                .WithNone<Position>()
+                .WithNone<Transform>()
                 .Build());
 
-            state.EntityManager.AddComponent<ParentPosition>(SystemAPI.QueryBuilder()
+            state.EntityManager.AddComponent<ParentTransform>(SystemAPI.QueryBuilder()
                 .WithAll<LocalPosition, ParentTetrimino>()
-                .WithNone<ParentPosition>()
+                .WithNone<ParentTransform>()
                 .Build());
         }
     }

@@ -23,7 +23,7 @@ namespace Tetris
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            m_query = SystemAPI.QueryBuilder().WithAll<GridReference, LocalPosition, TetriminoRef>().WithNone<Position>().Build();
+            m_query = SystemAPI.QueryBuilder().WithAll<GridReference, LocalPosition, TetriminoRef>().WithNone<Transform>().Build();
         }
 
         [BurstCompile]
@@ -34,7 +34,7 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            state.EntityManager.AddComponent<Position>(m_query);
+            state.EntityManager.AddComponent<Transform>(m_query);
         }
     }
     [UpdateInGroup(typeof(GridToWorldSystemGroup))]
@@ -120,7 +120,7 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positionLookup = SystemAPI.GetComponentLookup<Position>(false);
+            var positionLookup = SystemAPI.GetComponentLookup<Transform>(false);
             var rotationLookup = SystemAPI.GetComponentLookup<RotationMatrix>(true);
 
             new LocalToPosJob
@@ -135,7 +135,7 @@ namespace Tetris
     public partial struct LocalToPosJob : IJobEntity
     {
         [ReadOnly] public ComponentLookup<RotationMatrix> rotationLookup;
-        [NativeDisableParallelForRestriction] public ComponentLookup<Position> positionLookup;
+        [NativeDisableParallelForRestriction] public ComponentLookup<Transform> positionLookup;
 
         [BurstCompile]
         public void Execute(Entity block, in LocalPosition local, in TetriminoRef tetrimino)
@@ -144,7 +144,7 @@ namespace Tetris
             var position = positionLookup.GetRefRW(block, false);
             var rotation = rotationLookup.GetRefRO(tetrimino.value);
 
-            position.ValueRW.value = parentPos.ValueRO.value + math.mul(local.value, rotation.ValueRO.value);
+            position.ValueRW.position = parentPos.ValueRO.position + math.mul(local.value, rotation.ValueRO.value);
         }
     }
 
@@ -175,19 +175,19 @@ namespace Tetris
     }
 
     [BurstCompile]
-    [WithChangeFilter(typeof(Position))]
+    [WithChangeFilter(typeof(Transform))]
     public partial struct GridToWorldJob : IJobEntity
     {
         [ReadOnly] public ComponentLookup<GridToWorldData> gridDataLookup;
 
         [BurstCompile]
-        private void Execute(in GridReference grid, in Position posInGrid, ref TransformAspect transform)
+        private void Execute(in GridReference grid, in Transform posInGrid, ref TransformAspect transform)
         {
             var gridData = gridDataLookup[grid.value];
 
             transform.WorldPosition = gridData.origin + 
-                (posInGrid.value.x + 0.5f) * gridData.right + 
-                (posInGrid.value.y + 0.5f) * gridData.up;
+                (posInGrid.position.x + 0.5f) * gridData.right + 
+                (posInGrid.position.y + 0.5f) * gridData.up;
         }
     }
 }
