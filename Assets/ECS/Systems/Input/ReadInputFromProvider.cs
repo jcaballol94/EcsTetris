@@ -24,7 +24,9 @@ namespace Tetris
                 var readValues = new InputValues
                 {
                     moveValue = reader.moveValue,
-                    movePressed = reader.movePressed
+                    movePressed = reader.movePressed,
+                    rotateValue = reader.rotateValue,
+                    rotatePressed = reader.rotatePressed
                 };
 
                 foreach (var listener in listeners)

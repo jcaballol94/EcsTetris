@@ -12,5 +12,8 @@ namespace Tetris
         public bool movePressed;
         public float timeSinceLastMove;
         public bool repeatingMove;
+
+        public int rotateValue;
+        public bool rotatePressed;
     }
 }

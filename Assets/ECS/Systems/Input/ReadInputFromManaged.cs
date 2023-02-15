@@ -46,6 +46,17 @@ namespace Tetris
                         reader.ValueRW.movePressed = false;
                     }
                 }
+
+                var newRotate = Mathf.RoundToInt(managed.value.Game.Rotate.ReadValue<float>());
+                if (newRotate != reader.ValueRO.rotateValue)
+                {
+                    reader.ValueRW.rotateValue = newRotate;
+                    reader.ValueRW.rotatePressed = true;
+                }
+                else if (reader.ValueRO.rotatePressed)
+                {
+                    reader.ValueRW.rotatePressed = false;
+                }
             }
         }
     }

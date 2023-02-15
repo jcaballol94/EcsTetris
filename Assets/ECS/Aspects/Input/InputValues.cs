@@ -10,5 +10,8 @@ namespace Tetris
     {
         public int moveValue;
         public bool movePressed;
+
+        public int rotateValue;
+        public bool rotatePressed;
     }
 }
