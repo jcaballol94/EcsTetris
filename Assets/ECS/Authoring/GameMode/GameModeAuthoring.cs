@@ -14,6 +14,7 @@ namespace Tetris
         public GameObject blockPrefab;
         public float moveRepeatDelay = 0.5f;
         public float moveRepeatRatio = 0.2f;
+        public float fallSpeed = 5f;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -29,7 +30,8 @@ namespace Tetris
             { 
                 spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y),
                 moveRepeatDelay = authoring.moveRepeatDelay,
-                moveRepeatRatio = authoring.moveRepeatRatio
+                moveRepeatRatio = authoring.moveRepeatRatio,
+                fallSpeed = authoring.fallSpeed
             });
 
             if (authoring.playerGrids != null && authoring.playerGrids.Length > 0)
