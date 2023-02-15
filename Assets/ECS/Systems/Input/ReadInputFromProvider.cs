@@ -26,17 +26,11 @@ namespace Tetris
                     moveValue = reader.moveValue,
                     movePressed = reader.movePressed
                 };
-                var inputHash = readValues.GetHashCode();
 
                 foreach (var listener in listeners)
                 {
-                    // Try only trigger the change filter when it has actually changed
-                    var valuesRO = valuesLookup.GetRefRO(listener.value);
-                    if (valuesRO.ValueRO.GetHashCode() != inputHash)
-                    {
-                        var values = valuesLookup.GetRefRW(listener.value, false);
-                        values.ValueRW = readValues;
-                    }
+                    var values = valuesLookup.GetRefRW(listener.value, false);
+                    values.ValueRW = readValues;
                 }
             }
         }
