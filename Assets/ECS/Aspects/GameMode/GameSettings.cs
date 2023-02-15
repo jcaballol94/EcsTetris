@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct SpawnPosition : IComponentData
+    public struct GameSettings : ISharedComponentData
     {
-        public int2 value;
+        public int2 spawnPosition;
     }
 }

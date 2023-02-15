@@ -23,7 +23,7 @@ namespace Tetris
             if (authoring.blockPrefab)
                 AddComponent(new BlockPrefab { value = GetEntity(authoring.blockPrefab) });
 
-            AddComponent(new SpawnPosition { value = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y) });
+            AddSharedComponent(new GameSettings { spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y) });
 
             if (authoring.playerGrids != null && authoring.playerGrids.Length > 0)
             {

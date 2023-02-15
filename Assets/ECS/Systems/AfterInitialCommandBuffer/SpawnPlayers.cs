@@ -23,7 +23,7 @@ namespace Tetris
         {
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             foreach (var (playerDefinitions, tetriminos, blockPfefab, spawnPosition, gameModeEntity) in 
-                SystemAPI.Query<DynamicBuffer<PlayerDefinitionBuffer>, DynamicBuffer<AvailableTetriminoBuffer>, RefRO<BlockPrefab>, RefRO<SpawnPosition>>()
+                SystemAPI.Query<DynamicBuffer<PlayerDefinitionBuffer>, DynamicBuffer<AvailableTetriminoBuffer>, RefRO<BlockPrefab>, GameSettings>()
                 .WithNone<ActivePlayerBuffer>()
                 .WithEntityAccess())
             {
@@ -37,7 +37,7 @@ namespace Tetris
                     // Create a player and give it a reference to the game mode so it can be initialized
                     ecb.AddComponent<PlayerTag>(playerEntity);
                     ecb.AddComponent(playerEntity, blockPfefab.ValueRO);
-                    ecb.AddComponent(playerEntity, spawnPosition.ValueRO);
+                    ecb.AddSharedComponent(playerEntity, spawnPosition);
                     ecb.AddComponent(playerEntity, new GridRef { value = playerDef.grid });
                     ecb.AddComponent<InputReader>(playerEntity);
 
