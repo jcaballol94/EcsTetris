@@ -14,6 +14,7 @@ namespace Tetris
     [UpdateAfter(typeof(ReadInputFromManagedSystem))]
     public partial struct ReadInputFromProviderSystem : ISystem
     {
+        [WithChangeFilter(typeof(InputReader))]
         [BurstCompile]
         public partial struct ReadInputFromProviderJob : IJobEntity
         {
