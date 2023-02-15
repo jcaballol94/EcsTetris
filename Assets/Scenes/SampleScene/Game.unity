@@ -221,11 +221,12 @@ MonoBehaviour:
   - {fileID: -2861790179287625895, guid: 6e44b48c912918844a725e495308922e, type: 3}
   playerGrids:
   - {fileID: 635419141}
-  spawnPosition: {x: 4, y: 9}
+  spawnPosition: {x: 4, y: 21}
   blockPrefab: {fileID: 7046177515751513494, guid: 1a3f16d587cd12f4b918a04e3a88df82,
     type: 3}
   moveRepeatDelay: 0.3
   moveRepeatRatio: 0.1
+  fallSpeed: 5
 --- !u!4 &685388147
 Transform:
   m_ObjectHideFlags: 0
