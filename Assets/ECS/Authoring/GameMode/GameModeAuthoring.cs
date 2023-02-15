@@ -47,6 +47,8 @@ namespace Tetris
                 var tetriminosBuffer = AddBuffer<AvailableTetriminoBuffer>();
                 foreach (var tetrimino in authoring.availableTetriminos)
                 {
+                    DependsOn(tetrimino);
+
                     var blob = tetrimino.CreateBlobAsset();
                     AddBlobAsset(ref blob, out var hash);
 
