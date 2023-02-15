@@ -10,5 +10,7 @@ namespace Tetris
     {
         public int moveValue;
         public bool movePressed;
+        public float timeSinceLastMove;
+        public bool repeatingMove;
     }
 }

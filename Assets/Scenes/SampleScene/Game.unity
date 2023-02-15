@@ -224,6 +224,8 @@ MonoBehaviour:
   spawnPosition: {x: 4, y: 9}
   blockPrefab: {fileID: 7046177515751513494, guid: 1a3f16d587cd12f4b918a04e3a88df82,
     type: 3}
+  moveRepeatDelay: 0.3
+  moveRepeatRatio: 0.1
 --- !u!4 &685388147
 Transform:
   m_ObjectHideFlags: 0

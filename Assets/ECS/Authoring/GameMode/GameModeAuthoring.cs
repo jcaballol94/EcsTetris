@@ -12,6 +12,8 @@ namespace Tetris
         public GridAuthoring[] playerGrids;
         public Vector2Int spawnPosition;
         public GameObject blockPrefab;
+        public float moveRepeatDelay = 0.5f;
+        public float moveRepeatRatio = 0.2f;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -23,7 +25,12 @@ namespace Tetris
             if (authoring.blockPrefab)
                 AddComponent(new BlockPrefab { value = GetEntity(authoring.blockPrefab) });
 
-            AddSharedComponent(new GameSettings { spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y) });
+            AddSharedComponent(new GameSettings 
+            { 
+                spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y),
+                moveRepeatDelay = authoring.moveRepeatDelay,
+                moveRepeatRatio = authoring.moveRepeatRatio
+            });
 
             if (authoring.playerGrids != null && authoring.playerGrids.Length > 0)
             {

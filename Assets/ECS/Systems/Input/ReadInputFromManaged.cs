@@ -21,17 +21,30 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (reader, managed) in SystemAPI.Query<RefRW<InputReader>, ManagedInput>())
+            var deltaTime = SystemAPI.Time.DeltaTime;
+            foreach (var (reader, settings, managed) in SystemAPI.Query<RefRW<InputReader>, GameSettings, ManagedInput>())
             {
                 var newMove = Mathf.RoundToInt(managed.value.Game.Move.ReadValue<float>());
                 if (newMove != reader.ValueRO.moveValue)
                 {
                     reader.ValueRW.moveValue = newMove;
                     reader.ValueRW.movePressed = true;
+                    reader.ValueRW.timeSinceLastMove = 0f;
+                    reader.ValueRW.repeatingMove = false;
                 }
-                else if (reader.ValueRO.movePressed)
+                else 
                 {
-                    reader.ValueRW.movePressed = false;
+                    reader.ValueRW.timeSinceLastMove += deltaTime;
+                    if (reader.ValueRO.timeSinceLastMove >= (reader.ValueRO.repeatingMove ? settings.moveRepeatRatio : settings.moveRepeatDelay))
+                    {
+                        reader.ValueRW.movePressed = true;
+                        reader.ValueRW.timeSinceLastMove = 0f;
+                        reader.ValueRW.repeatingMove = true;
+                    }
+                    else if (reader.ValueRO.movePressed)
+                    {
+                        reader.ValueRW.movePressed = false;
+                    }
                 }
             }
         }
