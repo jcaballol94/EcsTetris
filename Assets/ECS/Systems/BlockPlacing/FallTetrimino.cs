@@ -23,32 +23,22 @@ namespace Tetris
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
 
-            foreach (var (transform, matrix, fallStatus, definition, collider, settings)
-                in SystemAPI.Query<RefRW<Position>, RefRO<OrientationMatrix>, RefRW<FallStatus>, RefRO<TetriminoType>, GridCollider, GameSettings>())
+            foreach (var (movement, fallStatus, settings)
+                in SystemAPI.Query<TetriminoMovement, RefRW<FallStatus>, GameSettings>())
             {
-                var newTransform = transform.ValueRO;
                 var newStatus = fallStatus.ValueRO;
 
                 newStatus.timeToFall -= deltaTime;
+                var fallTime = 1f / settings.fallSpeed;
+
                 while (newStatus.timeToFall < 0f)
                 {
-                    newStatus.timeToFall += 1f / settings.fallSpeed;
-                    var newPos = newTransform.value;
-                    newPos.y--;
+                    newStatus.timeToFall += fallTime;
 
-                    ref var blocks = ref definition.ValueRO.asset.Value.blocks;
-                    var canMove = true;
-                    for (int i = 0; canMove && i < blocks.Length; ++i)
-                    {
-                        canMove = collider.IsPositionValid(newPos + math.mul(blocks[i], matrix.ValueRO.value));
-                    }
-
-                    if (canMove)
-                        newTransform.value = newPos;
+                    movement.TryMove(new int2(0, -1));
                 }
 
                 fallStatus.ValueRW = newStatus;
-                transform.ValueRW = newTransform;
             }
         }
     }
