@@ -9,5 +9,6 @@ namespace Tetris
     public struct FallStatus : IComponentData
     {
         public float timeToFall;
+        public bool fallFailed;
     }
 }

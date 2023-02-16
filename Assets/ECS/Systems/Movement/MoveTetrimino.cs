@@ -21,15 +21,20 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (input, movement)
-                in SystemAPI.Query<RefRO<InputValues>, TetriminoMovement>()
+            foreach (var (input, fallStatus, movement)
+                in SystemAPI.Query<RefRO<InputValues>, RefRW<FallStatus>, TetriminoMovement>()
                 .WithChangeFilter<InputValues>())
             {
+                var moved = false;
                 if (input.ValueRO.movePressed && input.ValueRO.moveValue != 0)
-                    movement.TryMove(new int2(input.ValueRO.moveValue, 0));
+                    moved = movement.TryMove(new int2(input.ValueRO.moveValue, 0));
 
                 if (input.ValueRO.rotatePressed && input.ValueRO.rotateValue != 0)
-                    movement.TryRotate(input.ValueRO.rotateValue);
+                    moved |= movement.TryRotate(input.ValueRO.rotateValue);
+
+                // If we moved, cancel placing the block
+                if (moved)
+                    fallStatus.ValueRW.fallFailed = false;
             }
         }
     }
