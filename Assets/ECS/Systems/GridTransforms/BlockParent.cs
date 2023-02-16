@@ -21,9 +21,9 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            state.EntityManager.AddComponent<Transform>(SystemAPI.QueryBuilder()
+            state.EntityManager.AddComponent<Position>(SystemAPI.QueryBuilder()
                 .WithAll<LocalPosition>()
-                .WithNone<Transform>()
+                .WithNone<Position>()
                 .Build());
 
             state.EntityManager.AddComponent<ParentTransform>(SystemAPI.QueryBuilder()

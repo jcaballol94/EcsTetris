@@ -24,7 +24,7 @@ namespace Tetris
             var deltaTime = SystemAPI.Time.DeltaTime;
 
             foreach (var (transform, matrix, fallStatus, definition, collider, settings)
-                in SystemAPI.Query<RefRW<Transform>, RefRO<OrientationMatrix>, RefRW<FallStatus>, RefRO<TetriminoType>, GridCollider, GameSettings>())
+                in SystemAPI.Query<RefRW<Position>, RefRO<OrientationMatrix>, RefRW<FallStatus>, RefRO<TetriminoType>, GridCollider, GameSettings>())
             {
                 var newTransform = transform.ValueRO;
                 var newStatus = fallStatus.ValueRO;
@@ -33,7 +33,7 @@ namespace Tetris
                 while (newStatus.timeToFall < 0f)
                 {
                     newStatus.timeToFall += 1f / settings.fallSpeed;
-                    var newPos = newTransform.position;
+                    var newPos = newTransform.value;
                     newPos.y--;
 
                     ref var blocks = ref definition.ValueRO.asset.Value.blocks;
@@ -44,7 +44,7 @@ namespace Tetris
                     }
 
                     if (canMove)
-                        newTransform.position = newPos;
+                        newTransform.value = newPos;
                 }
 
                 fallStatus.ValueRW = newStatus;

@@ -13,13 +13,13 @@ namespace Tetris
     public partial struct GridToWorldSystem : ISystem
     {
         [BurstCompile]
-        [WithChangeFilter(typeof(Transform))]
+        [WithChangeFilter(typeof(Position))]
         public partial struct GridToWorldJob : IJobEntity
         {
             [BurstCompile]
-            private void Execute(in Transform pos, in GridToWorldData data, ref Unity.Transforms.LocalTransform transform)
+            private void Execute(in Position pos, in GridToWorldData data, ref Unity.Transforms.LocalTransform transform)
             {
-                var offset = pos.position.x * data.right + pos.position.y * data.up;
+                var offset = pos.value.x * data.right + pos.value.y * data.up;
                 transform.Position = data.origin + new float3(0.5f, 0.5f, 0f) + offset * data.blockSize;
             }
         }

@@ -13,13 +13,13 @@ namespace Tetris
     public partial struct CalculateOrientationMatrixSystem : ISystem
     {
         [BurstCompile]
-        [WithChangeFilter(typeof(Transform))]
+        [WithChangeFilter(typeof(Orientation))]
         public partial struct CalculateOrientationMatrixJob : IJobEntity
         {
             [BurstCompile]
-            private void Execute(in Transform transform, ref OrientationMatrix matrix)
+            private void Execute(in Orientation orientation, ref OrientationMatrix matrix)
             {
-                matrix.value = OrientationMatrix.CalculateForRotation(transform.orientation);
+                matrix.value = OrientationMatrix.CalculateForRotation(orientation.value);
             }
         }
 

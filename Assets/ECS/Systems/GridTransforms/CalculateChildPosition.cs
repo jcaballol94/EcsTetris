@@ -18,9 +18,9 @@ namespace Tetris
         public partial struct CalculateChildPositionJob : IJobEntity
         {
             [BurstCompile]
-            private void Execute(in ParentTransform parentPos, in LocalPosition localPos, ref Transform pos)
+            private void Execute(in ParentTransform parentPos, in LocalPosition localPos, ref Position pos)
             {
-                pos.position = parentPos.position + math.mul(localPos.value, parentPos.matrix);
+                pos.value = parentPos.position + math.mul(localPos.value, parentPos.matrix);
             }
         }
 

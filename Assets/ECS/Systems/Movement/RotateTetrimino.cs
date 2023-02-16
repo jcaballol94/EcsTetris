@@ -21,22 +21,23 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (input, position, definition, collider)
-                in SystemAPI.Query<RefRO<InputValues>, RefRW<Transform>, RefRO<TetriminoType>, GridCollider>()
+            foreach (var (input, position, orientation, definition, collider)
+                in SystemAPI.Query<RefRO<InputValues>, RefRW<Position>, RefRW<Orientation>, RefRO<TetriminoType>, GridCollider>()
                 .WithChangeFilter<InputValues>())
             {
                 if (!input.ValueRO.rotatePressed || input.ValueRO.rotateValue == 0)
                     continue;
 
-                var oldPosition = position.ValueRO;
+                var oldPosition = position.ValueRO.value;
+                var oldOrientation = orientation.ValueRO.value;
                 var newPosition = oldPosition;
-                newPosition.orientation = oldPosition.orientation + input.ValueRO.rotateValue;
-                if (newPosition.orientation < 0)
-                    newPosition.orientation += 4;
-                if (newPosition.orientation > 3)
-                    newPosition.orientation -= 4;
+                var newOrientation = oldOrientation + input.ValueRO.rotateValue;
+                if (newOrientation < 0)
+                    newOrientation += 4;
+                if (newOrientation > 3)
+                    newOrientation -= 4;
 
-                var newMatrix = OrientationMatrix.CalculateForRotation(newPosition.orientation);
+                var newMatrix = OrientationMatrix.CalculateForRotation(newOrientation);
 
                 // Check all the possible offsets
                 ref var offsets = ref definition.ValueRO.asset.Value.rotationOffsets;
@@ -44,20 +45,23 @@ namespace Tetris
                 bool canMove = false;
                 for (int i = 0; !canMove && i < offsets.Length; ++i)
                 {
-                    newPosition.position = oldPosition.position + 
-                        offsets[oldPosition.orientation].offsets[i] - offsets[newPosition.orientation].offsets[i];
+                    newPosition = oldPosition + 
+                        offsets[oldOrientation].offsets[i] - offsets[newOrientation].offsets[i];
 
                     // Check all the blocks
                     canMove = true;
                     for (int j = 0; canMove && j < blocks.Length; ++j)
                     {
-                        canMove = collider.IsPositionValid(newPosition.position + math.mul(blocks[j], newMatrix));
+                        canMove = collider.IsPositionValid(newPosition + math.mul(blocks[j], newMatrix));
                     }
                 }
 
                 // If possible, apply the move
                 if (canMove)
-                    position.ValueRW = newPosition;
+                {
+                    position.ValueRW.value = newPosition;
+                    orientation.ValueRW.value = newOrientation;
+                }
             }
         }
     }

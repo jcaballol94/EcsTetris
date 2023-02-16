@@ -27,7 +27,7 @@ namespace Tetris
             // Entities that have a grid position and a unity transform, add the data required for the translation
             foreach (var (grid, entity) in SystemAPI
                 .Query<GridRef>()
-                .WithAll<Transform, Unity.Transforms.LocalTransform>()
+                .WithAll<Position, Unity.Transforms.LocalTransform>()
                 .WithNone<GridToWorldData>()
                 .WithEntityAccess())
             {

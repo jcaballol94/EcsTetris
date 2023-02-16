@@ -14,17 +14,17 @@ namespace Tetris
     public partial struct UpdateParentTransformSystem : ISystem
     {
         [BurstCompile]
-        [WithChangeFilter(typeof(Transform))]
+        [WithChangeFilter(typeof(Position))]
         public partial struct UpdateParentTransformJob : IJobEntity
         {
             [NativeDisableParallelForRestriction] public ComponentLookup<ParentTransform> parentPosLookup;
 
             [BurstCompile]
-            private void Execute(in Transform pos, in OrientationMatrix matrix, in DynamicBuffer<ChildBlockBuffer> children)
+            private void Execute(in Position pos, in OrientationMatrix matrix, in DynamicBuffer<ChildBlockBuffer> children)
             {
                 var newValue = new ParentTransform
                 {
-                    position = pos.position,
+                    position = pos.value,
                     matrix = matrix.value
                 };
                 foreach (var child in children)
