@@ -9,7 +9,6 @@ namespace Tetris
 {
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(MovementSystemGroup))]
-    [UpdateBefore(typeof(RotateTetriminoSystem))]
     public partial struct MoveTetriminoSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -22,27 +21,15 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (input, position, matrix, definition, collider)
-                in SystemAPI.Query<RefRO<InputValues>, RefRW<Position>, RefRO<OrientationMatrix>, RefRO<TetriminoType>, GridCollider>()
+            foreach (var (input, movement)
+                in SystemAPI.Query<RefRO<InputValues>, TetriminoMovement>()
                 .WithChangeFilter<InputValues>())
             {
-                if (!input.ValueRO.movePressed || input.ValueRO.moveValue == 0)
-                    continue;
+                if (input.ValueRO.movePressed && input.ValueRO.moveValue != 0)
+                    movement.TryMove(new int2(input.ValueRO.moveValue, 0));
 
-                // The new desired pos
-                var newPos = position.ValueRO.value;
-                newPos.x += input.ValueRO.moveValue;
-
-                // Check that the movement is possible
-                bool canMove = true;
-                ref var blocksDef = ref definition.ValueRO.asset.Value.blocks;
-                for (int i = 0; canMove && i < blocksDef.Length; ++i)
-                {
-                    canMove = collider.IsPositionValid(newPos + math.mul(blocksDef[i], matrix.ValueRO.value)); ;
-                }
-
-                if (canMove)
-                    position.ValueRW.value = newPos;
+                if (input.ValueRO.rotatePressed && input.ValueRO.rotateValue != 0)
+                    movement.TryRotate(input.ValueRO.rotateValue);
             }
         }
     }
