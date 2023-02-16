@@ -57,6 +57,8 @@ namespace Tetris
                 {
                     reader.ValueRW.rotatePressed = false;
                 }
+
+                reader.ValueRW.fallFast = managed.value.Game.Fall.IsPressed();
             }
         }
     }

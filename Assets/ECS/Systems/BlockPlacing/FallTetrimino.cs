@@ -23,13 +23,16 @@ namespace Tetris
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
 
-            foreach (var (movement, fallStatus, settings)
-                in SystemAPI.Query<TetriminoMovement, RefRW<FallStatus>, GameSettings>())
+            foreach (var (input, movement, fallStatus, settings)
+                in SystemAPI.Query<RefRO<InputValues>, TetriminoMovement, RefRW<FallStatus>, GameSettings>())
             {
                 var newStatus = fallStatus.ValueRO;
 
                 newStatus.timeToFall -= deltaTime;
-                var fallTime = 1f / settings.fallSpeed;
+                var speed = settings.fallSpeed;
+                if (input.ValueRO.fallFast)
+                    speed *= settings.fastFallMultiplier;
+                var fallTime = 1f / speed;
 
                 while (newStatus.timeToFall < 0f)
                 {

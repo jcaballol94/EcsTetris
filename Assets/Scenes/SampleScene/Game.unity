@@ -226,7 +226,8 @@ MonoBehaviour:
     type: 3}
   moveRepeatDelay: 0.3
   moveRepeatRatio: 0.1
-  fallSpeed: 5
+  fallSpeed: 2
+  fastFallMultiplier: 3
 --- !u!4 &685388147
 Transform:
   m_ObjectHideFlags: 0
