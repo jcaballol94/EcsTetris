@@ -17,5 +17,7 @@ namespace Tetris
         public bool rotatePressed;
 
         public bool fallFast;
+        public bool drop;
+        public bool prevDrop;
     }
 }

@@ -27,7 +27,8 @@ namespace Tetris
                     movePressed = reader.movePressed,
                     rotateValue = reader.rotateValue,
                     rotatePressed = reader.rotatePressed,
-                    fallFast = reader.fallFast
+                    fallFast = reader.fallFast,
+                    drop = reader.drop && !reader.prevDrop
                 };
 
                 foreach (var listener in listeners)

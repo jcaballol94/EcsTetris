@@ -28,15 +28,20 @@ namespace Tetris
             {
                 var newStatus = fallStatus.ValueRO;
 
-                newStatus.timeToFall -= deltaTime;
+                newStatus.timeToFall += deltaTime;
+
                 var speed = settings.fallSpeed;
                 if (input.ValueRO.fallFast)
                     speed *= settings.fastFallMultiplier;
+
                 var fallTime = 1f / speed;
 
-                while (newStatus.timeToFall < 0f)
+                if (input.ValueRO.drop)
+                    fallTime = deltaTime / 40f;
+
+                while (newStatus.timeToFall > fallTime)
                 {
-                    newStatus.timeToFall += fallTime;
+                    newStatus.timeToFall -= fallTime;
 
                     movement.TryMove(new int2(0, -1));
                 }

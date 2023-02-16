@@ -59,6 +59,9 @@ namespace Tetris
                 }
 
                 reader.ValueRW.fallFast = managed.value.Game.Fall.IsPressed();
+                reader.ValueRW.prevDrop = reader.ValueRO.drop;
+                reader.ValueRW.drop = managed.value.Game.Drop.IsPressed();
+
             }
         }
     }
