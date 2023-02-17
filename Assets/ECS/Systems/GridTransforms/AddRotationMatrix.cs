@@ -26,7 +26,18 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            state.EntityManager.AddComponent<OrientationMatrix>(SystemAPI.QueryBuilder().WithAll<Orientation>().WithNone<OrientationMatrix>().Build());
+            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+
+            foreach (var (orientation, entity)
+                in SystemAPI.Query<Orientation>()
+                .WithNone<OrientationMatrix>()
+                .WithEntityAccess())
+            {
+                ecb.AddComponent(entity, new OrientationMatrix { value = OrientationMatrix.CalculateForRotation(orientation.value) });
+            }
+
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 }

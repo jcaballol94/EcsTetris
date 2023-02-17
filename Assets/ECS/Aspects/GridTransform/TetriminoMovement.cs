@@ -13,7 +13,7 @@ namespace Tetris
         private readonly RefRW<Orientation> m_orientation;
 
         private readonly RefRO<TetriminoType> m_type;
-        [Optional] private readonly RefRO<OrientationMatrix> m_matrix;
+        [Optional] private readonly RefRW<OrientationMatrix> m_matrix;
 
         [ReadOnly] private readonly GridCollider m_collider;
 
@@ -68,6 +68,10 @@ namespace Tetris
             {
                 m_position.ValueRW.value = newPosition;
                 m_orientation.ValueRW.value = newRotation;
+
+                if (m_matrix.IsValid)
+                    m_matrix.ValueRW.value = newMatrix;
+
                 return true;
             }
 
