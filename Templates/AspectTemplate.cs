@@ -7,6 +7,6 @@ using UnityEngine;
     #ROOTNAMESPACEBEGIN#
 public readonly partial struct #SCRIPTNAME# : IAspect
 {
-    public readonly Entity Self;
+    public readonly RefRO<Unity.Transforms.LocalTransform> m_transform;
 }
 #ROOTNAMESPACEEND#

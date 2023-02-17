@@ -9,7 +9,7 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AfterInitialCommandBufferSystemGroup))]
+    [UpdateInGroup(typeof(SpawnSystemGroup))]
     [UpdateAfter(typeof(SpawnTetriminoSystem))]
     public partial struct AddRotationMatrixSystem : ISystem
     {

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Tetris
 {
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AfterInitialCommandBufferSystemGroup))]
+    [UpdateInGroup(typeof(SpawnSystemGroup))]
     [UpdateAfter(typeof(SpawnTetriminoSystem))]
     public partial struct SpawnTetriminoBlocksSystem : ISystem
     {

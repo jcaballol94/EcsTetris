@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Tetris
 {
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AfterInitialCommandBufferSystemGroup))]
+    [UpdateInGroup(typeof(SpawnSystemGroup))]
     [UpdateAfter(typeof(SpawnPlayersSystem))]
     public partial struct SpawnTetriminoSystem : ISystem
     {

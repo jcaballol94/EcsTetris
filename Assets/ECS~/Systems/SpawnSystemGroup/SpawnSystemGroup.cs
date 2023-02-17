@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup), OrderFirst = true)]
     [UpdateAfter(typeof(BeginVariableRateSimulationEntityCommandBufferSystem))]
-    public class AfterInitialCommandBufferSystemGroup : ComponentSystemGroup
+    public class SpawnSystemGroup : ComponentSystemGroup
     {
     }
 }
