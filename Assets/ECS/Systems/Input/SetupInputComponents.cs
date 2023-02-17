@@ -31,6 +31,28 @@ namespace Tetris
                 buffer.Add(new InputListener { value = entity });
             }
 
+            // Store the previous provider to be able to cleanup
+            foreach (var (provider, entity) in SystemAPI.Query<InputProvider>().WithNone<PrevInputProvider>().WithEntityAccess())
+            {
+                ecb.AddComponent(entity, new PrevInputProvider { value = provider.value });
+            }
+
+            // If an entity only has the cleanup component, do the cleanup by unregistering it from the provider
+            var listenerLookup = SystemAPI.GetBufferLookup<InputListener>();
+            foreach (var (provider, entity) in SystemAPI.Query<PrevInputProvider>().WithNone<InputProvider>().WithEntityAccess())
+            {
+                var buffer = listenerLookup[provider.value];
+                for (int i =0; i < buffer.Length; ++i)
+                {
+                    if (buffer[i].value == entity)
+                    {
+                        buffer.RemoveAtSwapBack(i);
+                        break;
+                    }
+                }
+                ecb.RemoveComponent<PrevInputProvider>(entity);
+            }
+
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }

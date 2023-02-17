@@ -10,4 +10,9 @@ namespace Tetris
     {
         public Entity value;
     }
+
+    public struct PrevInputProvider : ICleanupComponentData
+    {
+        public Entity value;
+    }
 }

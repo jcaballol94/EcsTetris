@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateBefore(typeof(TransformSystemGroup))]
+    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup), OrderLast = true)]
+    [UpdateBefore(typeof(EndVariableRateSimulationEntityCommandBufferSystem))]
     public class GridTransformsSystemGroup : ComponentSystemGroup
     {
     }
