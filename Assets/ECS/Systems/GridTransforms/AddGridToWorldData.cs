@@ -22,7 +22,6 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-            var dataLookup = SystemAPI.GetComponentLookup<GridToWorldData>(true);
 
             // Entities that have a grid position and a unity transform, add the data required for the translation
             foreach (var (grid, entity) in SystemAPI
@@ -31,7 +30,7 @@ namespace Tetris
                 .WithNone<GridToWorldData>()
                 .WithEntityAccess())
             {
-                ecb.AddComponent(entity, dataLookup[grid.value]);
+                ecb.AddSharedComponent(entity, state.EntityManager.GetSharedComponent<GridToWorldData>(grid.value));
             }
 
             ecb.Playback(state.EntityManager);

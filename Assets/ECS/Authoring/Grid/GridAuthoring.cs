@@ -18,7 +18,7 @@ namespace Tetris
         {
             var transform = GetComponent<UnityEngine.Transform>();
 
-            AddComponent(new GridToWorldData
+            AddSharedComponent(new GridToWorldData
             {
                 blockSize = authoring.BlockSize,
                 origin = transform.position,

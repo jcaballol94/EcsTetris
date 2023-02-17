@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct GridToWorldData : IComponentData
+    public struct GridToWorldData : ISharedComponentData
     {
         public float3 origin;
         public float3 up;
