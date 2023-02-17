@@ -21,7 +21,7 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            var query = SystemAPI.QueryBuilder().WithAll<InputReader>().WithNone<ManagedInput>().Build();
+            var query = SystemAPI.QueryBuilder().WithAll<UnmanagedInput>().WithNone<ManagedInput>().Build();
             var entities = query.ToEntityArray(Unity.Collections.Allocator.Temp);
             foreach (var entity in entities)
             {

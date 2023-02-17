@@ -14,12 +14,12 @@ namespace Tetris
     [UpdateAfter(typeof(ReadInputFromManagedSystem))]
     public partial struct ReadInputFromProviderSystem : ISystem
     {
-        [WithChangeFilter(typeof(InputReader))]
+        [WithChangeFilter(typeof(UnmanagedInput))]
         public partial struct ReadInputFromProviderJob : IJobEntity
         {
             [NativeDisableParallelForRestriction] public ComponentLookup<InputValues> valuesLookup;
 
-            private void Execute(in InputReader reader, in DynamicBuffer<InputListener> listeners)
+            private void Execute(in UnmanagedInput reader, in CurrentTetrimino tetrimino)
             {
                 var readValues = new InputValues
                 {
@@ -31,11 +31,8 @@ namespace Tetris
                     drop = reader.drop && !reader.prevDrop
                 };
 
-                foreach (var listener in listeners)
-                {
-                    var values = valuesLookup.GetRefRW(listener.value, false);
-                    values.ValueRW = readValues;
-                }
+                var values = valuesLookup.GetRefRW(tetrimino.value, false);
+                values.ValueRW = readValues;
             }
         }
 

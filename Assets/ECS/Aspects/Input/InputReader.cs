@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct InputReader : IComponentData
+    public struct UnmanagedInput : IComponentData
     {
         public int moveValue;
         public bool movePressed;

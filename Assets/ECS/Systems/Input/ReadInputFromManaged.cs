@@ -22,7 +22,7 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
-            foreach (var (reader, settings, managed) in SystemAPI.Query<RefRW<InputReader>, GameSettings, ManagedInput>())
+            foreach (var (reader, settings, managed) in SystemAPI.Query<RefRW<UnmanagedInput>, GameSettings, ManagedInput>())
             {
                 var newMove = Mathf.RoundToInt(managed.value.Game.Move.ReadValue<float>());
                 if (newMove != reader.ValueRO.moveValue)
