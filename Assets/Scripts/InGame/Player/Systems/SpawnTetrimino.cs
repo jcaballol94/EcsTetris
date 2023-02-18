@@ -66,6 +66,7 @@ namespace Tetris
                     ecb.SetName(block, "Block");
                     ecb.AddComponent(block, new LocalGridTransform { position = tetriminoData.blocks[i] });
                     ecb.AddComponent(block, new GridParent { value = tetrimino });
+                    ecb.SetComponent(block, new Unity.Rendering.URPMaterialPropertyBaseColor { Value = tetriminoData.color });
                     ecb.AddSharedComponent(block, gridRef);
                 }
 
