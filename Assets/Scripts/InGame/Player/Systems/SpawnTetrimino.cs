@@ -34,8 +34,6 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            Debug.Log("Spawn");
-
             // Try get the singletons first
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
             if (!SystemAPI.TryGetSingleton(out TetriminoData tetriminoData)) return;
