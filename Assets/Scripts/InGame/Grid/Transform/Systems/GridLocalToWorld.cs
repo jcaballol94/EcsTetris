@@ -52,7 +52,7 @@ namespace Tetris
         }
 
         [BurstCompile]
-        [WithChangeFilter(typeof(ParentGridTransform))]
+        [WithChangeFilter(typeof(ParentGridTransform), typeof(LocalGridTransform))]
         public partial struct UpdateLocalToWorldTransformJob : IJobEntity
         {
 
