@@ -18,7 +18,7 @@ namespace Tetris
         public void OnCreate(ref SystemState state)
         {
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
-                typeof(LocalGridTransform), typeof(WorldGridTransform), // Positioning
+                typeof(LocalGridTransform), typeof(WorldGridTransform), typeof(GridOrientationMatrix), // Transform
                 typeof(GridChildren), // Hierarchy
                 typeof(GridRef), typeof(TetriminoData)); // Required data references
         }
@@ -42,7 +42,7 @@ namespace Tetris
                 // Create and initialize the tetrimino
                 var tetrimino = ecb.CreateEntity(m_tetriminoArchetype);
                 ecb.SetName(tetrimino, "Tetrimino");
-                ecb.SetComponent(tetrimino, new LocalGridTransform { value = gameData.ValueRO.spawnPosition });
+                ecb.SetComponent(tetrimino, new LocalGridTransform { position = gameData.ValueRO.spawnPosition, orientation = 0 });
                 ecb.SetComponent(tetrimino, tetriminoData.ValueRO);
                 ecb.SetSharedComponent(tetrimino, new GridRef { value = playerData.ValueRO.grid });
 
@@ -53,7 +53,7 @@ namespace Tetris
                     ecb.AppendToBuffer(tetrimino, new GridChildren { value = block });
 
                     ecb.SetName(block, "Block");
-                    ecb.AddComponent(block, new LocalGridTransform { value = tetriminoData.ValueRO.blocks[i] });
+                    ecb.AddComponent(block, new LocalGridTransform { position = tetriminoData.ValueRO.blocks[i] });
                     ecb.AddComponent(block, new GridParent { value = tetrimino });
                     ecb.AddSharedComponent(block, new GridRef { value = playerData.ValueRO.grid });
                 }

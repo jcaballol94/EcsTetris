@@ -20,9 +20,10 @@ namespace Tetris
         public partial struct CopyLocalToWorldJob : IJobEntity
         {
             [BurstCompile]
-            private void Execute(in LocalGridTransform local, ref WorldGridTransform world)
+            private void Execute(in LocalGridTransform local, in GridOrientationMatrix matrix, ref WorldGridTransform world)
             {
-                world.value = local.value;
+                world.position = local.position;
+                world.matrix = matrix.value;
             }
         }
 
@@ -36,24 +37,42 @@ namespace Tetris
             [BurstCompile]
             private void Execute(in WorldGridTransform local, in DynamicBuffer<GridChildren> children)
             {
+                var newValue = new ParentGridTransform
+                {
+                    position = local.position,
+                    matrix = local.matrix
+                };
+
                 foreach (var child in children)
                 {
                     var parent = m_parentLookup.GetRefRW(child.value, false);
-                    parent.ValueRW.value = local.value;
+                    parent.ValueRW = newValue;
                 }
             }
         }
 
         [BurstCompile]
         [WithChangeFilter(typeof(ParentGridTransform))]
-        // Passes the current world position to the children
         public partial struct UpdateLocalToWorldTransformJob : IJobEntity
         {
 
             [BurstCompile]
-            private void Execute(in ParentGridTransform parent, in LocalGridTransform local, ref WorldGridTransform trans)
+            private void Execute(in ParentGridTransform parent, in LocalGridTransform local, in GridOrientationMatrix matrix, ref WorldGridTransform trans)
             {
-                trans.value = parent.value + local.value;
+                trans.position = parent.TransformPoint(local.position);
+                trans.matrix = math.mul(matrix.value, parent.matrix);
+            }
+        }
+
+        [BurstCompile]
+        [WithChangeFilter(typeof(LocalGridTransform))]
+        public partial struct UpdateOrientationMatrixJob : IJobEntity
+        {
+
+            [BurstCompile]
+            private void Execute(in LocalGridTransform local, ref GridOrientationMatrix matrix)
+            {
+                matrix.value = GridOrientationMatrix.GetMatrixForOrientation(local.orientation);
             }
         }
 
@@ -80,6 +99,14 @@ namespace Tetris
                 .WithAll<GridParent, LocalGridTransform>()
                 .WithNone<ParentGridTransform>()
                 .Build());
+
+            state.EntityManager.AddComponent<GridOrientationMatrix>(SystemAPI.QueryBuilder()
+                .WithAll<LocalGridTransform>()
+                .WithNone<GridOrientationMatrix>()
+                .Build());
+
+            // Update the matrices first
+            new UpdateOrientationMatrixJob().ScheduleParallel();
 
             // For entities without a parent, the world is a copy of the local
             new CopyLocalToWorldJob().ScheduleParallel();

@@ -8,6 +8,12 @@ namespace Tetris
 {
     public struct ParentGridTransform : IComponentData
     {
-        public int2 value;
+        public int2 position;
+        public int2x2 matrix;
+
+        public int2 TransformPoint(in int2 point)
+        {
+            return position + math.mul(point, matrix);
+        }
     }
 }

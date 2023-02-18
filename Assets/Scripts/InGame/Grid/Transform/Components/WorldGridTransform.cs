@@ -8,6 +8,7 @@ namespace Tetris
 {
     public struct WorldGridTransform : IComponentData
     {
-        public int2 value;
+        public int2 position;
+        public int2x2 matrix;
     }
 }
