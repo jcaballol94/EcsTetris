@@ -11,6 +11,7 @@ namespace Tetris
     [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
     [UpdateBefore(typeof(VariableRateSimulationSystemGroup))]
     [UpdateAfter(typeof(BeginSimulationEntityCommandBufferSystem))]
+    [DisableAutoCreation]
     public partial struct TestSpawnerSystem : ISystem
     {
         private EntityArchetype m_tetriminoArchetype;
