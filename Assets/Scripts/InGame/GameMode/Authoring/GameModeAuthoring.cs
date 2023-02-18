@@ -12,7 +12,7 @@ namespace Tetris
         public GridAuthoring grid;
         public GameObject blockPrefab;
         public Vector2Int spawnPosition;
-        public TetriminoDefinition tetrimino;
+        public TetriminoDefinition[] tetriminos;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -25,13 +25,19 @@ namespace Tetris
             if (authoring.blockPrefab)
                 AddComponent(new GameSkin { blockPrefab = GetEntity(authoring.blockPrefab) });
 
-            if (authoring.tetrimino)
+            if (authoring.tetriminos != null && authoring.tetriminos.Length > 0)
             {
-                DependsOn(authoring.tetrimino);
-                var blob = authoring.tetrimino.CreateBlobAsset();
-                AddBlobAsset(ref blob, out var hash);
+                var buffer = AddBuffer<AvailableTetriminos>();
+                foreach (var tetrimino in authoring.tetriminos)
+                {
+                    if (!tetrimino) continue;
 
-                AddComponent(new TetriminoData { asset = blob });
+                    DependsOn(tetrimino);
+                    var blob = tetrimino.CreateBlobAsset();
+                    AddBlobAsset(ref blob, out var hash);
+
+                    buffer.Add(new AvailableTetriminos { asset = blob });
+                }
             }
 
             AddComponent(new GameData

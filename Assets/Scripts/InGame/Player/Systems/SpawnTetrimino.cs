@@ -20,7 +20,7 @@ namespace Tetris
                 typeof(GridRef), typeof(TetriminoData)); // Required data references
 
             state.RequireForUpdate<GameData>();
-            state.RequireForUpdate<TetriminoData>();
+            state.RequireForUpdate<AvailableTetriminos>();
             state.RequireForUpdate<GameSkin>();
             state.RequireForUpdate(SystemAPI.QueryBuilder()
                 .WithAll<PlayerTag, GridRef>()
@@ -36,7 +36,7 @@ namespace Tetris
         {
             // Try get the singletons first
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
-            if (!SystemAPI.TryGetSingleton(out TetriminoData tetriminoData)) return;
+            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<AvailableTetriminos> availableTetriminos)) return;
             if (!SystemAPI.TryGetSingleton(out GameSkin gameSkin)) return;
 
             // Get the ecb we'll use
@@ -50,11 +50,15 @@ namespace Tetris
                 .WithNone<AlreadySpawned>()
                 .WithEntityAccess())
             {
+                // Find a tetrimino type to use
+                var tetriminoIdx = UnityEngine.Random.Range(0, availableTetriminos.Length);
+                ref var tetriminoData = ref availableTetriminos[tetriminoIdx].asset.Value;
+
                 // Create and initialize the tetrimino
                 var tetrimino = ecb.CreateEntity(m_tetriminoArchetype);
                 ecb.SetName(tetrimino, "Tetrimino");
                 ecb.SetComponent(tetrimino, new LocalGridTransform { position = gameData.spawnPosition, orientation = 0 });
-                ecb.SetComponent(tetrimino, tetriminoData);
+                ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
                 ecb.SetSharedComponent(tetrimino, gridRef);
 
                 // Create and initialize the blocks

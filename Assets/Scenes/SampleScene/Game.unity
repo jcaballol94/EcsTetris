@@ -177,7 +177,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 685388147}
-  - component: {fileID: 685388148}
   - component: {fileID: 685388149}
   m_Layer: 0
   m_Name: GameMode
@@ -201,21 +200,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &685388148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 685388145}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 932c28b35849d6d42b3ec91aa17a2436, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  blockPrefab: {fileID: 7046177515751513494, guid: 1a3f16d587cd12f4b918a04e3a88df82,
-    type: 3}
-  grid: {fileID: 635419139}
 --- !u!114 &685388149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,5 +216,11 @@ MonoBehaviour:
   blockPrefab: {fileID: 7046177515751513494, guid: 1a3f16d587cd12f4b918a04e3a88df82,
     type: 3}
   spawnPosition: {x: 4, y: 9}
-  tetrimino: {fileID: -2861790179287625895, guid: 532a12c4c8d072d4881f661c99c74dd9,
-    type: 3}
+  tetriminos:
+  - {fileID: -2861790179287625895, guid: c0ddabd82bb0e354e8144b521d967819, type: 3}
+  - {fileID: -2861790179287625895, guid: 855d775a6bb72aa4bb29f2057bc476ef, type: 3}
+  - {fileID: -2861790179287625895, guid: 03c0bdd7975b77a44940ebe4c032a61d, type: 3}
+  - {fileID: -2861790179287625895, guid: 6d8f930d6af17a34da21af5b030b7f2c, type: 3}
+  - {fileID: -2861790179287625895, guid: 0a032fc21450c7c4589a673cf090ae25, type: 3}
+  - {fileID: -2861790179287625895, guid: 532a12c4c8d072d4881f661c99c74dd9, type: 3}
+  - {fileID: -2861790179287625895, guid: 6e44b48c912918844a725e495308922e, type: 3}
