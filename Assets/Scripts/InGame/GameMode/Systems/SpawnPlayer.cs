@@ -16,7 +16,8 @@ namespace Tetris
         public void OnCreate(ref SystemState state)
         {
             m_playerArchetype = state.EntityManager.CreateArchetype(
-                typeof(GridRef));
+                typeof(PlayerTag), // The tag to identify it
+                typeof(GridRef)); // A reference to this player's grid
         }
 
         public void OnDestroy(ref SystemState state)
