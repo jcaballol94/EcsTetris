@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [WriteGroup(typeof(Unity.Transforms.WorldTransform))]
     public struct WorldGridPosition : IComponentData
     {
         public int2 value;

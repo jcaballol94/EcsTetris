@@ -33,6 +33,7 @@ namespace Tetris
             {
                 var block = ecb.Instantiate(prefab.value);
                 ecb.AddComponent(block, new LocalGridPosition { value = new int2(4, 9) });
+                ecb.AddSharedComponent(block, new GridRef { value = prefab.grid });
 
                 ecb.AddComponent<AlreadySpawned>(entity);
             }
