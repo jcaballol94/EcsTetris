@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Tetris
 {
+    [AddComponentMenu("Tetris/InGame/Grid")]
     public class GridAuthoring : MonoBehaviour
     {
         public float gridScale = 1f;

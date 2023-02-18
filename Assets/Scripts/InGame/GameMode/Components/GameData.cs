@@ -6,9 +6,8 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct TestBlockPrefab : IComponentData
+    public struct GameData : IComponentData
     {
-        public Entity value;
-        public Entity grid;
+        public int2 spawnPosition;
     }
 }

@@ -13,8 +13,13 @@ namespace Tetris
     [UpdateAfter(typeof(BeginSimulationEntityCommandBufferSystem))]
     public partial struct TestSpawnerSystem : ISystem
     {
+        private EntityArchetype m_tetriminoArchetype;
+
         public void OnCreate(ref SystemState state)
         {
+            m_tetriminoArchetype = state.EntityManager.CreateArchetype(
+                typeof(LocalGridPosition), typeof(WorldGridPosition), // Positioning
+                typeof(GridRef), typeof(TetriminoData)); // Required data references
         }
 
         public void OnDestroy(ref SystemState state)
@@ -26,14 +31,18 @@ namespace Tetris
             var ecbSystem = state.World.GetExistingSystemManaged<BeginVariableRateSimulationEntityCommandBufferSystem>();
             var ecb = ecbSystem.CreateCommandBuffer();
 
-            foreach (var (prefab, entity) in SystemAPI
-                .Query<TestBlockPrefab>()
+            Debug.Log("Spawn");
+
+            foreach (var (gameData, tetriminoData, gridRef, entity) in SystemAPI
+                .Query<RefRO<GameData>, RefRO<TetriminoData>, GridRef>()
                 .WithNone<AlreadySpawned>()
                 .WithEntityAccess())
             {
-                var block = ecb.Instantiate(prefab.value);
-                ecb.AddComponent(block, new LocalGridPosition { value = new int2(4, 9) });
-                ecb.AddSharedComponent(block, new GridRef { value = prefab.grid });
+                var tetrimino = ecb.CreateEntity(m_tetriminoArchetype);
+                ecb.SetName(tetrimino, "Tetrimino");
+                ecb.SetComponent(tetrimino, new LocalGridPosition { value = gameData.ValueRO.spawnPosition });
+                ecb.SetComponent(tetrimino, tetriminoData.ValueRO);
+                ecb.SetSharedComponent(tetrimino, gridRef);
 
                 ecb.AddComponent<AlreadySpawned>(entity);
             }
