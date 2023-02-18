@@ -11,7 +11,6 @@ namespace Tetris
     [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
     [UpdateBefore(typeof(VariableRateSimulationSystemGroup))]
     [UpdateAfter(typeof(BeginSimulationEntityCommandBufferSystem))]
-    [WorldSystemFilter(WorldSystemFilterFlags.Default | WorldSystemFilterFlags.Editor)]
     public partial struct TestSpawnerSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -32,7 +31,8 @@ namespace Tetris
                 .WithNone<AlreadySpawned>()
                 .WithEntityAccess())
             {
-                ecb.Instantiate(prefab.value);
+                var block = ecb.Instantiate(prefab.value);
+                ecb.AddComponent(block, new LocalGridPosition { value = new int2(4, 9) });
 
                 ecb.AddComponent<AlreadySpawned>(entity);
             }
