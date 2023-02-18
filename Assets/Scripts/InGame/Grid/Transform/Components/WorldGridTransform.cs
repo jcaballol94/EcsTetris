@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct LocalGridPosition : IComponentData
+    public struct WorldGridTransform : IComponentData
     {
         public int2 value;
     }

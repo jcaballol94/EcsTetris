@@ -19,7 +19,7 @@ namespace Tetris
             public GridTransformData transformData;
 
             [BurstCompile]
-            private void Execute(in WorldGridPosition pos, ref LocalTransform transform)
+            private void Execute(in WorldGridTransform pos, ref LocalTransform transform)
             {
                 transform.Position = transformData.origin
                     + (pos.value.x * transformData.right + pos.value.y * transformData.up)
@@ -40,7 +40,7 @@ namespace Tetris
             // Build the query
             var query = SystemAPI.QueryBuilder()
                 .WithAllRW<LocalTransform>()
-                .WithAll<WorldGridPosition, GridRef>()
+                .WithAll<WorldGridTransform, GridRef>()
                 .Build();
             
 
@@ -50,9 +50,11 @@ namespace Tetris
             {
                 // It will always return the default value, which is a null entity
                 if (grid.value == Entity.Null) continue;
+                // Ensure that the grid has the right component
+                if (!state.EntityManager.HasComponent<GridTransformData>(grid.value)) continue;
 
                 query.ResetFilter();
-                query.AddChangedVersionFilter(typeof(WorldGridPosition));
+                query.AddChangedVersionFilter(typeof(WorldGridTransform));
                 query.AddSharedComponentFilter(grid);
 
                 new TransformFromGridJob

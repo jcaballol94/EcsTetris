@@ -20,7 +20,7 @@ namespace Tetris
         public override void Bake(GameModeAuthoring authoring)
         {
             if (authoring.grid)
-                AddSharedComponent(new GridRef { value = GetEntity(authoring.grid.gameObject) });
+                AddComponent(new PlayerData { grid = GetEntity(authoring.grid.gameObject) });
 
             if (authoring.blockPrefab)
                 AddComponent(new GameSkin { blockPrefab = GetEntity(authoring.blockPrefab) });

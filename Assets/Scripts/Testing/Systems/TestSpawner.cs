@@ -18,7 +18,8 @@ namespace Tetris
         public void OnCreate(ref SystemState state)
         {
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
-                typeof(LocalGridPosition), typeof(WorldGridPosition), // Positioning
+                typeof(LocalGridTransform), typeof(WorldGridTransform), // Positioning
+                typeof(GridChildren), // Hierarchy
                 typeof(GridRef), typeof(TetriminoData)); // Required data references
         }
 
@@ -33,16 +34,29 @@ namespace Tetris
 
             Debug.Log("Spawn");
 
-            foreach (var (gameData, tetriminoData, gridRef, entity) in SystemAPI
-                .Query<RefRO<GameData>, RefRO<TetriminoData>, GridRef>()
+            foreach (var (gameData, tetriminoData, playerData, skin, entity) in SystemAPI
+                .Query<RefRO<GameData>, RefRO<TetriminoData>, RefRO<PlayerData>, RefRO<GameSkin>>()
                 .WithNone<AlreadySpawned>()
                 .WithEntityAccess())
             {
+                // Create and initialize the tetrimino
                 var tetrimino = ecb.CreateEntity(m_tetriminoArchetype);
                 ecb.SetName(tetrimino, "Tetrimino");
-                ecb.SetComponent(tetrimino, new LocalGridPosition { value = gameData.ValueRO.spawnPosition });
+                ecb.SetComponent(tetrimino, new LocalGridTransform { value = gameData.ValueRO.spawnPosition });
                 ecb.SetComponent(tetrimino, tetriminoData.ValueRO);
-                ecb.SetSharedComponent(tetrimino, gridRef);
+                ecb.SetSharedComponent(tetrimino, new GridRef { value = playerData.ValueRO.grid });
+
+                // Create and initialize the blocks
+                for (int i = 0; i < tetriminoData.ValueRO.blocks.Length; ++i)
+                {
+                    var block = ecb.Instantiate(skin.ValueRO.blockPrefab);
+                    ecb.AppendToBuffer(tetrimino, new GridChildren { value = block });
+
+                    ecb.SetName(block, "Block");
+                    ecb.AddComponent(block, new LocalGridTransform { value = tetriminoData.ValueRO.blocks[i] });
+                    ecb.AddComponent(block, new GridParent { value = tetrimino });
+                    ecb.AddSharedComponent(block, new GridRef { value = playerData.ValueRO.grid });
+                }
 
                 ecb.AddComponent<AlreadySpawned>(entity);
             }
