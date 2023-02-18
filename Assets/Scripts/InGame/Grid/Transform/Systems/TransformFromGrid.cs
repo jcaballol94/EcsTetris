@@ -22,7 +22,7 @@ namespace Tetris
             private void Execute(in WorldGridTransform pos, ref LocalTransform transform)
             {
                 transform.Position = transformData.origin
-                    + (pos.position.x * transformData.right + pos.position.y * transformData.up)
+                    + ((pos.position.x + 0.5f) * transformData.right + (pos.position.y + 0.5f) * transformData.up)
                     * transformData.scale;
             }
         }
