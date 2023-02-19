@@ -9,5 +9,8 @@ namespace Tetris
     public struct GameData : IComponentData
     {
         public int2 spawnPosition;
+
+        public float moveRepeatDelay;
+        public float moveRepeatPeriod;
     }
 }

@@ -35,7 +35,7 @@ namespace Tetris
                     ""id"": ""ccfa196d-97b3-48d6-9e4d-e67ec8795621"",
                     ""expectedControlType"": ""Digital"",
                     ""processors"": """",
-                    ""interactions"": ""Press"",
+                    ""interactions"": """",
                     ""initialStateCheck"": true
                 },
                 {
@@ -44,7 +44,7 @@ namespace Tetris
                     ""id"": ""1e2bc92b-3a84-4222-a245-43a974f38250"",
                     ""expectedControlType"": ""Digital"",
                     ""processors"": """",
-                    ""interactions"": ""Press"",
+                    ""interactions"": """",
                     ""initialStateCheck"": true
                 },
                 {

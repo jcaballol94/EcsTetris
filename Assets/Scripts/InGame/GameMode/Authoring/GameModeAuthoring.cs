@@ -13,6 +13,10 @@ namespace Tetris
         public GameObject blockPrefab;
         public Vector2Int spawnPosition;
         public TetriminoDefinition[] tetriminos;
+
+        [Header("Input")]
+        public float moveRepeatDelay = 0.3f;
+        public float moveRepeatPeriod = 0.2f;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -42,7 +46,9 @@ namespace Tetris
 
             AddComponent(new GameData
             {
-                spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y)
+                spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y),
+                moveRepeatDelay = authoring.moveRepeatDelay,
+                moveRepeatPeriod = authoring.moveRepeatPeriod
             });
         }
     }
