@@ -17,7 +17,7 @@ namespace Tetris
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
                 typeof(LocalGridTransform), typeof(WorldGridTransform), typeof(GridOrientationMatrix), // Transform
                 typeof(GridChildren), // Hierarchy
-                typeof(GridRef), typeof(TetriminoData)); // Required data references
+                typeof(GridRef), typeof(TetriminoData), typeof(PlayerRef)); // Required data references
 
             state.RequireForUpdate<GameData>();
             state.RequireForUpdate<AvailableTetriminos>();
@@ -45,7 +45,7 @@ namespace Tetris
 
 
             foreach (var (gridRef, entity) in SystemAPI
-                .Query<GridRef>()
+                .Query<RefRO<GridRef>>()
                 .WithAll<PlayerTag>()
                 .WithNone<AlreadySpawned>()
                 .WithEntityAccess())
@@ -59,7 +59,8 @@ namespace Tetris
                 ecb.SetName(tetrimino, "Tetrimino");
                 ecb.SetComponent(tetrimino, new LocalGridTransform { position = gameData.spawnPosition, orientation = 0 });
                 ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
-                ecb.SetSharedComponent(tetrimino, gridRef);
+                ecb.SetComponent(tetrimino, gridRef.ValueRO);
+                ecb.SetComponent(tetrimino, new PlayerRef { value = entity });
 
                 // Create and initialize the blocks
                 for (int i = 0; i < tetriminoData.blocks.Length; ++i)
@@ -71,7 +72,7 @@ namespace Tetris
                     ecb.AddComponent(block, new LocalGridTransform { position = tetriminoData.blocks[i] });
                     ecb.AddComponent(block, new GridParent { value = tetrimino });
                     ecb.SetComponent(block, new Unity.Rendering.URPMaterialPropertyBaseColor { Value = tetriminoData.color });
-                    ecb.AddSharedComponent(block, gridRef);
+                    ecb.AddComponent(block, gridRef.ValueRO);
                 }
 
                 ecb.AddComponent<AlreadySpawned>(entity);

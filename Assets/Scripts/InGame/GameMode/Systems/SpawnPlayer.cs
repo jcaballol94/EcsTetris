@@ -39,7 +39,7 @@ namespace Tetris
             {
                 var player = ecb.CreateEntity(m_playerArchetype);
                 ecb.SetName(player, "Player");
-                ecb.SetSharedComponent(player, new GridRef { value = playerData.ValueRO.grid });
+                ecb.SetComponent(player, new GridRef { value = playerData.ValueRO.grid });
 
                 ecb.AddComponent<AlreadySpawned>(entity);
             }

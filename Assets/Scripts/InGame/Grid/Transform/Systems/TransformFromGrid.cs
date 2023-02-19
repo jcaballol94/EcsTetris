@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -16,11 +17,13 @@ namespace Tetris
         [WithChangeFilter]
         public partial struct TransformFromGridJob : IJobEntity
         {
-            public GridTransformData transformData;
+            [ReadOnly] public ComponentLookup<GridTransformData> transformDataLookup;
 
             [BurstCompile]
-            private void Execute(in WorldGridTransform pos, ref LocalTransform transform)
+            private void Execute(in WorldGridTransform pos, ref LocalTransform transform, in GridRef grid)
             {
+                var transformData = transformDataLookup[grid.value];
+
                 transform.Position = transformData.origin
                     + ((pos.position.x + 0.5f) * transformData.right + (pos.position.y + 0.5f) * transformData.up)
                     * transformData.scale;
@@ -37,33 +40,12 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            // Build the query
-            var query = SystemAPI.QueryBuilder()
-                .WithAllRW<LocalTransform>()
-                .WithAll<WorldGridTransform, GridRef>()
-                .Build();
-            
+            var gridDataLookup = SystemAPI.GetComponentLookup<GridTransformData>(true);
 
-            // Get all the available grids
-            state.EntityManager.GetAllUniqueSharedComponents<GridRef>(out var grids, Unity.Collections.Allocator.Temp);
-            foreach (var grid in grids)
+            new TransformFromGridJob
             {
-                // It will always return the default value, which is a null entity
-                if (grid.value == Entity.Null) continue;
-                // Ensure that the grid has the right component
-                if (!state.EntityManager.HasComponent<GridTransformData>(grid.value)) continue;
-
-                query.ResetFilter();
-                query.AddChangedVersionFilter(typeof(WorldGridTransform));
-                query.AddSharedComponentFilter(grid);
-
-                new TransformFromGridJob
-                {
-                    transformData = state.EntityManager.GetComponentData<GridTransformData>(grid.value)
-                }.ScheduleParallel(query);
-            }
-
-            grids.Dispose();
+                transformDataLookup = gridDataLookup,
+            }.ScheduleParallel();
         }
     }
 }
