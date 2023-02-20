@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(EventsSystemGroup))]
     public partial struct SpawnTetriminoSystem : ISystem
     {
         private EntityArchetype m_tetriminoArchetype;
@@ -28,7 +28,7 @@ namespace Tetris
                 .WithNone<AlreadySpawned>()
                 .Build());
 
-            state.RequireForUpdate<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -43,15 +43,14 @@ namespace Tetris
             if (!SystemAPI.TryGetSingleton(out GameSkin gameSkin)) return;
 
             // Get the ecb we'll use
-            if (!SystemAPI.TryGetSingleton(out EndVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            if (!SystemAPI.TryGetSingleton(out BeginVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
             var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
-            foreach (var (gridRef, entity) in SystemAPI
-                .Query<RefRO<GridRef>>()
-                .WithAll<PlayerTag>()
-                .WithNone<AlreadySpawned>()
-                .WithEntityAccess())
+            foreach (var spawnEvent in SystemAPI.Query<RefRO<RequestSpawnTetriminoEvent>>())
             {
+                // Get the grid from the player
+                var gridRef = state.EntityManager.GetComponentData<GridRef>(spawnEvent.ValueRO.player);
+
                 // Find a tetrimino type to use
                 var tetriminoIdx = UnityEngine.Random.Range(0, availableTetriminos.Length);
                 ref var tetriminoData = ref availableTetriminos[tetriminoIdx].asset.Value;
@@ -61,8 +60,8 @@ namespace Tetris
                 ecb.SetName(tetrimino, "Tetrimino");
                 ecb.SetComponent(tetrimino, new LocalGridTransform { position = gameData.spawnPosition, orientation = 0 });
                 ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
-                ecb.SetComponent(tetrimino, gridRef.ValueRO);
-                ecb.SetComponent(tetrimino, new PlayerRef { value = entity });
+                ecb.SetComponent(tetrimino, gridRef);
+                ecb.SetComponent(tetrimino, new PlayerRef { value = spawnEvent.ValueRO.player });
                 ecb.SetComponent(tetrimino, DropState.DefaultDropState);
 
                 // Create and initialize the blocks
@@ -75,10 +74,8 @@ namespace Tetris
                     ecb.AddComponent(block, new LocalGridTransform { position = tetriminoData.blocks[i] });
                     ecb.AddComponent(block, new GridParent { value = tetrimino });
                     ecb.SetComponent(block, new Unity.Rendering.URPMaterialPropertyBaseColor { Value = tetriminoData.color });
-                    ecb.AddComponent(block, gridRef.ValueRO);
+                    ecb.AddComponent(block, gridRef);
                 }
-
-                ecb.AddComponent<AlreadySpawned>(entity);
             }
         }
     }

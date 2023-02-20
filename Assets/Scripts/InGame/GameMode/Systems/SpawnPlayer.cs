@@ -12,6 +12,7 @@ namespace Tetris
     public partial struct SpawnPlayerSystem : ISystem
     {
         private EntityArchetype m_playerArchetype;
+        private EntityArchetype m_startPlayingEventArchetype;
 
         public void OnCreate(ref SystemState state)
         {
@@ -20,6 +21,9 @@ namespace Tetris
                 typeof(GridRef), // A reference to this player's grid
                 typeof(InputValues) // The input
                 );
+
+            m_startPlayingEventArchetype = state.EntityManager.CreateArchetype(
+                typeof(EventTag), typeof(RequestSpawnTetriminoEvent));
 
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
         }
@@ -38,9 +42,14 @@ namespace Tetris
                 .WithNone<AlreadySpawned>()
                 .WithEntityAccess())
             {
+                // Create the player
                 var player = ecb.CreateEntity(m_playerArchetype);
                 ecb.SetName(player, "Player");
                 ecb.SetComponent(player, new GridRef { value = playerData.ValueRO.grid });
+
+                // Request the first tetrimino to start playing
+                var ev = ecb.CreateEntity(m_startPlayingEventArchetype);
+                ecb.SetComponent(ev, new RequestSpawnTetriminoEvent { player = player });
 
                 ecb.AddComponent<AlreadySpawned>(entity);
             }

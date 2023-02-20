@@ -17,9 +17,9 @@ namespace Tetris
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<GameData>();
-            state.RequireForUpdate<BeginEventsCommandBufferSystem>
 
-            m_placeEventArchetype = state.EntityManager.CreateArchetype(typeof(EventTag), typeof(PlaceTetriminoEvent));
+            m_placeEventArchetype = state.EntityManager.CreateArchetype(
+                typeof(EventTag), typeof(PlaceTetriminoEvent), typeof(RequestSpawnTetriminoEvent));
         }
 
         public void OnDestroy(ref SystemState state)
@@ -60,6 +60,7 @@ namespace Tetris
                         {
                             var ev = eventECB.CreateEntity(m_placeEventArchetype);
                             eventECB.SetComponent(ev, new PlaceTetriminoEvent { tetrimino = entity });
+                            eventECB.SetComponent(ev, new RequestSpawnTetriminoEvent { player = player.ValueRO.value });
                             break;
                         }
                     }
