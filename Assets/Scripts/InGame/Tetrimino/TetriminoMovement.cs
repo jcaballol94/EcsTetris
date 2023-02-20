@@ -14,19 +14,17 @@ namespace Tetris
 
         private readonly RefRO<TetriminoData> m_type;
 
-        // [ReadOnly] private readonly GridCollider m_collider;
-
-        public bool TryMove(int2 delta)
+        public bool TryMove(int2 delta, GridCollisions collider)
         {
             var newPosition = m_localTransform.ValueRO.position + delta;
 
             if (m_matrix.IsValid)
-                return TrySetPosition(newPosition, m_matrix.ValueRO.value);
+                return TrySetPosition(newPosition, m_matrix.ValueRO.value, collider);
             else
-                return TrySetPosition(newPosition, GridOrientationMatrix.GetMatrixForOrientation(m_localTransform.ValueRO.orientation));
+                return TrySetPosition(newPosition, GridOrientationMatrix.GetMatrixForOrientation(m_localTransform.ValueRO.orientation), collider);
         }
 
-        public bool TryRotate(int delta)
+        public bool TryRotate(int delta, GridCollisions collider)
         {
             var newRotation = m_localTransform.ValueRO.orientation;
             newRotation += delta;
@@ -35,24 +33,24 @@ namespace Tetris
             if (newRotation < 0)
                 newRotation += 4;
 
-            return TrySetRotation(newRotation, GridOrientationMatrix.GetMatrixForOrientation(newRotation));
+            return TrySetRotation(newRotation, GridOrientationMatrix.GetMatrixForOrientation(newRotation), collider);
         }
 
-        private bool IsPositionAndTransformValid(int2 position, int2x2 matrix)
+        private bool IsPositionAndTransformValid(int2 position, int2x2 matrix, GridCollisions collider)
         {
-            //ref var blocks = ref m_type.ValueRO.asset.Value.blocks;
-            //for (int i = 0; i < blocks.Length; ++i)
-            //{
-            //    if (!m_collider.IsPositionValid(position + math.mul(blocks[i], matrix)))
-            //        return false;
-            //}
+            ref var blocks = ref m_type.ValueRO.asset.Value.blocks;
+            for (int i = 0; i < blocks.Length; ++i)
+            {
+                if (!collider.IsPositionValid(position + math.mul(blocks[i], matrix)))
+                    return false;
+            }
 
             return true;
         }
 
-        private bool TrySetPosition(int2 newPosition, int2x2 matrix)
+        private bool TrySetPosition(int2 newPosition, int2x2 matrix, GridCollisions collider)
         {
-            if (IsPositionAndTransformValid(newPosition, matrix))
+            if (IsPositionAndTransformValid(newPosition, matrix, collider))
             {
                 m_localTransform.ValueRW.position = newPosition;
                 return true;
@@ -61,9 +59,9 @@ namespace Tetris
             return false;
         }
 
-        private bool TrySetPositionAndRotation(int2 newPosition, int newRotation, int2x2 newMatrix)
+        private bool TrySetPositionAndRotation(int2 newPosition, int newRotation, int2x2 newMatrix, GridCollisions collider)
         {
-            if (IsPositionAndTransformValid(newPosition, newMatrix))
+            if (IsPositionAndTransformValid(newPosition, newMatrix, collider))
             {
                 m_localTransform.ValueRW.position = newPosition;
                 m_localTransform.ValueRW.orientation = newRotation;
@@ -77,7 +75,7 @@ namespace Tetris
             return false;
         }
 
-        private bool TrySetRotation(int newRotation, int2x2 newMatrix)
+        private bool TrySetRotation(int newRotation, int2x2 newMatrix, GridCollisions collider)
         {
             var position = m_localTransform.ValueRO.position;
             ref var prevOffsets = ref m_type.ValueRO.asset.Value.rotationOffsets[m_localTransform.ValueRO.orientation].offsets;
@@ -86,7 +84,7 @@ namespace Tetris
             for (int i = 0; i < prevOffsets.Length; i++)
             {
                 var newPosition = position + prevOffsets[i] - newOffsets[i];
-                if (TrySetPositionAndRotation(newPosition, newRotation, newMatrix))
+                if (TrySetPositionAndRotation(newPosition, newRotation, newMatrix, collider))
                     return true;
             }
 

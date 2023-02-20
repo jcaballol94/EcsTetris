@@ -12,29 +12,27 @@ namespace Tetris
     [UpdateInGroup(typeof(MovementSystemGroup))]
     public partial struct TetriminoMovementSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
         }
 
-        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (movement, player) in SystemAPI
-                .Query<TetriminoMovement, RefRO<PlayerRef>>())
+            foreach (var (movement, player, grid) in SystemAPI
+                .Query<TetriminoMovement, RefRO<PlayerRef>, RefRO<GridRef>>())
             {
                 var input = state.EntityManager.GetComponentData<InputValues>(player.ValueRO.value);
+                var collider = state.EntityManager.GetAspectRO<GridCollisions>(grid.ValueRO.value);
 
                 if (input.move != 0)
-                    movement.TryMove(new int2(input.move, 0));
+                    movement.TryMove(new int2(input.move, 0), collider);
 
                 if (input.rotate != 0)
-                    movement.TryRotate(input.rotate);
+                    movement.TryRotate(input.rotate, collider);
             }
         }
     }
