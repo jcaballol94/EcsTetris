@@ -9,7 +9,8 @@ namespace Tetris
 {
     public class TetrisInputReader : IComponentData, IDisposable
     {
-        private TetrisInput m_input;
+        private object boxedInput;
+        private TetrisInput m_input => boxedInput as TetrisInput;
 
         private int lastMove;
         private float timeToMoveAgain;
@@ -20,7 +21,7 @@ namespace Tetris
         public void Initialize()
         {
             // Create the input and enable the game input
-            m_input = new TetrisInput();
+            boxedInput = new TetrisInput();
             m_input.Enable();
             m_input.Game.Enable();
         }
