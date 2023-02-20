@@ -42,5 +42,11 @@ namespace Tetris
         {
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/SystemGroupTemplate.cs", "NewSystemGroup.cs");
         }
+
+        [MenuItem("Assets/Create/Scripts/ECS/CommandBufferSystem", priority = 0)]
+        public static void CreateCommandBufferSystem()
+        {
+            ProjectWindowUtil.CreateScriptAssetFromTemplateFile("Templates/CommandBufferSystemTemplate.cs", "NewCommandBufferSystem.cs");
+        }
     }
 }
