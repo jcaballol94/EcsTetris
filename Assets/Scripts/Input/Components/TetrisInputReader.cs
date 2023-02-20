@@ -96,7 +96,7 @@ namespace Tetris
         {
             var dropInput = m_input.Game.Drop.IsPressed();
 
-            values.drop = dropInput && !lastDrop;
+            values.drop = (dropInput && !lastDrop);
 
             lastDrop = dropInput;
         }
@@ -105,7 +105,7 @@ namespace Tetris
         {
             var holdInput = m_input.Game.Hold.IsPressed();
 
-            values.drop = holdInput && !lastHold;
+            values.hold = holdInput && !lastHold;
 
             lastHold = holdInput;
         }

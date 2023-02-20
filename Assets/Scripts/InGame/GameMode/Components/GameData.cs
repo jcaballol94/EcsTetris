@@ -12,5 +12,9 @@ namespace Tetris
 
         public float moveRepeatDelay;
         public float moveRepeatPeriod;
+
+        public float fallSpeed;
+        public float fastFallMultiplier;
+        public int dropLength;
     }
 }

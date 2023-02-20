@@ -17,6 +17,11 @@ namespace Tetris
         [Header("Input")]
         public float moveRepeatDelay = 0.3f;
         public float moveRepeatPeriod = 0.2f;
+
+        [Header("Drop")]
+        public float fallSpeed = 1f;
+        public float fastFallMultiplier = 5f;
+        public int dropLength = 40;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -48,7 +53,10 @@ namespace Tetris
             {
                 spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y),
                 moveRepeatDelay = authoring.moveRepeatDelay,
-                moveRepeatPeriod = authoring.moveRepeatPeriod
+                moveRepeatPeriod = authoring.moveRepeatPeriod,
+                fallSpeed = authoring.fallSpeed,
+                fastFallMultiplier = authoring.fastFallMultiplier,
+                dropLength = authoring.dropLength
             });
         }
     }

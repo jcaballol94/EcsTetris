@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
     public partial struct SpawnTetriminoSystem : ISystem
     {
         private EntityArchetype m_tetriminoArchetype;
@@ -17,6 +17,7 @@ namespace Tetris
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
                 typeof(LocalGridTransform), typeof(WorldGridTransform), typeof(GridOrientationMatrix), // Transform
                 typeof(GridChildren), // Hierarchy
+                typeof(DropState), // Movement
                 typeof(GridRef), typeof(TetriminoData), typeof(PlayerRef)); // Required data references
 
             state.RequireForUpdate<GameData>();
@@ -40,7 +41,7 @@ namespace Tetris
             if (!SystemAPI.TryGetSingleton(out GameSkin gameSkin)) return;
 
             // Get the ecb we'll use
-            var ecbSystem = state.World.GetExistingSystemManaged<BeginVariableRateSimulationEntityCommandBufferSystem>();
+            var ecbSystem = state.World.GetExistingSystemManaged<EndVariableRateSimulationEntityCommandBufferSystem>();
             var ecb = ecbSystem.CreateCommandBuffer();
 
 

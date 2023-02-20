@@ -9,8 +9,7 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
-    [UpdateAfter(typeof(ReadInputSystem))]
+    [UpdateInGroup(typeof(MovementSystemGroup))]
     public partial struct TetriminoMovementSystem : ISystem
     {
         [BurstCompile]
