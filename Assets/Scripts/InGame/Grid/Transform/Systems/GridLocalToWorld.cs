@@ -89,17 +89,25 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            // Ensure that we have the required components
+            // All entities with a local transform also need a world transform
             state.EntityManager.AddComponent<WorldGridTransform>(SystemAPI.QueryBuilder()
                 .WithAll<LocalGridTransform>()
                 .WithNone<WorldGridTransform>()
                 .Build());
 
+            // All objects with a parent need a copy of the parent's transform
             state.EntityManager.AddComponent<ParentGridTransform>(SystemAPI.QueryBuilder()
                 .WithAll<GridParent, LocalGridTransform>()
                 .WithNone<ParentGridTransform>()
                 .Build());
 
+            // Objects without a parent don't need the parent transform anymore
+            state.EntityManager.RemoveComponent<ParentGridTransform>(SystemAPI.QueryBuilder()
+                .WithAll<ParentGridTransform>()
+                .WithNone<GridParent>()
+                .Build());
+
+            // All objects with a transform also need to compute the matrix
             state.EntityManager.AddComponent<GridOrientationMatrix>(SystemAPI.QueryBuilder()
                 .WithAll<LocalGridTransform>()
                 .WithNone<GridOrientationMatrix>()
