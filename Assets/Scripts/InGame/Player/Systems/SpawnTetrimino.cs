@@ -62,6 +62,7 @@ namespace Tetris
                 ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
                 ecb.SetComponent(tetrimino, gridRef.ValueRO);
                 ecb.SetComponent(tetrimino, new PlayerRef { value = entity });
+                ecb.SetComponent(tetrimino, DropState.DefaultDropState);
 
                 // Create and initialize the blocks
                 for (int i = 0; i < tetriminoData.blocks.Length; ++i)

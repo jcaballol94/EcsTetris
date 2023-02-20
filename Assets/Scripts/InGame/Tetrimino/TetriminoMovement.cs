@@ -14,6 +14,8 @@ namespace Tetris
 
         private readonly RefRO<TetriminoData> m_type;
 
+        public readonly LocalGridTransform LocalTransform => m_localTransform.ValueRO;
+
         public bool TryMove(int2 delta, GridCollisions collider)
         {
             var newPosition = m_localTransform.ValueRO.position + delta;

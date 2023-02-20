@@ -13,9 +13,12 @@ namespace Tetris
     [UpdateAfter(typeof(TetriminoMovementSystem))]
     public partial struct TetriminoDropSystem : ISystem
     {
+        private EntityArchetype m_placeEventArchetype;
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<GameData>();
+
+            m_placeEventArchetype = state.EntityManager.CreateArchetype(typeof(EventTag), typeof(PlaceTetriminoEvent));
         }
 
         public void OnDestroy(ref SystemState state)
@@ -26,10 +29,13 @@ namespace Tetris
         {
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
 
+            var eventECB = state.EntityManager.World.GetExistingSystemManaged<BeginEventsCommandBufferSystem>().CreateCommandBuffer();
+
             var deltaTime = SystemAPI.Time.DeltaTime;
 
-            foreach (var (movement, dropState, player, grid) in SystemAPI
-                .Query<TetriminoMovement, RefRW<DropState>, RefRO<PlayerRef>, RefRO<GridRef>>())
+            foreach (var (movement, dropState, player, grid, entity) in SystemAPI
+                .Query<TetriminoMovement, RefRW<DropState>, RefRO<PlayerRef>, RefRO<GridRef>>()
+                .WithEntityAccess())
             {
                 var input = state.EntityManager.GetComponentData<InputValues>(player.ValueRO.value);
                 var collider = state.EntityManager.GetAspectRO<GridCollisions>(grid.ValueRO.value);
@@ -44,7 +50,18 @@ namespace Tetris
                 {
                     newDropAmount -= 1f;
                     if (!movement.TryMove(new int2(0, -1), collider))
-                        break;
+                    {
+                        // If it hasn't moved since the last collision, place it
+                        var transform = movement.LocalTransform;
+                        if (dropState.ValueRO.HasMoved(transform))
+                            dropState.ValueRW.lastCollision = transform;
+                        else
+                        {
+                            var ev = eventECB.CreateEntity(m_placeEventArchetype);
+                            eventECB.SetComponent(ev, new PlaceTetriminoEvent { tetrimino = entity });
+                            break;
+                        }
+                    }
                 }
 
                 dropState.ValueRW.currentDrop = newDropAmount;
