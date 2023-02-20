@@ -21,6 +21,7 @@ namespace Tetris
                 typeof(InputValues) // The input
                 );
 
+            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -29,8 +30,8 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            var ecbSystem = state.EntityManager.World.GetExistingSystemManaged<BeginSimulationEntityCommandBufferSystem>();
-            var ecb = ecbSystem.CreateCommandBuffer();
+            if (!SystemAPI.TryGetSingleton(out BeginSimulationEntityCommandBufferSystem.Singleton ecbSingleton)) return;
+            var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
             foreach (var (playerData, entity) in SystemAPI
                 .Query<RefRO<PlayerData>>()

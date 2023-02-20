@@ -27,6 +27,8 @@ namespace Tetris
                 .WithAll<PlayerTag, GridRef>()
                 .WithNone<AlreadySpawned>()
                 .Build());
+
+            state.RequireForUpdate<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -41,9 +43,8 @@ namespace Tetris
             if (!SystemAPI.TryGetSingleton(out GameSkin gameSkin)) return;
 
             // Get the ecb we'll use
-            var ecbSystem = state.World.GetExistingSystemManaged<EndVariableRateSimulationEntityCommandBufferSystem>();
-            var ecb = ecbSystem.CreateCommandBuffer();
-
+            if (!SystemAPI.TryGetSingleton(out EndVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
             foreach (var (gridRef, entity) in SystemAPI
                 .Query<RefRO<GridRef>>()

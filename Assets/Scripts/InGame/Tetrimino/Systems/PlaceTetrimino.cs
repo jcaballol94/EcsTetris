@@ -36,6 +36,7 @@ namespace Tetris
 
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -44,9 +45,8 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            var ecb = state.EntityManager.World.GetExistingSystemManaged<BeginVariableRateSimulationEntityCommandBufferSystem>()
-                .CreateCommandBuffer()
-                .AsParallelWriter();
+            if (!SystemAPI.TryGetSingleton(out BeginVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
 
             var childrenLookup = SystemAPI.GetBufferLookup<GridChildren>(true);
 

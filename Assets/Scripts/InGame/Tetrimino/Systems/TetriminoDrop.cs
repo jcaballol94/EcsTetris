@@ -17,6 +17,7 @@ namespace Tetris
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<GameData>();
+            state.RequireForUpdate<BeginEventsCommandBufferSystem>
 
             m_placeEventArchetype = state.EntityManager.CreateArchetype(typeof(EventTag), typeof(PlaceTetriminoEvent));
         }
