@@ -12,14 +12,17 @@ namespace Tetris
     [UpdateInGroup(typeof(MovementSystemGroup))]
     public partial struct TetriminoMovementSystem : ISystem
     {
+        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
         }
 
+        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
         }
 
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             foreach (var (movement, player, grid) in SystemAPI
