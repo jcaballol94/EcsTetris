@@ -7,11 +7,13 @@ using UnityEngine;
 
 namespace Tetris
 {
+    [BurstCompile]
     [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
     public partial struct SpawnTetriminoSystem : ISystem
     {
         private EntityArchetype m_tetriminoArchetype;
 
+        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
@@ -32,10 +34,12 @@ namespace Tetris
             state.RequireForUpdate<RequestSpawnTetriminoEvent>();
         }
 
+        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
         }
 
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             // Try get the list of events

@@ -7,12 +7,14 @@ using UnityEngine;
 
 namespace Tetris
 {
+    [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct SpawnPlayerSystem : ISystem
     {
         private EntityArchetype m_playerArchetype;
 
+        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             m_playerArchetype = state.EntityManager.CreateArchetype(
@@ -25,10 +27,12 @@ namespace Tetris
             state.RequireForUpdate<RequestSpawnTetriminoEvent>();
         }
 
+        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
         }
 
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             if (!SystemAPI.TryGetSingletonEntity<RequestSpawnTetriminoEvent>(out var eventBufferEntity)) return;
