@@ -57,7 +57,7 @@ namespace Tetris
             foreach (var ev in events)
             {
                 // Get the grid from the player
-                var gridRef = state.EntityManager.GetComponentData<GridRef>(ev.player);
+                var gridRef = state.EntityManager.GetSharedComponent<GridRef>(ev.player);
 
                 // Find a tetrimino type to use
                 var tetriminoIdx = UnityEngine.Random.Range(0, availableTetriminos.Length);
@@ -68,7 +68,7 @@ namespace Tetris
                 ecb.SetName(tetrimino, "Tetrimino");
                 ecb.SetComponent(tetrimino, new LocalGridTransform { position = gameData.spawnPosition, orientation = 0 });
                 ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
-                ecb.SetComponent(tetrimino, gridRef);
+                ecb.SetSharedComponent(tetrimino, gridRef);
                 ecb.SetComponent(tetrimino, new PlayerRef { value = ev.player });
                 ecb.SetComponent(tetrimino, DropState.DefaultDropState);
 
@@ -82,7 +82,7 @@ namespace Tetris
                     ecb.AddComponent(block, new LocalGridTransform { position = tetriminoData.blocks[i] });
                     ecb.AddComponent(block, new GridParent { value = tetrimino });
                     ecb.SetComponent(block, new Unity.Rendering.URPMaterialPropertyBaseColor { Value = tetriminoData.color });
-                    ecb.AddComponent(block, gridRef);
+                    ecb.AddSharedComponent(block, gridRef);
                 }
             }
         }

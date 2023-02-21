@@ -22,10 +22,10 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             foreach (var (movement, player, grid) in SystemAPI
-                .Query<TetriminoMovement, RefRO<PlayerRef>, RefRO<GridRef>>())
+                .Query<TetriminoMovement, RefRO<PlayerRef>, GridRef>())
             {
                 var input = state.EntityManager.GetComponentData<InputValues>(player.ValueRO.value);
-                var collider = state.EntityManager.GetAspectRO<GridCollisions>(grid.ValueRO.value);
+                var collider = state.EntityManager.GetAspectRO<GridCollisions>(grid.value);
 
                 if (input.move != 0)
                     movement.TryMove(new int2(input.move, 0), collider);

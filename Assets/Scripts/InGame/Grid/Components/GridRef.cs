@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct GridRef : IComponentData
+    public struct GridRef : ISharedComponentData
     {
         public Entity value;
     }

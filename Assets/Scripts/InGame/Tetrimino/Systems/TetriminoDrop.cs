@@ -31,11 +31,11 @@ namespace Tetris
             var deltaTime = SystemAPI.Time.DeltaTime;
 
             foreach (var (movement, dropState, player, grid, entity) in SystemAPI
-                .Query<TetriminoMovement, RefRW<DropState>, RefRO<PlayerRef>, RefRO<GridRef>>()
+                .Query<TetriminoMovement, RefRW<DropState>, RefRO<PlayerRef>, GridRef>()
                 .WithEntityAccess())
             {
                 var input = state.EntityManager.GetComponentData<InputValues>(player.ValueRO.value);
-                var collider = state.EntityManager.GetAspectRO<GridCollisions>(grid.ValueRO.value);
+                var collider = state.EntityManager.GetAspectRO<GridCollisions>(grid.value);
 
                 // Calculate how much we need to drop
                 var newDropAmount = dropState.ValueRO.currentDrop;

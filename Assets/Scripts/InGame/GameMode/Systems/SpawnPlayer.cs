@@ -46,7 +46,7 @@ namespace Tetris
                 // Create the player
                 var player = ecb.CreateEntity(m_playerArchetype);
                 ecb.SetName(player, "Player");
-                ecb.SetComponent(player, new GridRef { value = playerData.ValueRO.grid });
+                ecb.SetSharedComponent(player, new GridRef { value = playerData.ValueRO.grid });
 
                 // Request the first tetrimino to start playing, use the command buffer so the event isn't created until the player also exists
                 ecb.AppendToBuffer(eventBufferEntity, new RequestSpawnTetriminoEvent { player = player });
