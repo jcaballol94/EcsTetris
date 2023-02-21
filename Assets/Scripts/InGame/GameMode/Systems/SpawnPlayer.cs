@@ -14,7 +14,6 @@ namespace Tetris
     {
         private EntityArchetype m_playerArchetype;
 
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             m_playerArchetype = state.EntityManager.CreateArchetype(

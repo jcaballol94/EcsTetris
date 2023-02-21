@@ -8,25 +8,21 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(MovementSystemGroup))]
     [UpdateAfter(typeof(TetriminoMovementSystem))]
     public partial struct TetriminoDropSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<GameData>();
             state.RequireForUpdate<PlaceTetriminoEvent>();
         }
 
-        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;

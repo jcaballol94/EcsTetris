@@ -13,7 +13,6 @@ namespace Tetris
     {
         private EntityArchetype m_tetriminoArchetype;
 
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
