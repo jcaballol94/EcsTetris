@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [UpdateInGroup(typeof(EventsSystemGroup))]
+    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
+    [UpdateAfter(typeof(EventsCommandBufferSystem))]
     public partial struct SpawnTetriminoSystem : ISystem
     {
         private EntityArchetype m_tetriminoArchetype;
@@ -28,7 +29,7 @@ namespace Tetris
                 .WithNone<AlreadySpawned>()
                 .Build());
 
-            state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -43,7 +44,7 @@ namespace Tetris
             if (!SystemAPI.TryGetSingleton(out GameSkin gameSkin)) return;
 
             // Get the ecb we'll use
-            if (!SystemAPI.TryGetSingleton(out BeginVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            if (!SystemAPI.TryGetSingleton(out EndVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
             var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
             foreach (var spawnEvent in SystemAPI.Query<RefRO<RequestSpawnTetriminoEvent>>())

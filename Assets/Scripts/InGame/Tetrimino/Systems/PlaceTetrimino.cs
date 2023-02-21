@@ -9,7 +9,8 @@ using UnityEngine;
 namespace Tetris
 {
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(EventsSystemGroup))]
+    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
+    [UpdateAfter(typeof(EventsCommandBufferSystem))]
     public partial struct PlaceTetriminoSystem : ISystem
     {
         [BurstCompile]
@@ -36,7 +37,7 @@ namespace Tetris
 
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -45,7 +46,7 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingleton(out BeginVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            if (!SystemAPI.TryGetSingleton(out EndSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
             var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
 
             var childrenLookup = SystemAPI.GetBufferLookup<GridChildren>(true);

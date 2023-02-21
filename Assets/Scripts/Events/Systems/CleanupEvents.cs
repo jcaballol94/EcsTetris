@@ -9,7 +9,7 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(EventsSystemGroup), OrderLast = true)]
+    [UpdateInGroup(typeof(SimulationSystemGroup), OrderLast = true)]
     public partial struct CleanupEventsSystem : ISystem
     {
         [BurstCompile]

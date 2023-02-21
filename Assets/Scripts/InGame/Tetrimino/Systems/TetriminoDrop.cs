@@ -30,7 +30,7 @@ namespace Tetris
         {
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
 
-            var eventECB = state.EntityManager.World.GetExistingSystemManaged<BeginEventsCommandBufferSystem>().CreateCommandBuffer();
+            var eventECB = state.EntityManager.World.GetExistingSystemManaged<EventsCommandBufferSystem>().CreateCommandBuffer();
 
             var deltaTime = SystemAPI.Time.DeltaTime;
 

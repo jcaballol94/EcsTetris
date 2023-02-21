@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Tetris
 {
     [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
-    public class EventsSystemGroup : ComponentSystemGroup
+    public class EventsCommandBufferSystem : EntityCommandBufferSystem
     {
     }
 }
