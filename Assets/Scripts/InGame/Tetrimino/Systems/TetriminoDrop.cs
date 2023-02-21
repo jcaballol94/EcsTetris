@@ -13,13 +13,10 @@ namespace Tetris
     [UpdateAfter(typeof(TetriminoMovementSystem))]
     public partial struct TetriminoDropSystem : ISystem
     {
-        private EntityArchetype m_placeEventArchetype;
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<GameData>();
-
-            m_placeEventArchetype = state.EntityManager.CreateArchetype(
-                typeof(EventTag), typeof(PlaceTetriminoEvent), typeof(RequestSpawnTetriminoEvent));
+            state.RequireForUpdate<PlaceTetriminoEvent>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -29,8 +26,7 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
-
-            var eventECB = state.EntityManager.World.GetExistingSystemManaged<EventsCommandBufferSystem>().CreateCommandBuffer();
+            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<PlaceTetriminoEvent> placeEvents)) return;
 
             var deltaTime = SystemAPI.Time.DeltaTime;
 
@@ -58,9 +54,7 @@ namespace Tetris
                             dropState.ValueRW.lastCollision = transform;
                         else
                         {
-                            var ev = eventECB.CreateEntity(m_placeEventArchetype);
-                            eventECB.SetComponent(ev, new PlaceTetriminoEvent { tetrimino = entity });
-                            eventECB.SetComponent(ev, new RequestSpawnTetriminoEvent { player = player.ValueRO.value });
+                            placeEvents.Add(new PlaceTetriminoEvent { tetrimino = entity });
                             break;
                         }
                     }

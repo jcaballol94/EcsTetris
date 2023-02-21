@@ -7,7 +7,7 @@ namespace Tetris
 {
     [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
     [UpdateAfter(typeof(ReadInputSystem))]
-    [UpdateBefore(typeof(EventsCommandBufferSystem))]
+    [UpdateBefore(typeof(PlaceTetriminoSystem))]
     public class MovementSystemGroup : ComponentSystemGroup
     {
     }

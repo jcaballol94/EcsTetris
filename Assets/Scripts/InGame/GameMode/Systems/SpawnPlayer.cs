@@ -12,7 +12,6 @@ namespace Tetris
     public partial struct SpawnPlayerSystem : ISystem
     {
         private EntityArchetype m_playerArchetype;
-        private EntityArchetype m_startPlayingEventArchetype;
 
         public void OnCreate(ref SystemState state)
         {
@@ -22,10 +21,8 @@ namespace Tetris
                 typeof(InputValues) // The input
                 );
 
-            m_startPlayingEventArchetype = state.EntityManager.CreateArchetype(
-                typeof(EventTag), typeof(RequestSpawnTetriminoEvent));
-
-            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<RequestSpawnTetriminoEvent>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -34,7 +31,8 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingleton(out BeginSimulationEntityCommandBufferSystem.Singleton ecbSingleton)) return;
+            if (!SystemAPI.TryGetSingletonEntity<RequestSpawnTetriminoEvent>(out var eventBufferEntity)) return;
+            if (!SystemAPI.TryGetSingleton(out BeginVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSingleton)) return;
             var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
             foreach (var (playerData, entity) in SystemAPI
@@ -47,9 +45,8 @@ namespace Tetris
                 ecb.SetName(player, "Player");
                 ecb.SetComponent(player, new GridRef { value = playerData.ValueRO.grid });
 
-                // Request the first tetrimino to start playing
-                var ev = ecb.CreateEntity(m_startPlayingEventArchetype);
-                ecb.SetComponent(ev, new RequestSpawnTetriminoEvent { player = player });
+                // Request the first tetrimino to start playing, use the command buffer so the event isn't created until the player also exists
+                ecb.AppendToBuffer(eventBufferEntity, new RequestSpawnTetriminoEvent { player = player });
 
                 ecb.AddComponent<AlreadySpawned>(entity);
             }

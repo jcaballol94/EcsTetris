@@ -10,33 +10,36 @@ namespace Tetris
 {
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
-    [UpdateAfter(typeof(EventsCommandBufferSystem))]
+    [UpdateBefore(typeof(SpawnTetriminoSystem))]
     public partial struct PlaceTetriminoSystem : ISystem
     {
         [BurstCompile]
         public partial struct PlaceTetriminoJob : IJobEntity
         {
-            public EntityCommandBuffer.ParallelWriter ecb;
+            public EntityCommandBuffer ecb;
             [ReadOnly] public BufferLookup<GridChildren> childrenLookup;
+            public DynamicBuffer<RequestSpawnTetriminoEvent> spawnEvents;
 
             [BurstCompile]
-            private void Execute([ChunkIndexInQuery] int id, in PlaceTetriminoEvent ev)
+            private void Execute(in PlaceTetriminoEvent ev)
             {
                 var children = childrenLookup[ev.tetrimino];
 
                 // Unparent all the children
                 foreach (var child in children)
                 {
-                    ecb.RemoveComponent<GridParent>(id, child.value);
+                    ecb.RemoveComponent<GridParent>(child.value);
                 }
 
                 // Finally, destroy the tetrimino
-                ecb.DestroyEntity(id, ev.tetrimino);
+                ecb.DestroyEntity(ev.tetrimino);
             }
         }
 
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<PlaceTetriminoEvent>();
+            state.RequireForUpdate<RequestSpawnTetriminoEvent>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
 
@@ -46,16 +49,31 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
+            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<PlaceTetriminoEvent> events, true)) return;
+            if (events.Length == 0) return;
+
+            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<RequestSpawnTetriminoEvent> spawnEvents)) return;
+
             if (!SystemAPI.TryGetSingleton(out EndSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
-            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
+            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
-            var childrenLookup = SystemAPI.GetBufferLookup<GridChildren>(true);
-
-            new PlaceTetriminoJob
+            foreach (var ev in events)
             {
-                childrenLookup = childrenLookup,
-                ecb = ecb
-            }.ScheduleParallel();
+                var children = state.EntityManager.GetBuffer<GridChildren>(ev.tetrimino, true);
+
+                // Unparent all the children
+                foreach (var child in children)
+                {
+                    ecb.RemoveComponent<GridParent>(child.value);
+                }
+
+                // Finally, destroy the tetrimino
+                ecb.DestroyEntity(ev.tetrimino);
+
+                // Request a new tetrimino to be spawned
+                var playerRef = state.EntityManager.GetComponentData<PlayerRef>(ev.tetrimino);
+                spawnEvents.Add(new RequestSpawnTetriminoEvent { player = playerRef.value });
+            }
         }
     }
 }
