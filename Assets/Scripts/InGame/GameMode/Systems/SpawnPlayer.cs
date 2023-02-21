@@ -9,7 +9,7 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
     public partial struct SpawnPlayerSystem : ISystem
     {
         private EntityArchetype m_playerArchetype;
