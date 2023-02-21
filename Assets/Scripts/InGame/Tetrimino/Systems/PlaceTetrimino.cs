@@ -8,34 +8,13 @@ using UnityEngine;
 
 namespace Tetris
 {
+    [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
     [UpdateBefore(typeof(SpawnTetriminoSystem))]
     public partial struct PlaceTetriminoSystem : ISystem
     {
         [BurstCompile]
-        public partial struct PlaceTetriminoJob : IJobEntity
-        {
-            public EntityCommandBuffer ecb;
-            [ReadOnly] public BufferLookup<GridChildren> childrenLookup;
-            public DynamicBuffer<RequestSpawnTetriminoEvent> spawnEvents;
-
-            [BurstCompile]
-            private void Execute(in PlaceTetriminoEvent ev)
-            {
-                var children = childrenLookup[ev.tetrimino];
-
-                // Unparent all the children
-                foreach (var child in children)
-                {
-                    ecb.RemoveComponent<GridParent>(child.value);
-                }
-
-                // Finally, destroy the tetrimino
-                ecb.DestroyEntity(ev.tetrimino);
-            }
-        }
-
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<PlaceTetriminoEvent>();
@@ -43,10 +22,12 @@ namespace Tetris
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
 
+        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
         }
 
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<PlaceTetriminoEvent> events, true)) return;
