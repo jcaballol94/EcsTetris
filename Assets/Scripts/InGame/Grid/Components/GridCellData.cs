@@ -11,7 +11,7 @@ namespace Tetris
     {
         public bool available;
 
-        public static GridCellData Empty = new GridCellData { available = true };
-        public static GridCellData Busy = new GridCellData { available = false };
+        public static readonly GridCellData Empty = new GridCellData { available = true };
+        public static readonly GridCellData Busy = new GridCellData { available = false };
     }
 }
