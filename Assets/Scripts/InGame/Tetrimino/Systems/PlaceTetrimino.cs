@@ -48,6 +48,8 @@ namespace Tetris
                 foreach (var child in children)
                 {
                     ecb.RemoveComponent<GridParent>(child.value);
+                    // Set it as static so we can collide with it
+                    ecb.AddComponent<StaticBlockTag>(child.value);
                 }
 
                 // Finally, destroy the tetrimino
