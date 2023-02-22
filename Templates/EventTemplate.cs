@@ -18,7 +18,7 @@ public partial struct #SCRIPTNAME#System : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.EntityManager.AddComponent<RequestSpawnTetriminoEvent>(state.SystemHandle);
+        state.EntityManager.AddComponent<#SCRIPTNAME#>(state.SystemHandle);
     }
 
     [BurstCompile]
@@ -29,7 +29,7 @@ public partial struct #SCRIPTNAME#System : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        var buffer = state.EntityManager.GetBuffer<RequestSpawnTetriminoEvent>(state.SystemHandle);
+        var buffer = state.EntityManager.GetBuffer<#SCRIPTNAME#>(state.SystemHandle);
         buffer.Clear();
     }
 }

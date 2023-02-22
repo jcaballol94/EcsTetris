@@ -10,5 +10,8 @@ namespace Tetris
     public struct GridCellData : IBufferElementData
     {
         public bool available;
+
+        public static GridCellData Empty = new GridCellData { available = true };
+        public static GridCellData Busy = new GridCellData { available = false };
     }
 }

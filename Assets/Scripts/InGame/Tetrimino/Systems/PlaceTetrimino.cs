@@ -18,8 +18,9 @@ namespace Tetris
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<PlaceTetriminoEvent>();
+            state.RequireForUpdate<RefreshGridCollisionsEvent>();
             state.RequireForUpdate<RequestSpawnTetriminoEvent>();
-            state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         [BurstCompile]
@@ -34,8 +35,9 @@ namespace Tetris
             if (events.Length == 0) return;
 
             if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<RequestSpawnTetriminoEvent> spawnEvents)) return;
+            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<RefreshGridCollisionsEvent> gridEvents)) return;
 
-            if (!SystemAPI.TryGetSingleton(out EndSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            if (!SystemAPI.TryGetSingleton(out EndVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
             var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
             foreach (var ev in events)
@@ -54,6 +56,9 @@ namespace Tetris
                 // Request a new tetrimino to be spawned
                 var playerRef = state.EntityManager.GetComponentData<PlayerRef>(ev.tetrimino);
                 spawnEvents.Add(new RequestSpawnTetriminoEvent { player = playerRef.value });
+                // Request that the grid is refreshed
+                var gridRef = state.EntityManager.GetSharedComponent<GridRef>(ev.tetrimino);
+                gridEvents.Add(new RefreshGridCollisionsEvent { grid = gridRef.value });
             }
         }
     }
