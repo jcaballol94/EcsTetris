@@ -29,7 +29,10 @@ namespace Tetris
         public override void Bake(GameModeAuthoring authoring)
         {
             if (authoring.grid)
-                AddComponent(new PlayerData { grid = GetEntity(authoring.grid.gameObject) });
+            {
+                var gridEntity = GetEntity(authoring.grid.gameObject);
+                AddComponent(new PlayerData { grid = gridEntity });
+            }
 
             if (authoring.blockPrefab)
                 AddComponent(new GameSkin { blockPrefab = GetEntity(authoring.blockPrefab) });
