@@ -67,7 +67,7 @@ namespace Tetris
                 {
                     bounds = bounds.size,
                     gridCells = cells
-                }.Schedule();
+                }.Run();
             }
         }
     }

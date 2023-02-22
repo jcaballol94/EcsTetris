@@ -9,7 +9,7 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     [UpdateAfter(typeof(UpdateGridCollisionsSystem))]
     public partial struct DetectLinesSystem : ISystem
     {
@@ -25,7 +25,7 @@ namespace Tetris
                     var line = true;
                     for (int j = 0; line && j < lineSize; ++j)
                     {
-                        line = !cells[i * lineSize + j].available;
+                        line = !cells[i + j].available;
                     }
                     if (line)
                     {
@@ -48,7 +48,7 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            new DetectLinesJob().ScheduleParallel();
+            new DetectLinesJob().Run();
         }
     }
 }
