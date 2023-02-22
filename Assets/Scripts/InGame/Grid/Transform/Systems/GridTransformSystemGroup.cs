@@ -5,9 +5,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateBefore(typeof(Unity.Transforms.TransformSystemGroup))]
-    [UpdateAfter(typeof(VariableRateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup), OrderLast = true)]
     public class GridTransformSystemGroup : ComponentSystemGroup
     {
     }
