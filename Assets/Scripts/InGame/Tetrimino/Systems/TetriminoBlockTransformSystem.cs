@@ -20,14 +20,13 @@ namespace Tetris
         {
             [NativeDisableParallelForRestriction] public ComponentLookup<BlockPosition> m_blockLookup;
 
-            //[BurstCompile]
+            [BurstCompile]
             private void Execute(in TetriminoTransformAspect transform, in TetriminoData definition, in DynamicBuffer<TetriminoBlockBuffer> blocks)
             {
                 ref var blockDefinitions = ref definition.blocks;
 
                 for (int i = 0; i < blockDefinitions.Length; ++i)
                 {
-                    Debug.Log($"Block {i}, definition {blockDefinitions[i]}");
                     var blockPos = m_blockLookup.GetRefRW(blocks[i].value, false);
                     blockPos.ValueRW.position = transform.TransformPoint(blockDefinitions[i]);
                 }
