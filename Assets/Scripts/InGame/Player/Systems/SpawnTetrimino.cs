@@ -29,7 +29,7 @@ namespace Tetris
                 .WithNone<AlreadySpawned>()
                 .Build());
 
-            state.RequireForUpdate<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<RequestSpawnTetriminoEvent>();
         }
 
@@ -51,7 +51,7 @@ namespace Tetris
             if (!SystemAPI.TryGetSingleton(out GameSkin gameSkin)) return;
 
             // Get the ecb we'll use
-            if (!SystemAPI.TryGetSingleton(out EndVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            if (!SystemAPI.TryGetSingleton(out BeginVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
             var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
             foreach (var ev in events)
