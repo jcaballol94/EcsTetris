@@ -26,7 +26,7 @@ namespace Tetris
                     var offset = 0;
                     foreach (var ev in events)
                     {
-                        if (ev.lineY >= i)
+                        if (ev.lineY <= i)
                             offset++;
                     }
                     if (offset == 0) continue;
@@ -41,14 +41,14 @@ namespace Tetris
             }
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         [WithAll(typeof(StaticBlockTag))]
         public partial struct RemoveLinesEntitiesJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
             [ReadOnly] public BufferLookup<RemoveLineEvent> eventLookup;
 
-            [BurstCompile]
+            //[BurstCompile]
             private void Execute(Entity entity, ref BlockPosition position, in GridRef gridRef)
             {
                 var events = eventLookup[gridRef.value];
@@ -63,16 +63,19 @@ namespace Tetris
                     // If we are in a line to remove, delete
                     if (ev.lineY == pos.y)
                     {
+                        Debug.Log("Destroy entity at line " + pos.y);
                         ecb.DestroyEntity(entity);
                         return;
                     }
-                    else if (ev.lineY > pos.y)
+                    else if (ev.lineY < pos.y)
                     {
+                        Debug.Log("Add offset to entity at line " + pos.y);
                         offset++;
                     }
                 }
 
                 // Move the block
+                Debug.Log("Moving entity at line " + pos.y + " " + offset + " positions");
                 pos.y -= offset;
                 position.position = pos;
             }
