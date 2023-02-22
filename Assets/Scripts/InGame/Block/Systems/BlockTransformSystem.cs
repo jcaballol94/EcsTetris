@@ -10,17 +10,18 @@ using UnityEngine;
 namespace Tetris
 {
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(GridTransformSystemGroup), OrderLast = true)]
-    public partial struct TransformFromGridSystem : ISystem
+    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup), OrderLast = true)]
+    [UpdateAfter(typeof(TetriminoBlockTransformSystem))]
+    public partial struct BlockTransformSystem : ISystem
     {
         [BurstCompile]
         [WithChangeFilter]
-        public partial struct TransformFromGridJob : IJobEntity
+        public partial struct BlockTransformJob : IJobEntity
         {
             [ReadOnly] public ComponentLookup<GridTransformData> transformDataLookup;
 
             [BurstCompile]
-            private void Execute(in WorldGridTransform pos, ref LocalTransform transform, in GridRef grid)
+            private void Execute(in BlockPosition pos, ref LocalTransform transform, in GridRef grid)
             {
                 var transformData = transformDataLookup[grid.value];
 
@@ -42,7 +43,7 @@ namespace Tetris
         {
             var gridDataLookup = SystemAPI.GetComponentLookup<GridTransformData>(true);
 
-            new TransformFromGridJob
+            new BlockTransformJob
             {
                 transformDataLookup = gridDataLookup,
             }.ScheduleParallel();

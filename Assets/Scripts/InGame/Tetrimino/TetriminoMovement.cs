@@ -9,12 +9,12 @@ namespace Tetris
 {
     public readonly partial struct TetriminoMovement : IAspect
     {
-        private readonly RefRW<LocalGridTransform> m_localTransform;
-        [Optional] private readonly RefRW<GridOrientationMatrix> m_matrix;
+        private readonly RefRW<TetriminoPosition> m_localTransform;
+        [Optional] private readonly RefRW<TetriminoOrientationMatrix> m_matrix;
 
         private readonly RefRO<TetriminoData> m_type;
 
-        public readonly LocalGridTransform LocalTransform => m_localTransform.ValueRO;
+        public readonly TetriminoPosition LocalTransform => m_localTransform.ValueRO;
 
         public bool TryMove(int2 delta, GridCollisions collider)
         {
@@ -23,7 +23,7 @@ namespace Tetris
             if (m_matrix.IsValid)
                 return TrySetPosition(newPosition, m_matrix.ValueRO.value, collider);
             else
-                return TrySetPosition(newPosition, GridOrientationMatrix.GetMatrixForOrientation(m_localTransform.ValueRO.orientation), collider);
+                return TrySetPosition(newPosition, TetriminoOrientationMatrix.GetMatrixForOrientation(m_localTransform.ValueRO.orientation), collider);
         }
 
         public bool TryRotate(int delta, GridCollisions collider)
@@ -35,7 +35,7 @@ namespace Tetris
             if (newRotation < 0)
                 newRotation += 4;
 
-            return TrySetRotation(newRotation, GridOrientationMatrix.GetMatrixForOrientation(newRotation), collider);
+            return TrySetRotation(newRotation, TetriminoOrientationMatrix.GetMatrixForOrientation(newRotation), collider);
         }
 
         private bool IsPositionAndTransformValid(int2 position, int2x2 matrix, GridCollisions collider)

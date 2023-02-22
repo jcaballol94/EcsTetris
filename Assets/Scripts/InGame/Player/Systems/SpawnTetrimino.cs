@@ -16,8 +16,8 @@ namespace Tetris
         public void OnCreate(ref SystemState state)
         {
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
-                typeof(LocalGridTransform), typeof(WorldGridTransform), typeof(GridOrientationMatrix), // Transform
-                typeof(GridChildren), // Hierarchy
+                typeof(TetriminoPosition), typeof(TetriminoOrientationMatrix), // Transform
+                typeof(TetriminoBlockBuffer), // Hierarchy
                 typeof(DropState), // Movement
                 typeof(GridRef), typeof(TetriminoData), typeof(PlayerRef)); // Required data references
 
@@ -66,7 +66,7 @@ namespace Tetris
                 // Create and initialize the tetrimino
                 var tetrimino = ecb.CreateEntity(m_tetriminoArchetype);
                 ecb.SetName(tetrimino, "Tetrimino");
-                ecb.SetComponent(tetrimino, new LocalGridTransform { position = gameData.spawnPosition, orientation = 0 });
+                ecb.SetComponent(tetrimino, new TetriminoPosition { position = gameData.spawnPosition, orientation = 0 });
                 ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
                 ecb.SetSharedComponent(tetrimino, gridRef);
                 ecb.SetComponent(tetrimino, new PlayerRef { value = ev.player });
@@ -76,11 +76,10 @@ namespace Tetris
                 for (int i = 0; i < tetriminoData.blocks.Length; ++i)
                 {
                     var block = ecb.Instantiate(gameSkin.blockPrefab);
-                    ecb.AppendToBuffer(tetrimino, new GridChildren { value = block });
+                    ecb.AppendToBuffer(tetrimino, new TetriminoBlockBuffer { value = block });
 
                     ecb.SetName(block, "Block");
-                    ecb.AddComponent(block, new LocalGridTransform { position = tetriminoData.blocks[i] });
-                    ecb.AddComponent(block, new GridParent { value = tetrimino });
+                    ecb.AddComponent(block, new BlockPosition { position = tetriminoData.blocks[i] });
                     ecb.SetComponent(block, new Unity.Rendering.URPMaterialPropertyBaseColor { Value = tetriminoData.color });
                     ecb.AddSharedComponent(block, gridRef);
                 }
