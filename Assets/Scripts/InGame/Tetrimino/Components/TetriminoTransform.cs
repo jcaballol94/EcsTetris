@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct WorldGridTransform : IComponentData
+    public struct TetriminoPosition : IComponentData
     {
         public int2 position;
-        public int2x2 matrix;
+        public int orientation;
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct GridOrientationMatrix : IComponentData
+    public struct TetriminoOrientationMatrix : IComponentData
     {
         public int2x2 value;
 

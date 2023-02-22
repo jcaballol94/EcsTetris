@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct LocalGridTransform : IComponentData
+    [InternalBufferCapacity(4)]
+    public struct TetriminoBlockBuffer : IBufferElementData
     {
-        public int2 position;
-        public int orientation;
+        public Entity value;
     }
 }

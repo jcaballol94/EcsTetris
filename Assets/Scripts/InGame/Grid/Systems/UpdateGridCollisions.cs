@@ -20,7 +20,7 @@ namespace Tetris
             public int2 bounds;
 
             [BurstCompile]
-            private void Execute(in WorldGridTransform transform)
+            private void Execute(in BlockPosition transform)
             {
                 var idx = transform.position.y * bounds.x + transform.position.x;
                 gridCells[idx] = GridCellData.Busy;
@@ -45,7 +45,7 @@ namespace Tetris
             if (events.Length == 0) return;
 
             var query = SystemAPI.QueryBuilder()
-                .WithAll<WorldGridTransform, StaticBlockTag, GridRef>()
+                .WithAll<BlockPosition, StaticBlockTag, GridRef>()
                 .Build();
 
             foreach (var ev in events)

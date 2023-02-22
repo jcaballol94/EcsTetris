@@ -42,12 +42,11 @@ namespace Tetris
 
             foreach (var ev in events)
             {
-                var children = state.EntityManager.GetBuffer<GridChildren>(ev.tetrimino, true);
+                var children = state.EntityManager.GetBuffer<TetriminoBlockBuffer>(ev.tetrimino, true);
 
                 // Unparent all the children
                 foreach (var child in children)
                 {
-                    ecb.RemoveComponent<GridParent>(child.value);
                     // Set it as static so we can collide with it
                     ecb.AddComponent<StaticBlockTag>(child.value);
                 }
