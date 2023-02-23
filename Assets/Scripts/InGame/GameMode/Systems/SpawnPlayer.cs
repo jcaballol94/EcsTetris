@@ -25,8 +25,6 @@ namespace Tetris
             [BurstCompile]
             private void Execute([EntityIndexInQuery] int idx, Entity entity, in PlayerData playerData)
             {
-                Debug.Log("Spawn Player Job");
-
                 // Create the player
                 var player = ecb.CreateEntity(archetype);
                 ecb.SetName(player, "Player");

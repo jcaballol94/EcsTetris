@@ -24,8 +24,6 @@ namespace Tetris
             [BurstCompile]
             private void Execute(Entity entity, TetriminoData data, in GridRef gridRef)
             {
-                Debug.Log("Spawn blocks Job");
-
                 var buffer = ecb.AddBuffer<TetriminoBlockBuffer>(entity);
 
                 ref var blocks = ref data.blocks;

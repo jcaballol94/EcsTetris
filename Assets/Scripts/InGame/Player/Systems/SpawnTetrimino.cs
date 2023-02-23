@@ -29,10 +29,8 @@ namespace Tetris
             [BurstCompile]
             private void Execute(Entity entity, ref RandomProvider random, in GridRef gridRef)
             {
-                Debug.Log("Spawn Tetrimino Job");
-
                 // Find a tetrimino type to use
-                var tetriminoIdx = random.value.NextInt() % availableTetriminos.Length;
+                var tetriminoIdx = (int)random.value.NextUInt() % availableTetriminos.Length;
                 ref var tetriminoData = ref availableTetriminos[tetriminoIdx].asset.Value;
 
                 // Create and initialize the tetrimino
