@@ -12,9 +12,31 @@ namespace Tetris
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct InitializeGridCellsSystem : ISystem
     {
+        [WithAll(typeof(GridWithCollisionsTag))]
+        [WithNone(typeof(GridCellData))]
+        [BurstCompile]
+        public partial struct InitializeGridCellsJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+
+            [BurstCompile]
+            private void Execute(Entity entity, in GridBounds bounds)
+            {
+                var size = bounds.size.x * bounds.size.y;
+
+                var buffer = ecb.AddBuffer<GridCellData>(entity);
+                buffer.Length = size;
+                for (int i = 0; i < buffer.Length; ++i)
+                {
+                    buffer[i] = GridCellData.Empty;
+                }
+            }
+        }
+
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<EndInitializationEntityCommandBufferSystem.Singleton>();
         }
 
         [BurstCompile]
@@ -25,26 +47,13 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+            if (!SystemAPI.TryGetSingleton(out EndInitializationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
-            foreach (var (bounds, entity) in SystemAPI
-                .Query<RefRO<GridBounds>>()
-                .WithAll<GridWithCollisionsTag>()
-                .WithNone<GridCellData>()
-                .WithEntityAccess())
+            new InitializeGridCellsJob
             {
-                var size = bounds.ValueRO.size.x * bounds.ValueRO.size.y;
-
-                var buffer = ecb.AddBuffer<GridCellData>(entity);
-                buffer.Length = size;
-                for (int i = 0; i < buffer.Length; ++i)
-                {
-                    buffer[i] = GridCellData.Empty;
-                }
-            }
-
-            ecb.Playback(state.EntityManager);
-            ecb.Dispose();
+                ecb = ecb
+            }.Schedule();
         }
     }
 }

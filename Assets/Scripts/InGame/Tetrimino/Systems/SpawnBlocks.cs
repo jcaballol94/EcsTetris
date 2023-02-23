@@ -46,6 +46,7 @@ namespace Tetris
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<GameSkin>();
+            state.RequireForUpdate<EndInitializationEntityCommandBufferSystem.Singleton>();
         }
 
         [BurstCompile]
@@ -56,18 +57,16 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingleton(out GameSkin gameSkin)) return;
+            if (!SystemAPI.TryGetSingleton(out EndInitializationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
-            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.TempJob);
+            if (!SystemAPI.TryGetSingleton(out GameSkin gameSkin)) return;
 
             new SpawnBlocksJob
             {
                 ecb = ecb,
                 skin = gameSkin
-            }.Run();
-
-            ecb.Playback(state.EntityManager);
-            ecb.Dispose();
+            }.Schedule();
         }
     }
 }
