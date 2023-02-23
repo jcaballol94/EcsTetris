@@ -20,6 +20,9 @@ namespace Tetris
             [BurstCompile]
             private void Execute(ref DynamicBuffer<GridCellData> cells, in DynamicBuffer<RemoveLineEvent> events, in GridBounds bounds)
             {
+                if (events.Length == 0)
+                    return;
+
                 for (int i = 0; i < bounds.size.y; ++i)
                 {
                     // Calculate how much to move
@@ -32,23 +35,23 @@ namespace Tetris
                     if (offset == 0) continue;
 
                     // Move the values
-                    var readLine = math.min(bounds.size.y - 1, i + offset);
+                    var writeLine = math.max(0, i - offset);
                     for (int j = 0; j < bounds.size.x; ++j)
                     {
-                        cells[i * bounds.size.x + j] = cells[readLine * bounds.size.x + j];
+                        cells[writeLine * bounds.size.x + j] = cells[i * bounds.size.x + j];
                     }
                 }
             }
         }
 
-        //[BurstCompile]
+        [BurstCompile]
         [WithAll(typeof(StaticBlockTag))]
         public partial struct RemoveLinesEntitiesJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
             [ReadOnly] public BufferLookup<RemoveLineEvent> eventLookup;
 
-            //[BurstCompile]
+            [BurstCompile]
             private void Execute(Entity entity, ref BlockPosition position, in GridRef gridRef)
             {
                 var events = eventLookup[gridRef.value];
@@ -63,19 +66,16 @@ namespace Tetris
                     // If we are in a line to remove, delete
                     if (ev.lineY == pos.y)
                     {
-                        Debug.Log("Destroy entity at line " + pos.y);
                         ecb.DestroyEntity(entity);
                         return;
                     }
                     else if (ev.lineY < pos.y)
                     {
-                        Debug.Log("Add offset to entity at line " + pos.y);
                         offset++;
                     }
                 }
 
                 // Move the block
-                Debug.Log("Moving entity at line " + pos.y + " " + offset + " positions");
                 pos.y -= offset;
                 position.position = pos;
             }
