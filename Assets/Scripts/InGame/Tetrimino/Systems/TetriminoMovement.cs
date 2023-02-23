@@ -12,6 +12,8 @@ namespace Tetris
     [UpdateInGroup(typeof(MovementSystemGroup))]
     public partial struct TetriminoMovementSystem : ISystem
     {
+        private GridCollisions.Lookup m_colliderLookup;
+
         public partial struct TetriminoMovementJob : IJobEntity
         {
             [ReadOnly] public ComponentLookup<InputValues> inputLookup;
@@ -31,6 +33,7 @@ namespace Tetris
         }
         public void OnCreate(ref SystemState state)
         {
+            m_colliderLookup = new GridCollisions.Lookup(ref state, true);
         }
 
         public void OnDestroy(ref SystemState state)
@@ -39,12 +42,12 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            var inputLookup = SystemAPI.GetComponentLookup<InputValues>();
-            var colliderLookup = new GridCollisions.Lookup(ref state, true);
+            var inputLookup = SystemAPI.GetComponentLookup<InputValues>(true);
+            m_colliderLookup.Update(ref state);
 
             new TetriminoMovementJob
             {
-                colliderLookup = colliderLookup,
+                colliderLookup = m_colliderLookup,
                 inputLookup = inputLookup
             }.ScheduleParallel();
         }

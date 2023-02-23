@@ -100,14 +100,15 @@ namespace Tetris
 
             // Remove the entities in the line and move the ones above
             var eventLookup = SystemAPI.GetBufferLookup<RemoveLineEvent>(true);
-            new RemoveLinesEntitiesJob
+            state.Dependency = new RemoveLinesEntitiesJob
             {
                 ecb = ecb,
                 eventLookup = eventLookup
 
-            }.Schedule();
+            }.Schedule(state.Dependency);
 
             // Update the collisions
+            state.Dependency.Complete();
             new RemoveLinesCollisionsJob().Run();
         }
     }

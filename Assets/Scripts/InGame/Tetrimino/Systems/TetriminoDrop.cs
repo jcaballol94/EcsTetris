@@ -13,32 +13,23 @@ namespace Tetris
     [UpdateAfter(typeof(TetriminoMovementSystem))]
     public partial struct TetriminoDropSystem : ISystem
     {
-        public void OnCreate(ref SystemState state)
+        private GridCollisions.Lookup m_colliderLookup;
+
+        public partial struct TetriminoDropJob : IJobEntity
         {
-            state.RequireForUpdate<GameData>();
-            state.RequireForUpdate<PlaceTetriminoEvent>();
-        }
+            [ReadOnly] public ComponentLookup<InputValues> inputLookup;
+            [ReadOnly] public GridCollisions.Lookup colliderLookup;
 
-        public void OnDestroy(ref SystemState state)
-        {
-        }
+            public GameData gameData;
+            public float deltaTime;
 
-        public void OnUpdate(ref SystemState state)
-        {
-            if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
-            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<PlaceTetriminoEvent> placeEvents)) return;
-
-            var deltaTime = SystemAPI.Time.DeltaTime;
-
-            foreach (var (movement, dropState, player, grid, entity) in SystemAPI
-                .Query<TetriminoMovement, RefRW<DropState>, RefRO<PlayerRef>, GridRef>()
-                .WithEntityAccess())
+            private void Execute(ref TetriminoMovement movement, ref DropState dropState, in PlayerCleanupRef player, in GridRef grid)
             {
-                var input = state.EntityManager.GetComponentData<InputValues>(player.ValueRO.value);
-                var collider = state.EntityManager.GetAspectRO<GridCollisions>(grid.value);
+                var input = inputLookup[player.value];
+                var collider = colliderLookup[grid.value];
 
                 // Calculate how much we need to drop
-                var newDropAmount = dropState.ValueRO.currentDrop;
+                var newDropAmount = dropState.currentDrop;
                 if (input.drop)
                     newDropAmount += gameData.dropLength;
                 else
@@ -54,22 +45,49 @@ namespace Tetris
                         continue;
 
                     var transform = movement.LocalTransform;
-                    if (dropState.ValueRO.HasMoved(transform))
+                    if (dropState.HasMoved(transform))
                     {
                         // If it has moved since the last collision, we store the new position
                         // The tetrimino stays alive (the player can slide before they are placed)
-                        dropState.ValueRW.lastCollision = transform;
+                        dropState.lastCollision = transform;
                     }
                     else
                     {
                         // If it hasn't moved since the last collision, place it
-                        placeEvents.Add(new PlaceTetriminoEvent { tetrimino = entity });
+                        // TODO actually remove the tetrimino
                         break;
                     }
                 }
 
-                dropState.ValueRW.currentDrop = newDropAmount;
+                dropState.currentDrop = newDropAmount;
             }
+        }
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<GameData>();
+
+            m_colliderLookup = new GridCollisions.Lookup(ref state, true);
+        }
+
+        public void OnDestroy(ref SystemState state)
+        {
+        }
+
+        public void OnUpdate(ref SystemState state)
+        {
+            if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
+
+            var deltaTime = SystemAPI.Time.DeltaTime;
+            var inputLookup = SystemAPI.GetComponentLookup<InputValues>(true);
+            m_colliderLookup.Update(ref state);
+
+            state.Dependency = new TetriminoDropJob
+            {
+                colliderLookup = m_colliderLookup,
+                deltaTime = deltaTime,
+                gameData = gameData,
+                inputLookup = inputLookup
+            }.Schedule(state.Dependency);
         }
     }
 }
