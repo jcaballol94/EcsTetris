@@ -11,7 +11,6 @@ namespace Tetris
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
-    [UpdateBefore(typeof(SpawnTetriminoSystem))]
     public partial struct PlaceTetriminoSystem : ISystem
     {
         [BurstCompile]
@@ -19,7 +18,7 @@ namespace Tetris
         {
             state.RequireForUpdate<PlaceTetriminoEvent>();
             state.RequireForUpdate<RefreshGridCollisionsEvent>();
-            state.RequireForUpdate<RequestSpawnTetriminoEvent>();
+            //state.RequireForUpdate<RequestSpawnTetriminoEvent>();
             state.RequireForUpdate<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>();
         }
 
@@ -34,7 +33,7 @@ namespace Tetris
             if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<PlaceTetriminoEvent> events, true)) return;
             if (events.Length == 0) return;
 
-            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<RequestSpawnTetriminoEvent> spawnEvents)) return;
+            //if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<RequestSpawnTetriminoEvent> spawnEvents)) return;
             if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<RefreshGridCollisionsEvent> gridEvents)) return;
 
             if (!SystemAPI.TryGetSingleton(out EndVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
@@ -56,7 +55,7 @@ namespace Tetris
 
                 // Request a new tetrimino to be spawned
                 var playerRef = state.EntityManager.GetComponentData<PlayerRef>(ev.tetrimino);
-                spawnEvents.Add(new RequestSpawnTetriminoEvent { player = playerRef.value });
+                //spawnEvents.Add(new RequestSpawnTetriminoEvent { player = playerRef.value });
                 // Request that the grid is refreshed
                 var gridRef = state.EntityManager.GetSharedComponent<GridRef>(ev.tetrimino);
                 gridEvents.Add(new RefreshGridCollisionsEvent { grid = gridRef.value });

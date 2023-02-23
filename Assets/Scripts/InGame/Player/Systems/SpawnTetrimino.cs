@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -8,28 +9,56 @@ using UnityEngine;
 namespace Tetris
 {
     [BurstCompile]
-    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateAfter(typeof(SpawnPlayerSystem))]
     public partial struct SpawnTetriminoSystem : ISystem
     {
         private EntityArchetype m_tetriminoArchetype;
 
+        [BurstCompile]
+        [WithAll(typeof(PlayerTag))]
+        [WithNone(typeof(TetriminoRef))]
+        public partial struct SpawnTetriminoJob : IJobEntity
+        {
+            public EntityCommandBuffer ecb;
+            public EntityArchetype archetype;
+
+            public GameData gameData;
+            [ReadOnly] public DynamicBuffer<AvailableTetriminos> availableTetriminos;
+
+            [BurstCompile]
+            private void Execute(Entity entity, ref RandomProvider random, in GridRef gridRef)
+            {
+                Debug.Log("Spawn Tetrimino Job");
+
+                // Find a tetrimino type to use
+                var tetriminoIdx = random.value.NextInt() % availableTetriminos.Length;
+                ref var tetriminoData = ref availableTetriminos[tetriminoIdx].asset.Value;
+
+                // Create and initialize the tetrimino
+                var tetrimino = ecb.CreateEntity(archetype);
+                ecb.SetName(tetrimino, "Tetrimino");
+                ecb.SetComponent(tetrimino, new TetriminoPosition { position = gameData.spawnPosition, orientation = 0 });
+                ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
+                ecb.SetSharedComponent(tetrimino, gridRef);
+                ecb.SetComponent(tetrimino, new PlayerCleanupRef { value = entity });
+                ecb.SetComponent(tetrimino, DropState.DefaultDropState);
+
+                // Save a reference to the tetrimino
+                ecb.AddComponent(entity, new TetriminoRef { value = tetrimino });
+            }
+        }
+
         public void OnCreate(ref SystemState state)
         {
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
-                typeof(TetriminoPosition), typeof(TetriminoOrientationMatrix), // Transform
-                typeof(TetriminoBlockBuffer), // Hierarchy
+                typeof(TetriminoPosition), // Transform
                 typeof(DropState), // Movement
-                typeof(GridRef), typeof(TetriminoData), typeof(PlayerRef)); // Required data references
+                typeof(GridRef), typeof(TetriminoData), typeof(PlayerCleanupRef)); // Required data references
 
+            // All this data needs to be available
             state.RequireForUpdate<GameData>();
             state.RequireForUpdate<AvailableTetriminos>();
-            state.RequireForUpdate<GameSkin>();
-            state.RequireForUpdate(SystemAPI.QueryBuilder()
-                .WithAll<PlayerTag, GridRef>()
-                .Build());
-
-            state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate<RequestSpawnTetriminoEvent>();
         }
 
         [BurstCompile]
@@ -40,49 +69,22 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            // Try get the list of events
-            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<RequestSpawnTetriminoEvent> events, true)) return;
-            if (events.Length == 0) return;
-
             // Try get the singletons first
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
             if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<AvailableTetriminos> availableTetriminos, true)) return;
-            if (!SystemAPI.TryGetSingleton(out GameSkin gameSkin)) return;
 
-            // Get the ecb we'll use
-            if (!SystemAPI.TryGetSingleton(out BeginVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
-            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
+            var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
-            foreach (var ev in events)
+            new SpawnTetriminoJob
             {
-                // Get the grid from the player
-                var gridRef = state.EntityManager.GetSharedComponent<GridRef>(ev.player);
+                archetype = m_tetriminoArchetype,
+                ecb = ecb,
+                availableTetriminos = availableTetriminos,
+                gameData = gameData
+            }.Run();
 
-                // Find a tetrimino type to use
-                var tetriminoIdx = UnityEngine.Random.Range(0, availableTetriminos.Length);
-                ref var tetriminoData = ref availableTetriminos[tetriminoIdx].asset.Value;
-
-                // Create and initialize the tetrimino
-                var tetrimino = ecb.CreateEntity(m_tetriminoArchetype);
-                ecb.SetName(tetrimino, "Tetrimino");
-                ecb.SetComponent(tetrimino, new TetriminoPosition { position = gameData.spawnPosition, orientation = 0 });
-                ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
-                ecb.SetSharedComponent(tetrimino, gridRef);
-                ecb.SetComponent(tetrimino, new PlayerRef { value = ev.player });
-                ecb.SetComponent(tetrimino, DropState.DefaultDropState);
-
-                // Create and initialize the blocks
-                for (int i = 0; i < tetriminoData.blocks.Length; ++i)
-                {
-                    var block = ecb.Instantiate(gameSkin.blockPrefab);
-                    ecb.AppendToBuffer(tetrimino, new TetriminoBlockBuffer { value = block });
-
-                    ecb.SetName(block, "Block");
-                    ecb.AddComponent(block, new BlockPosition { position = tetriminoData.blocks[i] });
-                    ecb.SetComponent(block, new Unity.Rendering.URPMaterialPropertyBaseColor { Value = tetriminoData.color });
-                    ecb.AddSharedComponent(block, gridRef);
-                }
-            }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 }

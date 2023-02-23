@@ -7,52 +7,65 @@ using UnityEngine;
 
 namespace Tetris
 {
-    [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct SpawnPlayerSystem : ISystem
     {
         private EntityArchetype m_playerArchetype;
+
+        [BurstCompile]
+        [WithNone(typeof(GameModePlayingTag))]
+        public partial struct SpawnPlayerJob : IJobEntity
+        {
+            public EntityArchetype archetype;
+            public EntityCommandBuffer ecb;
+
+            public uint seed;
+
+            [BurstCompile]
+            private void Execute([EntityIndexInQuery] int idx, Entity entity, in PlayerData playerData)
+            {
+                Debug.Log("Spawn Player Job");
+
+                // Create the player
+                var player = ecb.CreateEntity(archetype);
+                ecb.SetName(player, "Player");
+                ecb.SetComponent(player, new RandomProvider { value = new Unity.Mathematics.Random(seed + (uint)idx * 53) });
+                ecb.SetSharedComponent(player, new GridRef { value = playerData.grid });
+
+                // Mark this as done
+                ecb.AddComponent<GameModePlayingTag>(entity);
+            }
+        }
 
         public void OnCreate(ref SystemState state)
         {
             m_playerArchetype = state.EntityManager.CreateArchetype(
                 typeof(PlayerTag), // The tag to identify it
                 typeof(GridRef), // A reference to this player's grid
-                typeof(InputValues) // The input
+                typeof(InputValues), // The input
+                typeof(RandomProvider) // A provider for the random tetriminos
                 );
-
-            state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate<RequestSpawnTetriminoEvent>();
         }
 
-        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingletonEntity<RequestSpawnTetriminoEvent>(out var eventBufferEntity)) return;
-            if (!SystemAPI.TryGetSingleton(out BeginVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSingleton)) return;
-            var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.TempJob);
 
-            foreach (var (playerData, entity) in SystemAPI
-                .Query<RefRO<PlayerData>>()
-                .WithNone<GameModePlayingTag>()
-                .WithEntityAccess())
+            var seed = (uint)System.DateTime.UtcNow.Ticks;
+            new SpawnPlayerJob
             {
-                // Create the player
-                var player = ecb.CreateEntity(m_playerArchetype);
-                ecb.SetName(player, "Player");
-                ecb.SetSharedComponent(player, new GridRef { value = playerData.ValueRO.grid });
+                archetype = m_playerArchetype,
+                ecb = ecb,
+                seed = seed
+            }.Run();
 
-                // Request the first tetrimino to start playing, use the command buffer so the event isn't created until the player also exists
-                ecb.AppendToBuffer(eventBufferEntity, new RequestSpawnTetriminoEvent { player = player });
-
-                ecb.AddComponent<GameModePlayingTag>(entity);
-            }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 }
