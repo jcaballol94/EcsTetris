@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -11,6 +12,25 @@ namespace Tetris
     [UpdateInGroup(typeof(MovementSystemGroup))]
     public partial struct TetriminoMovementSystem : ISystem
     {
+        [BurstCompile]
+        public partial struct TetriminoMovementJob : IJobEntity
+        {
+            [ReadOnly] public ComponentLookup<InputValues> inputLookup;
+            [ReadOnly] public GridCollisions.Lookup colliderLookup;
+
+            [BurstCompile]
+            private void Execute(TetriminoMovement movement, in PlayerCleanupRef player, in GridRef grid)
+            {
+                var input = inputLookup[player.value];
+                var collider = colliderLookup[grid.value];
+
+                if (input.move != 0)
+                    movement.TryMove(new int2(input.move, 0), collider);
+
+                if (input.rotate != 0)
+                    movement.TryRotate(input.rotate, collider);
+            }
+        }
         public void OnCreate(ref SystemState state)
         {
         }
@@ -21,18 +41,14 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (movement, player, grid) in SystemAPI
-                .Query<TetriminoMovement, RefRO<PlayerRef>, GridRef>())
+            var inputLookup = SystemAPI.GetComponentLookup<InputValues>();
+            var colliderLookup = new GridCollisions.Lookup(ref state, true);
+
+            new TetriminoMovementJob
             {
-                var input = state.EntityManager.GetComponentData<InputValues>(player.ValueRO.value);
-                var collider = state.EntityManager.GetAspectRO<GridCollisions>(grid.value);
-
-                if (input.move != 0)
-                    movement.TryMove(new int2(input.move, 0), collider);
-
-                if (input.rotate != 0)
-                    movement.TryRotate(input.rotate, collider);
-            }
+                colliderLookup = colliderLookup,
+                inputLookup = inputLookup
+            }.ScheduleParallel();
         }
     }
 }
