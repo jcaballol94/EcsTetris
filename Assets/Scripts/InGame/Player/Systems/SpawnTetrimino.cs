@@ -26,7 +26,6 @@ namespace Tetris
             state.RequireForUpdate<GameSkin>();
             state.RequireForUpdate(SystemAPI.QueryBuilder()
                 .WithAll<PlayerTag, GridRef>()
-                .WithNone<AlreadySpawned>()
                 .Build());
 
             state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();

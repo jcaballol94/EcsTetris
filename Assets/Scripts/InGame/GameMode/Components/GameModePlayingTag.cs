@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct AlreadySpawned : IComponentData
+    public struct GameModePlayingTag : IComponentData
     {
     }
 }

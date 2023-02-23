@@ -40,7 +40,7 @@ namespace Tetris
 
             foreach (var (playerData, entity) in SystemAPI
                 .Query<RefRO<PlayerData>>()
-                .WithNone<AlreadySpawned>()
+                .WithNone<GameModePlayingTag>()
                 .WithEntityAccess())
             {
                 // Create the player
@@ -51,7 +51,7 @@ namespace Tetris
                 // Request the first tetrimino to start playing, use the command buffer so the event isn't created until the player also exists
                 ecb.AppendToBuffer(eventBufferEntity, new RequestSpawnTetriminoEvent { player = player });
 
-                ecb.AddComponent<AlreadySpawned>(entity);
+                ecb.AddComponent<GameModePlayingTag>(entity);
             }
         }
     }
