@@ -12,13 +12,11 @@ namespace Tetris
     [UpdateInGroup(typeof(MovementSystemGroup))]
     public partial struct TetriminoMovementSystem : ISystem
     {
-        [BurstCompile]
         public partial struct TetriminoMovementJob : IJobEntity
         {
             [ReadOnly] public ComponentLookup<InputValues> inputLookup;
             [ReadOnly] public GridCollisions.Lookup colliderLookup;
 
-            [BurstCompile]
             private void Execute(TetriminoMovement movement, in PlayerCleanupRef player, in GridRef grid)
             {
                 var input = inputLookup[player.value];
