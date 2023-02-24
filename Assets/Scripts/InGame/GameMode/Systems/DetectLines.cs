@@ -9,27 +9,34 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     [UpdateAfter(typeof(UpdateGridCollisionsSystem))]
     public partial struct DetectLinesSystem : ISystem
     {
-        [BurstCompile]
+        [WithNone(typeof(DetectedLinesBuffer))]
         public partial struct DetectLinesJob : IJobEntity
         {
-            [BurstCompile]
-            private void Execute(in GridBounds bounds, in DynamicBuffer<GridCellData> cells, ref DynamicBuffer<RemoveLineEvent> events)
+            public EntityCommandBuffer ecb;
+
+            private void Execute(Entity entity, in GridCollisions collisions)
             {
-                var lineSize = bounds.size.x;
-                for (int i = 0; i < cells.Length; i += lineSize)
+                var lines = new DynamicBuffer<DetectedLinesBuffer>();
+
+                var gridSize = collisions.GridSize;
+                for (int i = 0; i < gridSize.y; ++i)
                 {
-                    var line = true;
-                    for (int j = 0; line && j < lineSize; ++j)
+                    bool line = true;
+                    for (int j = 0; line && j < gridSize.x; ++j)
                     {
-                        line = !cells[i + j].available;
+                        line = !collisions.IsPositionAvailable(new int2(j, i));
                     }
+
                     if (line)
                     {
-                        events.Add(new RemoveLineEvent { lineY = (i / lineSize) });
+                        if (!lines.IsCreated)
+                            lines = ecb.AddBuffer<DetectedLinesBuffer>(entity);
+
+                        lines.Add(new DetectedLinesBuffer { lineY = i });
                     }
                 }
             }
@@ -48,7 +55,14 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            new DetectLinesJob().Run();
+            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.TempJob);
+            new DetectLinesJob
+            {
+                ecb = ecb
+            }.Run();
+
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 }

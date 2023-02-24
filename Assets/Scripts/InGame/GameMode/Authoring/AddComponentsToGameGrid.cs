@@ -30,7 +30,6 @@ namespace Tetris
             {
                 var grid = playerData.ValueRO.grid;
                 ecb.AddComponent<GridWithCollisionsTag>(grid);
-                ecb.AddBuffer<RemoveLineEvent>(grid);
             }
 
             ecb.Playback(state.EntityManager);

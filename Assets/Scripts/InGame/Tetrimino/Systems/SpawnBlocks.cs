@@ -37,7 +37,7 @@ namespace Tetris
 
                     ecb.AddComponent(block, new BlockPosition { position = blocks[i] });
                     ecb.SetComponent(block, new Unity.Rendering.URPMaterialPropertyBaseColor { Value = data.color });
-                    ecb.AddSharedComponent(block, gridRef);
+                    ecb.AddComponent(block, gridRef);
                 }
             }
         }

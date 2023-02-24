@@ -35,8 +35,6 @@ namespace Tetris
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<EndInitializationEntityCommandBufferSystem.Singleton>();
-
             m_collisionsLookup = new GridCollisions.Lookup(ref state, false);
         }
 
@@ -48,8 +46,7 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingleton(out EndInitializationEntityCommandBufferSystem.Singleton ecbSystem)) return;
-            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
+            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.TempJob);
 
             m_collisionsLookup.Update(ref state);
 
@@ -58,6 +55,9 @@ namespace Tetris
                 collisionsLookup = m_collisionsLookup,
                 ecb = ecb
             }.Run();
+
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 }

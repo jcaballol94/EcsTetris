@@ -38,7 +38,7 @@ namespace Tetris
                 ecb.SetName(tetrimino, "Tetrimino");
                 ecb.SetComponent(tetrimino, new TetriminoPosition { position = gameData.spawnPosition, orientation = 0 });
                 ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
-                ecb.SetSharedComponent(tetrimino, gridRef);
+                ecb.SetComponent(tetrimino, gridRef);
                 ecb.SetComponent(tetrimino, new PlayerCleanupRef { value = entity });
                 ecb.SetComponent(tetrimino, DropState.DefaultDropState);
 

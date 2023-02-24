@@ -10,7 +10,7 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     [UpdateAfter(typeof(DetectLinesSystem))]
     public partial struct RemoveLinesSystem : ISystem
     {
@@ -18,7 +18,7 @@ namespace Tetris
         public partial struct RemoveLinesCollisionsJob : IJobEntity
         {
             [BurstCompile]
-            private void Execute(ref DynamicBuffer<GridCellData> cells, in DynamicBuffer<RemoveLineEvent> events, in GridBounds bounds)
+            private void Execute(ref DynamicBuffer<GridCellData> cells, in DynamicBuffer<DetectedLinesBuffer> events, in GridBounds bounds)
             {
                 if (events.Length == 0)
                     return;
@@ -29,7 +29,7 @@ namespace Tetris
                     var offset = 0;
                     foreach (var ev in events)
                     {
-                        if (ev.lineY <= i)
+                        if (ev.lineY < i)
                             offset++;
                     }
                     if (offset == 0) continue;
@@ -45,31 +45,33 @@ namespace Tetris
         }
 
         [BurstCompile]
-        [WithAll(typeof(StaticBlockTag))]
+        [WithAll(typeof(TrackedByGridTag))]
         public partial struct RemoveLinesEntitiesJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
-            [ReadOnly] public BufferLookup<RemoveLineEvent> eventLookup;
+            [ReadOnly] public BufferLookup<DetectedLinesBuffer> linesLookup;
 
             [BurstCompile]
             private void Execute(Entity entity, ref BlockPosition position, in GridRef gridRef)
             {
-                var events = eventLookup[gridRef.value];
-                if (events.Length == 0)
+                // Check that there are lines to remove
+                if (!linesLookup.HasBuffer(gridRef.value))
                     return;
+                var lines = linesLookup[gridRef.value];
 
                 var pos = position.position;
                 // Calculate how much to move
                 var offset = 0;
-                foreach (var ev in events)
+                foreach (var line in lines)
                 {
                     // If we are in a line to remove, delete
-                    if (ev.lineY == pos.y)
+                    if (line.lineY == pos.y)
                     {
+                        //Debug.Log("Remove entity at " + pos);
                         ecb.DestroyEntity(entity);
                         return;
                     }
-                    else if (ev.lineY < pos.y)
+                    else if (line.lineY < pos.y)
                     {
                         offset++;
                     }
@@ -84,7 +86,9 @@ namespace Tetris
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<EndInitializationEntityCommandBufferSystem.Singleton>();
+
+            state.RequireForUpdate<DetectedLinesBuffer>();
         }
 
         [BurstCompile]
@@ -95,21 +99,24 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingleton<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>(out var ecbSystem)) return;
+            if (!SystemAPI.TryGetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>(out var ecbSystem)) return;
             var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
             // Remove the entities in the line and move the ones above
-            var eventLookup = SystemAPI.GetBufferLookup<RemoveLineEvent>(true);
+            var eventLookup = SystemAPI.GetBufferLookup<DetectedLinesBuffer>(true);
             state.Dependency = new RemoveLinesEntitiesJob
             {
                 ecb = ecb,
-                eventLookup = eventLookup
+                linesLookup = eventLookup
 
             }.Schedule(state.Dependency);
 
             // Update the collisions
-            state.Dependency.Complete();
-            new RemoveLinesCollisionsJob().Run();
+            state.Dependency = new RemoveLinesCollisionsJob().ScheduleParallel(state.Dependency);
+
+            // The lines have been processed, we can remove them
+            ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
+            ecb.RemoveComponent<DetectedLinesBuffer>(SystemAPI.QueryBuilder().WithAll<DetectedLinesBuffer>().Build());
         }
     }
 }

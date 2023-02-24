@@ -29,7 +29,7 @@ namespace Tetris
                 var player = ecb.CreateEntity(archetype);
                 ecb.SetName(player, "Player");
                 ecb.SetComponent(player, new RandomProvider { value = new Unity.Mathematics.Random(seed + (uint)idx * 53) });
-                ecb.SetSharedComponent(player, new GridRef { value = playerData.grid });
+                ecb.SetComponent(player, new GridRef { value = playerData.grid });
 
                 // Mark this as done
                 ecb.AddComponent<GameModePlayingTag>(entity);

@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Tetris
 {
-    public struct GridRef : IComponentData
+    [InternalBufferCapacity(4)]
+    public struct DetectedLinesBuffer : IBufferElementData
     {
-        public Entity value;
+        public int lineY;
     }
 }

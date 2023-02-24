@@ -12,6 +12,8 @@ namespace Tetris
         private readonly RefRO<GridBounds> m_bounds;
         private readonly DynamicBuffer<GridCellData> m_cellData;
 
+        public int2 GridSize => m_bounds.ValueRO.size;
+
         public int PositionToIdx(int2 position)
         {
             return position.y * m_bounds.ValueRO.size.x + position.x;
@@ -38,7 +40,7 @@ namespace Tetris
                 && position.y < bounds.y;
         }
 
-        private bool IsPositionAvailable(int2 position)
+        public bool IsPositionAvailable(int2 position)
         {
             var idx = PositionToIdx(position);
             return m_cellData[idx].available;
