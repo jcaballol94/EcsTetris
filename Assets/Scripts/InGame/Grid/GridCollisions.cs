@@ -10,11 +10,22 @@ namespace Tetris
     public readonly partial struct GridCollisions : IAspect
     {
         private readonly RefRO<GridBounds> m_bounds;
-        [ReadOnly] private readonly DynamicBuffer<GridCellData> m_cellData;
+        private readonly DynamicBuffer<GridCellData> m_cellData;
+
+        public int PositionToIdx(int2 position)
+        {
+            return position.y * m_bounds.ValueRO.size.x + position.x;
+        }
 
         public bool IsPositionValid(int2 position)
         {
             return IsPositionInBounds(position) && IsPositionAvailable(position);
+        }
+
+        public void TakePosition(int2 position)
+        {
+            var idx = PositionToIdx(position);
+            m_cellData.ElementAt(idx).available = false;
         }
 
         private bool IsPositionInBounds(int2 position)
@@ -29,7 +40,7 @@ namespace Tetris
 
         private bool IsPositionAvailable(int2 position)
         {
-            var idx = position.y * m_bounds.ValueRO.size.x + position.x;
+            var idx = PositionToIdx(position);
             return m_cellData[idx].available;
         }
     }

@@ -9,28 +9,35 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateAfter(typeof(InitializeGridCellsSystem))]
     public partial struct UpdateGridCollisionsSystem : ISystem
     {
-        [BurstCompile]
         [WithAll(typeof(StaticBlockTag))]
+        [WithNone(typeof(TrackedByGridTag))]
         public partial struct UpdateGridCollisionsJob : IJobEntity
         {
-            public DynamicBuffer<GridCellData> gridCells;
-            public int2 bounds;
+            public EntityCommandBuffer ecb;
 
-            [BurstCompile]
-            private void Execute(in BlockPosition transform)
+            public GridCollisions.Lookup collisionsLookup;
+
+            private void Execute(Entity entity, in BlockPosition transform, in GridRef gridRef)
             {
-                var idx = transform.position.y * bounds.x + transform.position.x;
-                gridCells[idx] = GridCellData.Busy;
+                var collider = collisionsLookup[gridRef.value];
+                collider.TakePosition(transform.position);
+
+                ecb.AddComponent<TrackedByGridTag>(entity);
             }
         }
+
+        private GridCollisions.Lookup m_collisionsLookup;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<RefreshGridCollisionsEvent>();
+            state.RequireForUpdate<EndInitializationEntityCommandBufferSystem.Singleton>();
+
+            m_collisionsLookup = new GridCollisions.Lookup(ref state, false);
         }
 
         [BurstCompile]
@@ -41,34 +48,16 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<RefreshGridCollisionsEvent> events, true)) return;
-            if (events.Length == 0) return;
+            if (!SystemAPI.TryGetSingleton(out EndInitializationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
-            var query = SystemAPI.QueryBuilder()
-                .WithAll<BlockPosition, StaticBlockTag, GridRef>()
-                .Build();
+            m_collisionsLookup.Update(ref state);
 
-            foreach (var ev in events)
+            new UpdateGridCollisionsJob
             {
-                query.ResetFilter();
-                query.AddSharedComponentFilter(new GridRef { value = ev.grid });
-
-                var cells = state.EntityManager.GetBuffer<GridCellData>(ev.grid);
-                var bounds = state.EntityManager.GetComponentData<GridBounds>(ev.grid);
-
-                // Reset the grid
-                for (int i = 0; i < cells.Length; ++i)
-                {
-                    cells[i] = GridCellData.Empty;
-                }
-
-                // Fill with the new values
-                new UpdateGridCollisionsJob
-                {
-                    bounds = bounds.size,
-                    gridCells = cells
-                }.Run();
-            }
+                collisionsLookup = m_collisionsLookup,
+                ecb = ecb
+            }.Run();
         }
     }
 }

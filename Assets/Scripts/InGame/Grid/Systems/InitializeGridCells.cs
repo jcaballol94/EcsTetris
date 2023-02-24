@@ -36,7 +36,6 @@ namespace Tetris
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<EndInitializationEntityCommandBufferSystem.Singleton>();
         }
 
         [BurstCompile]
@@ -47,13 +46,15 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingleton(out EndInitializationEntityCommandBufferSystem.Singleton ecbSystem)) return;
-            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
+            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.TempJob);
 
             new InitializeGridCellsJob
             {
                 ecb = ecb
-            }.Schedule();
+            }.Run();
+
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 }
