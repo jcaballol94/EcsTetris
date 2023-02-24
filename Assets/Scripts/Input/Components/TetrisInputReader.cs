@@ -12,7 +12,8 @@ namespace Tetris
         private object boxedInput;
         private TetrisInput m_input => boxedInput as TetrisInput;
 
-        public static bool simulatePause;
+        public static bool simulatePause = false;
+        public static bool allowGameInput = true;
 
         private int lastMove;
         private float timeToMoveAgain;
@@ -37,6 +38,13 @@ namespace Tetris
 
         public void UpdateValues(ref InputValues values, in GameData settings, float deltaTime)
         {
+            // If no input is allowed, just return the default values
+            if (!allowGameInput)
+            {
+                values = new InputValues();
+                return;
+            }
+
             UpdateMove(ref values, settings, deltaTime);
             UpdateRotate(ref values);
             values.fall = m_input.Game.Fall.IsPressed();
@@ -118,6 +126,7 @@ namespace Tetris
         private void UpdatePause(ref InputValues values)
         {
             var pauseInput = simulatePause ? true : m_input.Game.Pause.IsPressed();
+            simulatePause = false;
 
             values.pause = pauseInput && !lastPause;
 
