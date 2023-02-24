@@ -30,7 +30,7 @@ namespace Tetris
             private void Execute(Entity entity, ref RandomProvider random, in GridRef gridRef)
             {
                 // Find a tetrimino type to use
-                var tetriminoIdx = math.max(random.value.NextInt(), 0) % availableTetriminos.Length;
+                var tetriminoIdx = math.abs(random.value.NextInt()) % availableTetriminos.Length;
                 ref var tetriminoData = ref availableTetriminos[tetriminoIdx].asset.Value;
 
                 // Create and initialize the tetrimino
