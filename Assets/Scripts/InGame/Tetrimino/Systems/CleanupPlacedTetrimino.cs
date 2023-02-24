@@ -19,10 +19,20 @@ namespace Tetris
             public EntityCommandBuffer ecb;
 
             [BurstCompile]
-            private void Execute(Entity entity, in PlayerCleanupRef playerRef)
+            private void Execute(Entity entity, in PlayerCleanupRef playerRef, in DynamicBuffer<TetriminoBlockBuffer> blocks)
             {
+                // Set the blocks as static so they are taking into consideration for the collisions
+                foreach (var block in blocks)
+                {
+                    ecb.AddComponent<StaticBlockTag>(block.value);
+                }
+
+                // Remove the reference to this tetrimino from the player, so it knows it has to spawn a new one
                 ecb.RemoveComponent<TetriminoRef>(playerRef.value);
+
+                // Remove the cleanup components to finish the deletion
                 ecb.RemoveComponent<PlayerCleanupRef>(entity);
+                ecb.RemoveComponent<TetriminoBlockBuffer>(entity);
             }
         }
 
