@@ -20,10 +20,13 @@ namespace Tetris
             [ReadOnly] public ComponentLookup<InputValues> inputLookup;
             [ReadOnly] public GridCollisions.Lookup colliderLookup;
 
+            public EntityCommandBuffer ecb;
+
             public GameData gameData;
             public float deltaTime;
 
-            private void Execute(ref TetriminoMovement movement, ref DropState dropState, in PlayerCleanupRef player, in GridRef grid)
+            private void Execute(Entity entity, ref TetriminoMovement movement, ref DropState dropState, 
+                in PlayerCleanupRef player, in GridRef grid)
             {
                 var input = inputLookup[player.value];
                 var collider = colliderLookup[grid.value];
@@ -54,7 +57,7 @@ namespace Tetris
                     else
                     {
                         // If it hasn't moved since the last collision, place it
-                        // TODO actually remove the tetrimino
+                        ecb.DestroyEntity(entity);
                         break;
                     }
                 }
@@ -64,6 +67,7 @@ namespace Tetris
         }
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<GameData>();
 
             m_colliderLookup = new GridCollisions.Lookup(ref state, true);
@@ -75,7 +79,10 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
+            if (!SystemAPI.TryGetSingleton(out EndVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
+
+            var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
             var deltaTime = SystemAPI.Time.DeltaTime;
             var inputLookup = SystemAPI.GetComponentLookup<InputValues>(true);
@@ -83,6 +90,7 @@ namespace Tetris
 
             state.Dependency = new TetriminoDropJob
             {
+                ecb = ecb,
                 colliderLookup = m_colliderLookup,
                 deltaTime = deltaTime,
                 gameData = gameData,

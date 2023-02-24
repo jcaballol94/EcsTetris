@@ -50,6 +50,7 @@ namespace Tetris
         public void OnCreate(ref SystemState state)
         {
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
+                typeof(TetriminoTag),
                 typeof(TetriminoPosition), // Transform
                 typeof(DropState), // Movement
                 typeof(GridRef), typeof(TetriminoData), typeof(PlayerCleanupRef)); // Required data references
