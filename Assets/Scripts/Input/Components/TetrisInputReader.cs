@@ -13,7 +13,7 @@ namespace Tetris
         private TetrisInput m_input => boxedInput as TetrisInput;
 
         public static bool simulatePause = false;
-        public static bool allowGameInput = true;
+        public bool allowGameInput = true;
 
         private int lastMove;
         private float timeToMoveAgain;
@@ -42,6 +42,7 @@ namespace Tetris
             if (!allowGameInput)
             {
                 values = new InputValues();
+                UpdatePause(ref values);
                 return;
             }
 

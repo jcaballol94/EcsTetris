@@ -34,7 +34,8 @@ namespace Tetris
             // Set the time scale to 0 when paused
             timeScale.ValueRW.value = paused ? 0f : 1f;
             // Disable the game input when paused
-            TetrisInputReader.allowGameInput = !paused;
+            foreach (var inputRead in SystemAPI.Query<TetrisInputReader>())
+                inputRead.allowGameInput = !paused;
 
             state.EntityManager.DestroyEntity(SystemAPI.QueryBuilder().WithAll<TogglePauseTag>().Build());
         }
