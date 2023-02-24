@@ -69,6 +69,7 @@ namespace Tetris
         {
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<GameData>();
+            state.RequireForUpdate<ScaledDeltaTime>();
 
             m_colliderLookup = new GridCollisions.Lookup(ref state, true);
         }
@@ -81,10 +82,10 @@ namespace Tetris
         {
             if (!SystemAPI.TryGetSingleton(out EndSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
+            if (!SystemAPI.TryGetSingleton(out ScaledDeltaTime deltaTime)) return;
 
             var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
-            var deltaTime = SystemAPI.Time.DeltaTime;
             var inputLookup = SystemAPI.GetComponentLookup<InputValues>(true);
             m_colliderLookup.Update(ref state);
 
@@ -92,7 +93,7 @@ namespace Tetris
             {
                 ecb = ecb,
                 colliderLookup = m_colliderLookup,
-                deltaTime = deltaTime,
+                deltaTime = deltaTime.value,
                 gameData = gameData,
                 inputLookup = inputLookup
             }.Schedule(state.Dependency);

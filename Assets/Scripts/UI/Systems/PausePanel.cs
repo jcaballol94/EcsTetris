@@ -26,8 +26,11 @@ namespace Tetris
         public void OnUpdate(ref SystemState state)
         {
             if (!SystemAPI.ManagedAPI.TryGetSingleton(out PausePanelReference panel)) return;
+            if (!SystemAPI.TryGetSingletonRW(out RefRW<TimeScale> timeScale)) return;
 
-            panel.value.value.SetActive(!panel.value.value.activeSelf);
+            var paused = !panel.value.value.activeSelf;
+            panel.value.value.SetActive(paused);
+            timeScale.ValueRW.value = paused ? 0f : 1f;
 
             state.EntityManager.DestroyEntity(SystemAPI.QueryBuilder().WithAll<TogglePauseTag>().Build());
         }

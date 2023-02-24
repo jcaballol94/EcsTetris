@@ -15,7 +15,6 @@ namespace Tetris
     {
         private EntityArchetype m_togglePauseArchetype;
         
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             m_togglePauseArchetype = state.EntityManager.CreateArchetype(typeof(TogglePauseTag));
