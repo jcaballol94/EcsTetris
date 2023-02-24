@@ -10,7 +10,7 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup), OrderLast = true)]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
     public partial struct TetriminoBlockTransformSystem : ISystem
     {
         [BurstCompile]

@@ -67,7 +67,7 @@ namespace Tetris
         }
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<GameData>();
 
             m_colliderLookup = new GridCollisions.Lookup(ref state, true);
@@ -79,7 +79,7 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.TryGetSingleton(out EndVariableRateSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
+            if (!SystemAPI.TryGetSingleton(out EndSimulationEntityCommandBufferSystem.Singleton ecbSystem)) return;
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
 
             var ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);

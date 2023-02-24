@@ -9,7 +9,7 @@ namespace Tetris
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct CleanupPlacedTetriminoSystem : ISystem
     {
         [BurstCompile]

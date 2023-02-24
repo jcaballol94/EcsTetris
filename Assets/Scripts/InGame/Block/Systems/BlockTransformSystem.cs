@@ -10,8 +10,9 @@ using UnityEngine;
 namespace Tetris
 {
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(VariableRateSimulationSystemGroup), OrderLast = true)]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateAfter(typeof(TetriminoBlockTransformSystem))]
+    [UpdateBefore(typeof(Unity.Transforms.TransformSystemGroup))]
     public partial struct BlockTransformSystem : ISystem
     {
         [BurstCompile]
