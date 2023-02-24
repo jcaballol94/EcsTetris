@@ -243,3 +243,4 @@ MonoBehaviour:
   fallSpeed: 3
   fastFallMultiplier: 5
   dropLength: 40
+  pausePanel: {fileID: 11400000, guid: 99dade80f104a574592b9a697e979702, type: 2}

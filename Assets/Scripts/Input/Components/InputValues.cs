@@ -13,5 +13,6 @@ namespace Tetris
         public bool fall;
         public bool drop;
         public bool hold;
+        public bool pause;
     }
 }

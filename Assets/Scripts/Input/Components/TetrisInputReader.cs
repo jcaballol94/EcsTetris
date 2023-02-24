@@ -12,11 +12,14 @@ namespace Tetris
         private object boxedInput;
         private TetrisInput m_input => boxedInput as TetrisInput;
 
+        public static bool simulatePause;
+
         private int lastMove;
         private float timeToMoveAgain;
         private int lastRotate;
         private bool lastDrop;
         private bool lastHold;
+        private bool lastPause;
 
         public void Initialize()
         {
@@ -39,6 +42,7 @@ namespace Tetris
             values.fall = m_input.Game.Fall.IsPressed();
             UpdateDrop(ref values);
             UpdateHold(ref values);
+            UpdatePause(ref values);
         }
 
         private void UpdateMove(ref InputValues values, in GameData settings, float deltaTime)
@@ -109,6 +113,15 @@ namespace Tetris
             values.hold = holdInput && !lastHold;
 
             lastHold = holdInput;
+        }
+
+        private void UpdatePause(ref InputValues values)
+        {
+            var pauseInput = simulatePause ? true : m_input.Game.Pause.IsPressed();
+
+            values.pause = pauseInput && !lastPause;
+
+            lastPause = pauseInput;
         }
     }
 }
