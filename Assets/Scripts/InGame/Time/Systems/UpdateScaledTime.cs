@@ -12,9 +12,6 @@ namespace Tetris
     {
         public void OnCreate(ref SystemState state)
         {
-            state.EntityManager.AddComponent<TimeScale>(state.SystemHandle);
-            state.EntityManager.SetComponentData(state.SystemHandle, new TimeScale { value = 1f });
-            state.EntityManager.AddComponent<ScaledDeltaTime>(state.SystemHandle);
         }
 
         public void OnDestroy(ref SystemState state)
@@ -23,13 +20,15 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            var scale = SystemAPI.GetComponent<TimeScale>(state.SystemHandle);
-            // Update the time for the game objects as well
-            Time.timeScale = scale.value;
+            var rawDelta = SystemAPI.Time.DeltaTime;
+            foreach (var (scale, delta) in SystemAPI.Query<RefRO<TimeScale>, RefRW<ScaledDeltaTime>>())
+            {
+                // Update the time for the game objects as well
+                Time.timeScale = scale.ValueRO.value;
 
-            // Update the delta time
-            var deltaTime = SystemAPI.Time.DeltaTime;
-            SystemAPI.SetComponent(state.SystemHandle, new ScaledDeltaTime { value = math.min(deltaTime * scale.value, 0.1f) });
+                // Update the delta time
+                delta.ValueRW.value = math.min(rawDelta * scale.ValueRO.value, 0.1f);
+            }
         }
     }
 }

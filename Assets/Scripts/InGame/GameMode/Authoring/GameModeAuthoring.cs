@@ -67,6 +67,9 @@ namespace Tetris
 
             if (authoring.pausePanel)
                 AddComponentObject(new PausePanelReference { value = authoring.pausePanel });
+
+            AddComponent(new TimeScale { value = 1f });
+            AddComponent<ScaledDeltaTime>();
         }
     }
 }

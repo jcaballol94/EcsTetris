@@ -23,13 +23,14 @@ namespace Tetris
             public uint seed;
 
             [BurstCompile]
-            private void Execute([EntityIndexInQuery] int idx, Entity entity, in PlayerData playerData)
+            private void Execute([EntityIndexInQuery] int idx, Entity entity, in PlayerData playerData, in SceneTag scene)
             {
                 // Create the player
                 var player = ecb.CreateEntity(archetype);
                 ecb.SetName(player, "Player");
                 ecb.SetComponent(player, new RandomProvider { value = new Unity.Mathematics.Random(seed + (uint)idx * 53) });
                 ecb.SetComponent(player, new GridRef { value = playerData.grid });
+                ecb.SetSharedComponent(player, scene);
 
                 // Mark this as done
                 ecb.AddComponent<GameModePlayingTag>(entity);
@@ -42,7 +43,8 @@ namespace Tetris
                 typeof(PlayerTag), // The tag to identify it
                 typeof(GridRef), // A reference to this player's grid
                 typeof(InputValues), // The input
-                typeof(RandomProvider) // A provider for the random tetriminos
+                typeof(RandomProvider), // A provider for the random tetriminos
+                typeof(SceneTag) // The scene so it unloads properly
                 );
         }
 

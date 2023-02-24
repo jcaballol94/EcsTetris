@@ -27,7 +27,7 @@ namespace Tetris
             [ReadOnly] public DynamicBuffer<AvailableTetriminos> availableTetriminos;
 
             [BurstCompile]
-            private void Execute(Entity entity, ref RandomProvider random, in GridRef gridRef)
+            private void Execute(Entity entity, ref RandomProvider random, in GridRef gridRef, in SceneTag scene)
             {
                 // Find a tetrimino type to use
                 var tetriminoIdx = math.abs(random.value.NextInt()) % availableTetriminos.Length;
@@ -41,6 +41,7 @@ namespace Tetris
                 ecb.SetComponent(tetrimino, gridRef);
                 ecb.SetComponent(tetrimino, new PlayerCleanupRef { value = entity });
                 ecb.SetComponent(tetrimino, DropState.DefaultDropState);
+                ecb.SetSharedComponent(tetrimino, scene);
 
                 // Save a reference to the tetrimino
                 ecb.AddComponent(entity, new TetriminoRef { value = tetrimino });
@@ -53,7 +54,9 @@ namespace Tetris
                 typeof(TetriminoTag),
                 typeof(TetriminoPosition), // Transform
                 typeof(DropState), // Movement
-                typeof(GridRef), typeof(TetriminoData), typeof(PlayerCleanupRef)); // Required data references
+                typeof(GridRef), typeof(TetriminoData), typeof(PlayerCleanupRef), // Required data references
+                typeof(SceneTag) // Link it to the scene so it can be properly unloaded
+                );
 
             // All this data needs to be available
             state.RequireForUpdate<GameData>();
