@@ -29,7 +29,7 @@ namespace Tetris
 
             // Update the delta time
             var deltaTime = SystemAPI.Time.DeltaTime;
-            SystemAPI.SetComponent(state.SystemHandle, new ScaledDeltaTime { value = deltaTime * scale.value });
+            SystemAPI.SetComponent(state.SystemHandle, new ScaledDeltaTime { value = math.min(deltaTime * scale.value, 0.1f) });
         }
     }
 }
