@@ -11,13 +11,14 @@ namespace Tetris
     [BurstCompile]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     [UpdateAfter(typeof(SpawnPlayerSystem))]
+    [UpdateAfter(typeof(InitializeGridCellsSystem))]
     public partial struct SpawnTetriminoSystem : ISystem
     {
         private EntityArchetype m_tetriminoArchetype;
+        private GridCollisions.Lookup m_colliderLookup;
 
-        [BurstCompile]
         [WithAll(typeof(PlayerTag))]
-        [WithNone(typeof(TetriminoRef))]
+        [WithNone(typeof(TetriminoRef), typeof(GameOverTag))]
         public partial struct SpawnTetriminoJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
@@ -25,26 +26,42 @@ namespace Tetris
 
             public GameData gameData;
             [ReadOnly] public DynamicBuffer<AvailableTetriminos> availableTetriminos;
+            [ReadOnly] public GridCollisions.Lookup colliderLookup;
 
-            [BurstCompile]
             private void Execute(Entity entity, ref RandomProvider random, in GridRef gridRef, in SceneTag scene)
             {
                 // Find a tetrimino type to use
                 var tetriminoIdx = math.abs(random.value.NextInt()) % availableTetriminos.Length;
                 ref var tetriminoData = ref availableTetriminos[tetriminoIdx].asset.Value;
 
-                // Create and initialize the tetrimino
-                var tetrimino = ecb.CreateEntity(archetype);
-                ecb.SetName(tetrimino, "Tetrimino");
-                ecb.SetComponent(tetrimino, new TetriminoPosition { position = gameData.spawnPosition, orientation = 0 });
-                ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
-                ecb.SetComponent(tetrimino, gridRef);
-                ecb.SetComponent(tetrimino, new PlayerCleanupRef { value = entity });
-                ecb.SetComponent(tetrimino, DropState.DefaultDropState);
-                ecb.SetSharedComponent(tetrimino, scene);
+                // Check if the tetrimino can be spawned
+                var collider = colliderLookup[gridRef.value];
+                bool canSpawn = true;
+                for (int i = 0; canSpawn && i < tetriminoData.blocks.Length; i++)
+                {
+                    canSpawn = collider.IsPositionValid(gameData.spawnPosition + tetriminoData.blocks[i]);
+                }
 
-                // Save a reference to the tetrimino
-                ecb.AddComponent(entity, new TetriminoRef { value = tetrimino });
+                // Create and initialize the tetrimino
+                if (canSpawn)
+                {
+                    var tetrimino = ecb.CreateEntity(archetype);
+                    ecb.SetName(tetrimino, "Tetrimino");
+                    ecb.SetComponent(tetrimino, new TetriminoPosition { position = gameData.spawnPosition, orientation = 0 });
+                    ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
+                    ecb.SetComponent(tetrimino, gridRef);
+                    ecb.SetComponent(tetrimino, new PlayerCleanupRef { value = entity });
+                    ecb.SetComponent(tetrimino, DropState.DefaultDropState);
+                    ecb.SetSharedComponent(tetrimino, scene);
+
+                    // Save a reference to the tetrimino
+                    ecb.AddComponent(entity, new TetriminoRef { value = tetrimino });
+                }
+                else
+                {
+                    // We couldn't spawn, so it's a game over!
+                    ecb.AddComponent<GameOverTag>(entity);
+                }
             }
         }
 
@@ -57,6 +74,8 @@ namespace Tetris
                 typeof(GridRef), typeof(TetriminoData), typeof(PlayerCleanupRef), // Required data references
                 typeof(SceneTag) // Link it to the scene so it can be properly unloaded
                 );
+
+            m_colliderLookup = new GridCollisions.Lookup(ref state, true);
 
             // All this data needs to be available
             state.RequireForUpdate<GameData>();
@@ -77,12 +96,15 @@ namespace Tetris
 
             var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
+            m_colliderLookup.Update(ref state);
+
             new SpawnTetriminoJob
             {
                 archetype = m_tetriminoArchetype,
                 ecb = ecb,
                 availableTetriminos = availableTetriminos,
-                gameData = gameData
+                gameData = gameData,
+                colliderLookup = m_colliderLookup
             }.Run();
 
             ecb.Playback(state.EntityManager);
