@@ -253,7 +253,7 @@ MonoBehaviour:
   - {fileID: -2861790179287625895, guid: 532a12c4c8d072d4881f661c99c74dd9, type: 3}
   - {fileID: -2861790179287625895, guid: 6e44b48c912918844a725e495308922e, type: 3}
   moveRepeatDelay: 0.2
-  moveRepeatPeriod: 0.1
-  fallSpeed: 3
-  fastFallMultiplier: 5
+  moveRepeatPeriod: 0.05
+  fallSpeed: 5
+  fastFallMultiplier: 2
   dropLength: 40
