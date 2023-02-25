@@ -15,6 +15,7 @@ namespace Tetris
     {
         [BurstCompile]
         [WithNone(typeof(TetriminoBlockBuffer))]
+        [WithAll(typeof(TetriminoTag))]
         public partial struct SpawnBlocksJob : IJobEntity
         {
             public EntityCommandBuffer ecb;

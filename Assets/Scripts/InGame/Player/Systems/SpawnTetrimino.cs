@@ -94,6 +94,7 @@ namespace Tetris
 
             m_colliderLookup.Update(ref state);
 
+            state.Dependency.Complete();
             new SpawnTetriminoJob
             {
                 archetype = m_tetriminoArchetype,

@@ -29,6 +29,8 @@ namespace Tetris
                 transform.Position = transformData.origin
                     + ((pos.position.x + 0.5f) * transformData.right + (pos.position.y + 0.5f) * transformData.up)
                     * transformData.scale;
+
+                transform.Scale = transformData.scale;
             }
         }
 

@@ -30,6 +30,7 @@ namespace Tetris
                 ecb.SetName(player, "Player");
                 ecb.SetComponent(player, new RandomProvider { value = new Unity.Mathematics.Random(seed + (uint)idx * 53) });
                 ecb.SetComponent(player, new GridRef { value = playerData.mainGrid });
+                ecb.SetComponent(player, new NextGrid { entity = playerData.nextGrid });
                 ecb.SetSharedComponent(player, scene);
 
                 // Mark this as done
@@ -42,6 +43,7 @@ namespace Tetris
             m_playerArchetype = state.EntityManager.CreateArchetype(
                 typeof(PlayerTag), // The tag to identify it
                 typeof(GridRef), // A reference to this player's grid
+                typeof(NextGrid), // The grid where we will show the next tetrimino preview
                 typeof(InputValues), // The input
                 typeof(RandomProvider), typeof(TetriminoQueue), // A provider for the random tetriminos
                 typeof(SceneTag) // The scene so it unloads properly
