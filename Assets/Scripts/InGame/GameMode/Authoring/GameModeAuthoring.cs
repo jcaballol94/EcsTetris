@@ -11,6 +11,7 @@ namespace Tetris
     {
         public GridAuthoring mainGrid;
         public GridAuthoring nextGrid;
+        public GridAuthoring holdGrid;
         public GameObject blockPrefab;
         public TetriminoDefinition[] tetriminos;
 
@@ -33,14 +34,16 @@ namespace Tetris
     {
         public override void Bake(GameModeAuthoring authoring)
         {
-            if (authoring.mainGrid && authoring.nextGrid)
+            if (authoring.mainGrid && authoring.nextGrid && authoring.holdGrid)
             {
                 var gridEntity = GetEntity(authoring.mainGrid.gameObject);
                 var nextGridEntity = GetEntity(authoring.nextGrid.gameObject);
+                var holdGridEntity = GetEntity(authoring.holdGrid.gameObject);
                 AddComponent(new PlayerData 
                 { 
-                    mainGrid = gridEntity ,
-                    nextGrid = nextGridEntity
+                    mainGrid = gridEntity,
+                    nextGrid = nextGridEntity,
+                    holdGrid = holdGridEntity
                 });
             }
 

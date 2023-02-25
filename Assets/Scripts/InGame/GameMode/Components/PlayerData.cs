@@ -10,5 +10,6 @@ namespace Tetris
     {
         public Entity mainGrid;
         public Entity nextGrid;
+        public Entity holdGrid;
     }
 }
