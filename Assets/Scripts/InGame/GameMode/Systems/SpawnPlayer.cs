@@ -31,6 +31,7 @@ namespace Tetris
                 ecb.SetComponent(player, new RandomProvider { value = new Unity.Mathematics.Random(seed + (uint)idx * 53) });
                 ecb.SetComponent(player, new GridRef { value = playerData.mainGrid });
                 ecb.SetComponent(player, new NextGrid { entity = playerData.nextGrid });
+                ecb.SetComponent(player, new HoldGrid { value = playerData.holdGrid });
                 ecb.SetSharedComponent(player, scene);
 
                 // Mark this as done
@@ -44,6 +45,7 @@ namespace Tetris
                 typeof(PlayerTag), // The tag to identify it
                 typeof(GridRef), // A reference to this player's grid
                 typeof(NextGrid), // The grid where we will show the next tetrimino preview
+                typeof(HoldGrid), // The grid where we will show the tetrimino that is on hold
                 typeof(InputValues), // The input
                 typeof(RandomProvider), typeof(TetriminoQueue), // A provider for the random tetriminos
                 typeof(SceneTag) // The scene so it unloads properly
