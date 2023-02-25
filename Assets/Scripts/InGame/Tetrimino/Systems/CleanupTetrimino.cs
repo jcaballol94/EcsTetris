@@ -11,11 +11,11 @@ namespace Tetris
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public partial struct CleanupPlacedTetriminoSystem : ISystem
+    public partial struct CleanupTetriminoSystem : ISystem
     {
         [BurstCompile]
         [WithNone(typeof(TetriminoTag))]
-        public partial struct CleanupPlacedTetriminoJob : IJobEntity
+        public partial struct CleanupTetriminoJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
 
@@ -25,12 +25,12 @@ namespace Tetris
             [BurstCompile]
             private void Execute(Entity entity, in PlayerCleanupRef playerRef, in DynamicBuffer<TetriminoBlockBuffer> blocks)
             {
-                // Set the blocks as static so they are taking into consideration for the collisions
+                // Remove all the blocks
                 foreach (var block in blocks)
                 {
                     // Ensure that it is a valid block
                     if (positionLookup.HasComponent(block.value))
-                        ecb.AddComponent<StaticBlockTag>(block.value);
+                        ecb.DestroyEntity(block.value);
                 }
 
                 // Remove the reference to this tetrimino from the player, so it knows it has to spawn a new one
@@ -61,7 +61,7 @@ namespace Tetris
             var positionLookup = SystemAPI.GetComponentLookup<BlockPosition>(true);
             var tetriminoRefLookup = SystemAPI.GetComponentLookup<TetriminoRef>(true);
 
-            new CleanupPlacedTetriminoJob()
+            new CleanupTetriminoJob()
             {
                 ecb = ecb,
                 positionLookup = positionLookup,

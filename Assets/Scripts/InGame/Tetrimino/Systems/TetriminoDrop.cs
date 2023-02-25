@@ -57,7 +57,7 @@ namespace Tetris
                     else
                     {
                         // If it hasn't moved since the last collision, place it
-                        ecb.DestroyEntity(entity);
+                        ecb.AddComponent<StaticBlockTag>(entity);
                         // Calculate the delay
                         var delay = gameData.baseSpawnDelay;
                         // Fist two lines get the base delay, from there it increases every 4 lines
