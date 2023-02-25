@@ -6,9 +6,8 @@ using UnityEngine;
 
 namespace Tetris
 {
-    public struct PlayerData : IComponentData
+    public struct NextTetrimino : IComponentData
     {
-        public Entity mainGrid;
-        public Entity nextGrid;
+        public TetriminoData data;
     }
 }

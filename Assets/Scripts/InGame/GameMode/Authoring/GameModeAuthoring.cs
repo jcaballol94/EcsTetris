@@ -9,7 +9,8 @@ namespace Tetris
     [AddComponentMenu("Tetris/InGame/Game Mode")]
     public class GameModeAuthoring : MonoBehaviour
     {
-        public GridAuthoring grid;
+        public GridAuthoring mainGrid;
+        public GridAuthoring nextGrid;
         public GameObject blockPrefab;
         public TetriminoDefinition[] tetriminos;
 
@@ -32,10 +33,15 @@ namespace Tetris
     {
         public override void Bake(GameModeAuthoring authoring)
         {
-            if (authoring.grid)
+            if (authoring.mainGrid && authoring.nextGrid)
             {
-                var gridEntity = GetEntity(authoring.grid.gameObject);
-                AddComponent(new PlayerData { grid = gridEntity });
+                var gridEntity = GetEntity(authoring.mainGrid.gameObject);
+                var nextGridEntity = GetEntity(authoring.nextGrid.gameObject);
+                AddComponent(new PlayerData 
+                { 
+                    mainGrid = gridEntity ,
+                    nextGrid = nextGridEntity
+                });
             }
 
             if (authoring.blockPrefab)

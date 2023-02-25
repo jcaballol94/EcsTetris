@@ -28,7 +28,7 @@ namespace Tetris
             var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             foreach (var playerData in SystemAPI.Query<RefRO<PlayerData>>())
             {
-                var grid = playerData.ValueRO.grid;
+                var grid = playerData.ValueRO.mainGrid;
                 ecb.AddComponent<GridWithCollisionsTag>(grid);
             }
 

@@ -27,18 +27,17 @@ namespace Tetris
             public GameData gameData;
             [ReadOnly] public GridCollisions.Lookup colliderLookup;
 
-            private void Execute(Entity entity, ref DynamicBuffer<TetriminoQueue> queue, in GridRef gridRef, in SceneTag scene)
+            private void Execute(Entity entity, in NextTetrimino next, in GridRef gridRef, in SceneTag scene)
             {
-                // Find a tetrimino type to use
-                var tetriminoData = queue[0].data;
-                queue.RemoveAtSwapBack(0);
+                // Remove the next so we trigger generating a new one
+                ecb.RemoveComponent<NextTetrimino>(entity);
 
                 // Check if the tetrimino can be spawned
                 var collider = colliderLookup[gridRef.value];
                 bool canSpawn = true;
-                for (int i = 0; canSpawn && i < tetriminoData.blocks.Length; i++)
+                for (int i = 0; canSpawn && i < next.data.blocks.Length; i++)
                 {
-                    canSpawn = collider.IsPositionValid(gameData.spawnPosition + tetriminoData.blocks[i]);
+                    canSpawn = collider.IsPositionValid(gameData.spawnPosition + next.data.blocks[i]);
                 }
 
                 // Create and initialize the tetrimino
@@ -47,7 +46,7 @@ namespace Tetris
                     var tetrimino = ecb.CreateEntity(archetype);
                     ecb.SetName(tetrimino, "Tetrimino");
                     ecb.SetComponent(tetrimino, new TetriminoPosition { position = gameData.spawnPosition, orientation = 0 });
-                    ecb.SetComponent(tetrimino, tetriminoData);
+                    ecb.SetComponent(tetrimino, next.data);
                     ecb.SetComponent(tetrimino, gridRef);
                     ecb.SetComponent(tetrimino, new PlayerCleanupRef { value = entity });
                     ecb.SetComponent(tetrimino, DropState.DefaultDropState);
@@ -95,7 +94,6 @@ namespace Tetris
 
             m_colliderLookup.Update(ref state);
 
-            state.Dependency.Complete();
             new SpawnTetriminoJob
             {
                 archetype = m_tetriminoArchetype,
