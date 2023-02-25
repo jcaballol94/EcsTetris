@@ -26,8 +26,6 @@ namespace Tetris
             [BurstCompile]
             private void Execute(Entity entity, in InputValues input, in TetriminoRef tetrimino)
             {
-                Debug.Log("New hold");
-
                 if (!input.hold) return;
 
                 var data = dataLookup[tetrimino.value];
@@ -35,12 +33,18 @@ namespace Tetris
                 // Store the tetrimino as hold and destroy the real one
                 ecb.AddComponent(entity, new HoldTetrimino { data = data });
                 ecb.DestroyEntity(tetrimino.value);
+
+                // Mark that we already swapped to prevent eternal swapping
+                ecb.AddComponent<UsingOnHold>(entity);
             }
         }
 
         [BurstCompile]
+        [WithNone(typeof(UsingOnHold))]
         public partial struct SwapHoldTetriminoJob : IJobEntity
         {
+            public EntityCommandBuffer ecb;
+
             public ComponentLookup<TetriminoData> dataLookup;
             public ComponentLookup<TetriminoPosition> positionLookup;
 
@@ -49,7 +53,6 @@ namespace Tetris
             [BurstCompile]
             private void Execute(Entity entity, in InputValues input, in TetriminoRef tetrimino, ref HoldTetrimino hold)
             {
-                Debug.Log("Swap hold");
                 if (!input.hold) return;
 
                 var data = dataLookup.GetRefRW(tetrimino.value, false);
@@ -63,6 +66,9 @@ namespace Tetris
                 var position = positionLookup.GetRefRW(tetrimino.value, false);
                 position.ValueRW.position = gameData.spawnPosition;
                 position.ValueRW.orientation = 0;
+
+                // Mark that we already swapped to prevent eternal swapping
+                ecb.AddComponent<UsingOnHold>(entity);
             }
         }
 
@@ -96,6 +102,7 @@ namespace Tetris
 
             new SwapHoldTetriminoJob
             {
+                ecb = ecb,
                 dataLookup = tetriminoLookup,
                 gameData = gameData,
                 positionLookup = positionLookup

@@ -63,6 +63,7 @@ namespace Tetris
                         // Fist two lines get the base delay, from there it increases every 4 lines
                         delay += ((movement.LocalTransform.position.y + 2) / 4) * gameData.spawnDelayDelta;
                         ecb.AddComponent(player.value, new SpawnTetriminoDelay { value = delay });
+                        ecb.RemoveComponent<UsingOnHold>(player.value);
                         break;
                     }
                 }
