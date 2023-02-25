@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 635419142}
   - component: {fileID: 635419143}
   - component: {fileID: 635419144}
+  - component: {fileID: 635419145}
   m_Layer: 0
   m_Name: MainGrid
   m_TagString: Untagged
@@ -182,6 +183,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bounds: {x: 10, y: 40}
+--- !u!114 &635419145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635419139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd4cdf0de45a11043849b576c4e3fe64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: {r: 0.191, g: 0.191, b: 0.191, a: 1}
 --- !u!1 &685388145
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,4 +257,3 @@ MonoBehaviour:
   fallSpeed: 3
   fastFallMultiplier: 5
   dropLength: 40
-  pausePanel: {fileID: 11400000, guid: 99dade80f104a574592b9a697e979702, type: 2}
