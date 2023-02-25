@@ -22,9 +22,6 @@ namespace Tetris
         public float fallSpeed = 1f;
         public float fastFallMultiplier = 5f;
         public int dropLength = 40;
-
-        [Header("UI")]
-        public GameObjectVariable pausePanel;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -64,9 +61,6 @@ namespace Tetris
                 fastFallMultiplier = authoring.fastFallMultiplier,
                 dropLength = authoring.dropLength
             });
-
-            if (authoring.pausePanel)
-                AddComponentObject(new PausePanelReference { value = authoring.pausePanel });
 
             AddComponent(new TimeScale { value = 1f });
             AddComponent<ScaledDeltaTime>();

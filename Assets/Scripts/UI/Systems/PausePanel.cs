@@ -14,7 +14,6 @@ namespace Tetris
     {
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<PausePanelReference>();
             // This only runs if the toggle pause tag exists
             state.RequireForUpdate<TogglePauseTag>();
         }
@@ -25,12 +24,12 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
-            if (!SystemAPI.ManagedAPI.TryGetSingleton(out PausePanelReference panel)) return;
             if (!SystemAPI.TryGetSingletonRW(out RefRW<TimeScale> timeScale)) return;
+            if (!GameObjectReferences.Instance.TryGetObject("PausePanel", out var panel)) return;
 
-            var paused = !panel.value.value.activeSelf;
+            var paused = !panel.activeSelf;
             // Toggle the state of the UI panel
-            panel.value.value.SetActive(paused);
+            panel.SetActive(paused);
             // Set the time scale to 0 when paused
             timeScale.ValueRW.value = paused ? 0f : 1f;
             // Disable the game input when paused
