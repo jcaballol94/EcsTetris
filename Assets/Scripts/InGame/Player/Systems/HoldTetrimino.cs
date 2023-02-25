@@ -26,6 +26,8 @@ namespace Tetris
             [BurstCompile]
             private void Execute(Entity entity, in InputValues input, in TetriminoRef tetrimino)
             {
+                Debug.Log("New hold");
+
                 if (!input.hold) return;
 
                 var data = dataLookup[tetrimino.value];
@@ -37,8 +39,37 @@ namespace Tetris
         }
 
         [BurstCompile]
+        public partial struct SwapHoldTetriminoJob : IJobEntity
+        {
+            public ComponentLookup<TetriminoData> dataLookup;
+            public ComponentLookup<TetriminoPosition> positionLookup;
+
+            public GameData gameData;
+
+            [BurstCompile]
+            private void Execute(Entity entity, in InputValues input, in TetriminoRef tetrimino, ref HoldTetrimino hold)
+            {
+                Debug.Log("Swap hold");
+                if (!input.hold) return;
+
+                var data = dataLookup.GetRefRW(tetrimino.value, false);
+
+                // Swap the tetrimino type
+                var aux = hold.data;
+                hold.data = data.ValueRO;
+                data.ValueRW = aux;
+
+                // Put the tetrimino back at the top
+                var position = positionLookup.GetRefRW(tetrimino.value, false);
+                position.ValueRW.position = gameData.spawnPosition;
+                position.ValueRW.orientation = 0;
+            }
+        }
+
+        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<GameData>();
         }
 
         [BurstCompile]
@@ -49,13 +80,25 @@ namespace Tetris
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
+
             var ecb = new EntityCommandBuffer(Allocator.TempJob);
-            var lookup = SystemAPI.GetComponentLookup<TetriminoData>(true);
+            var tetriminoLookup = SystemAPI.GetComponentLookup<TetriminoData>(false);
+            var positionLookup = SystemAPI.GetComponentLookup<TetriminoPosition>(false);
+
+            state.Dependency.Complete();
 
             new HoldNewTetriminoJob
             {
                 ecb = ecb,
-                dataLookup = lookup
+                dataLookup = tetriminoLookup
+            }.Run();
+
+            new SwapHoldTetriminoJob
+            {
+                dataLookup = tetriminoLookup,
+                gameData = gameData,
+                positionLookup = positionLookup
             }.Run();
 
             ecb.Playback(state.EntityManager);
