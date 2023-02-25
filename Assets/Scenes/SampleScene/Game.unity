@@ -243,7 +243,6 @@ MonoBehaviour:
   grid: {fileID: 635419143}
   blockPrefab: {fileID: 7046177515751513494, guid: 1a3f16d587cd12f4b918a04e3a88df82,
     type: 3}
-  spawnPosition: {x: 4, y: 21}
   tetriminos:
   - {fileID: -2861790179287625895, guid: c0ddabd82bb0e354e8144b521d967819, type: 3}
   - {fileID: -2861790179287625895, guid: 855d775a6bb72aa4bb29f2057bc476ef, type: 3}
@@ -257,3 +256,6 @@ MonoBehaviour:
   fallSpeed: 5
   fastFallMultiplier: 2
   dropLength: 40
+  spawnPosition: {x: 4, y: 21}
+  baseSpawnDelay: 0.16666667
+  spawnDelayDelta: 0.033333335

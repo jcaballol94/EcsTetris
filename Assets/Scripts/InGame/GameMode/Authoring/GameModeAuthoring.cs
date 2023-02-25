@@ -11,7 +11,6 @@ namespace Tetris
     {
         public GridAuthoring grid;
         public GameObject blockPrefab;
-        public Vector2Int spawnPosition;
         public TetriminoDefinition[] tetriminos;
 
         [Header("Input")]
@@ -22,6 +21,11 @@ namespace Tetris
         public float fallSpeed = 1f;
         public float fastFallMultiplier = 5f;
         public int dropLength = 40;
+
+        [Header("Spawning")]
+        public Vector2Int spawnPosition;
+        public float baseSpawnDelay = 10f / 60f;
+        public float spawnDelayDelta = 2f / 60f;
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -59,7 +63,9 @@ namespace Tetris
                 moveRepeatPeriod = authoring.moveRepeatPeriod,
                 fallSpeed = authoring.fallSpeed,
                 fastFallMultiplier = authoring.fastFallMultiplier,
-                dropLength = authoring.dropLength
+                dropLength = authoring.dropLength,
+                baseSpawnDelay = authoring.baseSpawnDelay,
+                spawnDelayDelta = authoring.spawnDelayDelta
             });
 
             AddComponent(new TimeScale { value = 1f });

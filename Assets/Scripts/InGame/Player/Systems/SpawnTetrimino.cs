@@ -18,7 +18,7 @@ namespace Tetris
         private GridCollisions.Lookup m_colliderLookup;
 
         [WithAll(typeof(PlayerTag))]
-        [WithNone(typeof(TetriminoRef), typeof(GameOverTag))]
+        [WithNone(typeof(TetriminoRef), typeof(GameOverTag), typeof(SpawnTetriminoDelay))]
         public partial struct SpawnTetriminoJob : IJobEntity
         {
             public EntityCommandBuffer ecb;

@@ -58,6 +58,11 @@ namespace Tetris
                     {
                         // If it hasn't moved since the last collision, place it
                         ecb.DestroyEntity(entity);
+                        // Calculate the delay
+                        var delay = gameData.baseSpawnDelay;
+                        // Fist two lines get the base delay, from there it increases every 4 lines
+                        delay += ((movement.LocalTransform.position.y + 2) / 4) * gameData.spawnDelayDelta;
+                        ecb.AddComponent(player.value, new SpawnTetriminoDelay { value = delay });
                         break;
                     }
                 }
