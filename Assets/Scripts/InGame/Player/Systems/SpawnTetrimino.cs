@@ -10,7 +10,7 @@ namespace Tetris
 {
     [BurstCompile]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    [UpdateAfter(typeof(SpawnPlayerSystem))]
+    [UpdateAfter(typeof(GenerateRandomTetriminosSystem))]
     [UpdateAfter(typeof(InitializeGridCellsSystem))]
     public partial struct SpawnTetriminoSystem : ISystem
     {
@@ -25,14 +25,13 @@ namespace Tetris
             public EntityArchetype archetype;
 
             public GameData gameData;
-            [ReadOnly] public DynamicBuffer<AvailableTetriminos> availableTetriminos;
             [ReadOnly] public GridCollisions.Lookup colliderLookup;
 
-            private void Execute(Entity entity, ref RandomProvider random, in GridRef gridRef, in SceneTag scene)
+            private void Execute(Entity entity, ref DynamicBuffer<TetriminoQueue> queue, in GridRef gridRef, in SceneTag scene)
             {
                 // Find a tetrimino type to use
-                var tetriminoIdx = math.abs(random.value.NextInt()) % availableTetriminos.Length;
-                ref var tetriminoData = ref availableTetriminos[tetriminoIdx].asset.Value;
+                var tetriminoData = queue[0].data;
+                queue.RemoveAtSwapBack(0);
 
                 // Check if the tetrimino can be spawned
                 var collider = colliderLookup[gridRef.value];
@@ -48,7 +47,7 @@ namespace Tetris
                     var tetrimino = ecb.CreateEntity(archetype);
                     ecb.SetName(tetrimino, "Tetrimino");
                     ecb.SetComponent(tetrimino, new TetriminoPosition { position = gameData.spawnPosition, orientation = 0 });
-                    ecb.SetComponent(tetrimino, new TetriminoData { asset = availableTetriminos[tetriminoIdx].asset });
+                    ecb.SetComponent(tetrimino, tetriminoData);
                     ecb.SetComponent(tetrimino, gridRef);
                     ecb.SetComponent(tetrimino, new PlayerCleanupRef { value = entity });
                     ecb.SetComponent(tetrimino, DropState.DefaultDropState);
@@ -79,7 +78,6 @@ namespace Tetris
 
             // All this data needs to be available
             state.RequireForUpdate<GameData>();
-            state.RequireForUpdate<AvailableTetriminos>();
         }
 
         [BurstCompile]
@@ -92,17 +90,16 @@ namespace Tetris
         {
             // Try get the singletons first
             if (!SystemAPI.TryGetSingleton(out GameData gameData)) return;
-            if (!SystemAPI.TryGetSingletonBuffer(out DynamicBuffer<AvailableTetriminos> availableTetriminos, true)) return;
 
             var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             m_colliderLookup.Update(ref state);
 
+            state.Dependency.Complete();
             new SpawnTetriminoJob
             {
                 archetype = m_tetriminoArchetype,
                 ecb = ecb,
-                availableTetriminos = availableTetriminos,
                 gameData = gameData,
                 colliderLookup = m_colliderLookup
             }.Run();

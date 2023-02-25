@@ -43,7 +43,7 @@ namespace Tetris
                 typeof(PlayerTag), // The tag to identify it
                 typeof(GridRef), // A reference to this player's grid
                 typeof(InputValues), // The input
-                typeof(RandomProvider), // A provider for the random tetriminos
+                typeof(RandomProvider), typeof(TetriminoQueue), // A provider for the random tetriminos
                 typeof(SceneTag) // The scene so it unloads properly
                 );
         }
