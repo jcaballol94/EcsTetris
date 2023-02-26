@@ -32,6 +32,7 @@ namespace Tetris
 
                 // Store the tetrimino as hold and destroy the real one
                 ecb.AddComponent(entity, new HoldTetrimino { data = data });
+                ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Hold });
                 ecb.DestroyEntity(tetrimino.value);
 
                 // Mark that we already swapped to prevent eternal swapping
@@ -69,6 +70,7 @@ namespace Tetris
 
                 // Mark that we already swapped to prevent eternal swapping
                 ecb.AddComponent<UsingOnHold>(entity);
+                ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Hold });
             }
         }
 
