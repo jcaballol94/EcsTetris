@@ -64,6 +64,7 @@ namespace Tetris
                 }
 
                 scores.ValueRW.score += score * scores.ValueRO.level;
+                scores.ValueRW.level = (scores.ValueRO.lines / 10) + 1;
             }
 
             state.EntityManager.AddComponent<ScoredLinesAdded>(SystemAPI.QueryBuilder()
