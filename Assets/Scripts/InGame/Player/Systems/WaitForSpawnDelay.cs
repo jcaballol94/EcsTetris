@@ -13,6 +13,7 @@ namespace Tetris
     public partial struct WaitForSpawnDelaySystem : ISystem
     {
         [BurstCompile]
+        [WithNone(typeof(WaitForAnimation))]
         public partial struct WaitForSpawnDelayJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
