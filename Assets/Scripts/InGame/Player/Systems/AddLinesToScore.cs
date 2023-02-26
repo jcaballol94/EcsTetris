@@ -44,26 +44,25 @@ namespace Tetris
                 var scores = scoreLookup.GetRefRW(player.ValueRO.value, false);
 
                 var numLines = lines.Length;
-                scores.ValueRW.lines += numLines;
 
-                var score = 0;
                 switch(numLines)
                 {
                     case 1:
-                        score = 100;
+                        numLines = 1;
                         break;
                     case 2:
-                        score = 300;
+                        numLines = 3;
                         break;
                     case 3:
-                        score = 500;
+                        numLines = 5;
                         break;
                     case 4:
-                        score = 800;
+                        numLines = 8;
                         break;
                 }
 
-                scores.ValueRW.score += score * scores.ValueRO.level;
+                scores.ValueRW.lines += numLines;
+                scores.ValueRW.score += numLines * scores.ValueRO.level * 100;
                 scores.ValueRW.level = (scores.ValueRO.lines / 10) + 1;
             }
 
