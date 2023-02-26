@@ -42,7 +42,9 @@ namespace Tetris
                 }
 
                 if (lines.IsCreated)
-                    ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.RemoveLine });
+                    ecb.AddComponent(entity, new AudioRequest { effect = (lines.Length == 4) 
+                        ? GameAudioManager.EFFECTS.Tetris
+                        : GameAudioManager.EFFECTS.RemoveLine });
             }
         }
 
