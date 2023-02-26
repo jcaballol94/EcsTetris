@@ -36,6 +36,9 @@ namespace Tetris
 
                 // Mark this as done
                 ecb.AddComponent<GameModePlayingTag>(entity);
+
+                // Add a reference to the player in the grid
+                ecb.AddComponent(playerData.mainGrid, new PlayerRef { value = player });
             }
         }
 

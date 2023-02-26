@@ -6,8 +6,14 @@ namespace Tetris
 {
     public class RegisterObject : MonoBehaviour
     {
-        public string key = "GameObject";
+        public string key;
         public GameObject target;
+
+        private void Reset()
+        {
+            key = name;
+            target = gameObject;
+        }
 
         private void Start()
         {
