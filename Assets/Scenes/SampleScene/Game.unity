@@ -300,7 +300,36 @@ MonoBehaviour:
   - {fileID: -2861790179287625895, guid: 6e44b48c912918844a725e495308922e, type: 3}
   moveRepeatDelay: 0.2
   moveRepeatPeriod: 0.05
-  fallSpeed: 5
+  fallSpeeds:
+  - 1.25
+  - 1.395349
+  - 1.578947
+  - 1.818182
+  - 2.142857
+  - 2.608696
+  - 3.333333
+  - 4.615385
+  - 7.5
+  - 10
+  - 12
+  - 12
+  - 12
+  - 15
+  - 15
+  - 15
+  - 20
+  - 20
+  - 20
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  - 30
+  - 60
   fastFallMultiplier: 2
   dropLength: 40
   spawnPosition: {x: 4, y: 21}

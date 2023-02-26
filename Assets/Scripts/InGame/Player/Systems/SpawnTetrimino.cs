@@ -27,7 +27,7 @@ namespace Tetris
             public GameData gameData;
             [ReadOnly] public GridCollisions.Lookup colliderLookup;
 
-            private void Execute(Entity entity, in NextTetrimino next, in GridRef gridRef, in SceneTag scene)
+            private void Execute(Entity entity, in CurrentScore score, in NextTetrimino next, in GridRef gridRef, in SceneTag scene)
             {
                 // Remove the next so we trigger generating a new one
                 ecb.RemoveComponent<NextTetrimino>(entity);
@@ -50,6 +50,7 @@ namespace Tetris
                     ecb.SetComponent(tetrimino, gridRef);
                     ecb.SetComponent(tetrimino, new PlayerCleanupRef { value = entity });
                     ecb.SetComponent(tetrimino, DropState.DefaultDropState);
+                    ecb.SetComponent(tetrimino, new DropSpeed { value = gameData.GetSpeedForLevel(score.level) });
                     ecb.SetSharedComponent(tetrimino, scene);
 
                     // Save a reference to the tetrimino
@@ -68,7 +69,7 @@ namespace Tetris
             m_tetriminoArchetype = state.EntityManager.CreateArchetype(
                 typeof(TetriminoTag),
                 typeof(TetriminoPosition), // Transform
-                typeof(DropState), // Movement
+                typeof(DropState), typeof(DropSpeed), // Movement
                 typeof(GridRef), typeof(TetriminoData), typeof(PlayerCleanupRef), // Required data references
                 typeof(SceneTag) // Link it to the scene so it can be properly unloaded
                 );

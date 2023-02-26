@@ -25,7 +25,7 @@ namespace Tetris
             public GameData gameData;
             public float deltaTime;
 
-            private void Execute(Entity entity, ref TetriminoMovement movement, ref DropState dropState, 
+            private void Execute(Entity entity, ref TetriminoMovement movement, in DropSpeed speed, ref DropState dropState, 
                 in PlayerCleanupRef player, in GridRef grid)
             {
                 var input = inputLookup[player.value];
@@ -36,7 +36,7 @@ namespace Tetris
                 if (input.drop)
                     newDropAmount += gameData.dropLength;
                 else
-                    newDropAmount += gameData.fallSpeed * deltaTime * (input.fall ? gameData.fastFallMultiplier : 1f);
+                    newDropAmount += speed.value * deltaTime * (input.fall ? gameData.fastFallMultiplier : 1f);
 
                 // Drop 1 cell at a time
                 while (newDropAmount >= 1f)

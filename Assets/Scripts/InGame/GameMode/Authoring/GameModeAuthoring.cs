@@ -20,7 +20,7 @@ namespace Tetris
         public float moveRepeatPeriod = 0.2f;
 
         [Header("Drop")]
-        public float fallSpeed = 1f;
+        public float[] fallSpeeds;
         public float fastFallMultiplier = 5f;
         public int dropLength = 40;
 
@@ -28,6 +28,11 @@ namespace Tetris
         public Vector2Int spawnPosition;
         public float baseSpawnDelay = 10f / 60f;
         public float spawnDelayDelta = 2f / 60f;
+
+        public struct SpeedsBlob
+        {
+            public BlobArray<float> values;
+        }
     }
 
     public class GameModeAuthoringBaking : Baker<GameModeAuthoring>
@@ -65,12 +70,30 @@ namespace Tetris
                 }
             }
 
+            BlobAssetReference<GameModeAuthoring.SpeedsBlob> speedsRef = default;
+            if (authoring.fallSpeeds != null && authoring.fallSpeeds.Length > 0)
+            {
+                var builder = new BlobBuilder(Unity.Collections.Allocator.Temp);
+                ref var root = ref builder.ConstructRoot<GameModeAuthoring.SpeedsBlob>();
+                var arrayBuilder = builder.Allocate(ref root.values, authoring.fallSpeeds.Length);
+                
+                for (int i = 0; i < authoring.fallSpeeds.Length; ++i)
+                {
+                    arrayBuilder[i] = authoring.fallSpeeds[i];
+                }
+
+                speedsRef = builder.CreateBlobAssetReference<GameModeAuthoring.SpeedsBlob>(Unity.Collections.Allocator.Persistent);
+                builder.Dispose();
+
+                AddBlobAsset(ref speedsRef, out var hash);
+            }
+
             AddComponent(new GameData
             {
                 spawnPosition = new int2(authoring.spawnPosition.x, authoring.spawnPosition.y),
                 moveRepeatDelay = authoring.moveRepeatDelay,
                 moveRepeatPeriod = authoring.moveRepeatPeriod,
-                fallSpeed = authoring.fallSpeed,
+                fallSpeed = speedsRef,
                 fastFallMultiplier = authoring.fastFallMultiplier,
                 dropLength = authoring.dropLength,
                 baseSpawnDelay = authoring.baseSpawnDelay,
