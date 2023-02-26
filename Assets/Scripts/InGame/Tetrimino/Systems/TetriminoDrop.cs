@@ -58,8 +58,6 @@ namespace Tetris
                         // If it has moved since the last collision, we store the new position
                         // The tetrimino stays alive (the player can slide before they are placed)
                         dropState.lastCollision = transform;
-                        if (!input.drop)
-                            ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Hit });
                     }
                     else
                     {
