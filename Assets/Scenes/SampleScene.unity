@@ -1451,11 +1451,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 1107636062}
-  - {fileID: 934152541}
+  - {fileID: 1606085301}
   - {fileID: 247666202}
   - {fileID: 1538291052}
-  - {fileID: 1606085301}
+  - {fileID: 1107636062}
+  - {fileID: 934152541}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1689,6 +1689,7 @@ GameObject:
   - component: {fileID: 1107636064}
   - component: {fileID: 1107636063}
   - component: {fileID: 1107636065}
+  - component: {fileID: 1107636066}
   m_Layer: 5
   m_Name: PausePanel
   m_TagString: Untagged
@@ -1768,6 +1769,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 058ca924aa205c64dba39147275b1ebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1107636066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1107636061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d201fbe47eabc2a4e935b9d4a9dac0af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  source: {fileID: 1822210511}
+  clip: {fileID: 8300000, guid: 1f32eee85fd25604a93a46d669646103, type: 3}
 --- !u!1001 &1413504119
 PrefabInstance:
   m_ObjectHideFlags: 0
