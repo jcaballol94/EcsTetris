@@ -27,15 +27,15 @@ namespace Tetris
 
                 if (input.move != 0)
                 {
-                    var moved = movement.TryMove(new int2(input.move, 0), collider);
-                    ecb.AddComponent(entity, new AudioRequest { effect = moved ? GameAudioManager.EFFECTS.Move : GameAudioManager.EFFECTS.Hit });
+                    if (movement.TryMove(new int2(input.move, 0), collider))
+                        ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Move });
 
                 }
 
                 if (input.rotate != 0)
                 {
-                    var rotated = movement.TryRotate(input.rotate, collider);
-                    ecb.AddComponent(entity, new AudioRequest { effect = rotated ? GameAudioManager.EFFECTS.Rotate : GameAudioManager.EFFECTS.Hit });
+                    if (movement.TryRotate(input.rotate, collider))
+                        ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Rotate });
 
                 }
             }
