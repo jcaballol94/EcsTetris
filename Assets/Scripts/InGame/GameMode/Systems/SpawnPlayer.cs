@@ -32,6 +32,7 @@ namespace Tetris
                 ecb.SetComponent(player, new GridRef { value = playerData.mainGrid });
                 ecb.SetComponent(player, new NextGrid { entity = playerData.nextGrid });
                 ecb.SetComponent(player, new HoldGrid { value = playerData.holdGrid });
+                ecb.SetComponent(player, CurrentScore.Default);
                 ecb.SetSharedComponent(player, scene);
 
                 // Mark this as done
@@ -50,6 +51,7 @@ namespace Tetris
                 typeof(NextGrid), // The grid where we will show the next tetrimino preview
                 typeof(HoldGrid), // The grid where we will show the tetrimino that is on hold
                 typeof(InputValues), // The input
+                typeof(CurrentScore), // Keep track of the score
                 typeof(RandomProvider), typeof(TetriminoQueue), // A provider for the random tetriminos
                 typeof(SceneTag) // The scene so it unloads properly
                 );
