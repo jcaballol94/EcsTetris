@@ -16,24 +16,35 @@ namespace Tetris
 
         public partial struct TetriminoMovementJob : IJobEntity
         {
+            public EntityCommandBuffer ecb;
             [ReadOnly] public ComponentLookup<InputValues> inputLookup;
             [ReadOnly] public GridCollisions.Lookup colliderLookup;
 
-            private void Execute(TetriminoMovement movement, in PlayerCleanupRef player, in GridRef grid)
+            private void Execute(Entity entity, TetriminoMovement movement, in PlayerCleanupRef player, in GridRef grid)
             {
                 var input = inputLookup[player.value];
                 var collider = colliderLookup[grid.value];
 
                 if (input.move != 0)
-                    movement.TryMove(new int2(input.move, 0), collider);
+                {
+                    var moved = movement.TryMove(new int2(input.move, 0), collider);
+                    ecb.AddComponent(entity, new AudioRequest { effect = moved ? GameAudioManager.EFFECTS.Move : GameAudioManager.EFFECTS.Hit });
+
+                }
 
                 if (input.rotate != 0)
-                    movement.TryRotate(input.rotate, collider);
+                {
+                    var rotated = movement.TryRotate(input.rotate, collider);
+                    ecb.AddComponent(entity, new AudioRequest { effect = rotated ? GameAudioManager.EFFECTS.Rotate : GameAudioManager.EFFECTS.Hit });
+
+                }
             }
         }
         public void OnCreate(ref SystemState state)
         {
             m_colliderLookup = new GridCollisions.Lookup(ref state, true);
+
+            state.RequireForUpdate<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>();
         }
 
         public void OnDestroy(ref SystemState state)
@@ -42,14 +53,18 @@ namespace Tetris
 
         public void OnUpdate(ref SystemState state)
         {
+            if (!SystemAPI.TryGetSingleton<EndVariableRateSimulationEntityCommandBufferSystem.Singleton>(out var systemEcb)) return;
+            var ecb = systemEcb.CreateCommandBuffer(state.WorldUnmanaged);
+
             var inputLookup = SystemAPI.GetComponentLookup<InputValues>(true);
             m_colliderLookup.Update(ref state);
 
             new TetriminoMovementJob
             {
+                ecb = ecb,
                 colliderLookup = m_colliderLookup,
                 inputLookup = inputLookup
-            }.ScheduleParallel();
+            }.Schedule();
         }
     }
 }
