@@ -9,8 +9,7 @@ namespace Tetris
 {
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    [UpdateAfter(typeof(DetectLinesSystem))]
-    [UpdateBefore(typeof(RemoveLinesSystem))]
+    [UpdateAfter(typeof(AddLinesToScoreSystem))]
     public partial struct UpdateScoresSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
