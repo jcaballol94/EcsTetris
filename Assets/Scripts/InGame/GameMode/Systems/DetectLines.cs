@@ -40,6 +40,9 @@ namespace Tetris
                         lines.Add(new DetectedLinesBuffer { lineY = i });
                     }
                 }
+
+                if (lines.IsCreated)
+                    ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.RemoveLine });
             }
         }
 

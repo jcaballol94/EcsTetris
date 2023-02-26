@@ -36,6 +36,7 @@ namespace Tetris
         public void PlayEffect(EFFECTS effect)
         {
             var sound = m_sounds.Find(e => e.effect == effect);
+            m_audioSource.Stop();
             if (sound.clip)
                 m_audioSource.PlayOneShot(sound.clip);
         }
