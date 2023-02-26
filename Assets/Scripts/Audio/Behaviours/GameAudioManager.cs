@@ -13,7 +13,9 @@ namespace Tetris
             Move,
             Rotate,
             RemoveLine,
-            Place
+            Place,
+            Drop,
+            Hold
         }
         [System.Serializable]
         public struct SoundEffect

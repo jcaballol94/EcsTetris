@@ -34,9 +34,14 @@ namespace Tetris
                 // Calculate how much we need to drop
                 var newDropAmount = dropState.currentDrop;
                 if (input.drop)
+                {
                     newDropAmount += gameData.dropLength;
+                    ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Drop });
+                }
                 else
+                {
                     newDropAmount += speed.value * deltaTime * (input.fall ? gameData.fastFallMultiplier : 1f);
+                }
 
                 // Drop 1 cell at a time
                 while (newDropAmount >= 1f)
@@ -53,13 +58,15 @@ namespace Tetris
                         // If it has moved since the last collision, we store the new position
                         // The tetrimino stays alive (the player can slide before they are placed)
                         dropState.lastCollision = transform;
-                        ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Hit });
+                        if (!input.drop)
+                            ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Hit });
                     }
                     else
                     {
                         // If it hasn't moved since the last collision, place it
                         ecb.AddComponent<StaticBlockTag>(entity);
-                        ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Place });
+                        if (!input.drop)
+                            ecb.AddComponent(entity, new AudioRequest { effect = GameAudioManager.EFFECTS.Place });
                         // Calculate the delay
                         var delay = gameData.baseSpawnDelay;
                         // Fist two lines get the base delay, from there it increases every 4 lines
