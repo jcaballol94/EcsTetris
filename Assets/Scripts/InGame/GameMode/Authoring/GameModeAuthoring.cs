@@ -23,6 +23,7 @@ namespace Tetris
         public float[] fallSpeeds;
         public float fastFallMultiplier = 5f;
         public int dropLength = 40;
+        public float removeLineDuration = 0.5f;
 
         [Header("Spawning")]
         public Vector2Int spawnPosition;
@@ -97,7 +98,8 @@ namespace Tetris
                 fastFallMultiplier = authoring.fastFallMultiplier,
                 dropLength = authoring.dropLength,
                 baseSpawnDelay = authoring.baseSpawnDelay,
-                spawnDelayDelta = authoring.spawnDelayDelta
+                spawnDelayDelta = authoring.spawnDelayDelta,
+                removeLineDuration = authoring.removeLineDuration
             });
 
             AddComponent(new TimeScale { value = 1f });

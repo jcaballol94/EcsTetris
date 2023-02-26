@@ -15,6 +15,7 @@ namespace Tetris
     public partial struct RemoveLinesSystem : ISystem
     {
         [BurstCompile]
+        [WithNone(typeof(WaitForAnimation))]
         public partial struct RemoveLinesCollisionsJob : IJobEntity
         {
             [BurstCompile]
@@ -50,10 +51,14 @@ namespace Tetris
         {
             public EntityCommandBuffer ecb;
             [ReadOnly] public BufferLookup<DetectedLinesBuffer> linesLookup;
+            [ReadOnly] public ComponentLookup<WaitForAnimation> animatinLookup;
 
             [BurstCompile]
             private void Execute(Entity entity, ref BlockPosition position, in GridRef gridRef)
             {
+                // Wait if required
+                if (animatinLookup.HasComponent(gridRef.value))
+                    return;
                 // Check that there are lines to remove
                 if (!linesLookup.HasBuffer(gridRef.value))
                     return;
@@ -104,11 +109,12 @@ namespace Tetris
 
             // Remove the entities in the line and move the ones above
             var eventLookup = SystemAPI.GetBufferLookup<DetectedLinesBuffer>(true);
+            var waitLookup = SystemAPI.GetComponentLookup<WaitForAnimation>(true);
             state.Dependency = new RemoveLinesEntitiesJob
             {
                 ecb = ecb,
-                linesLookup = eventLookup
-
+                linesLookup = eventLookup,
+                animatinLookup = waitLookup
             }.Schedule(state.Dependency);
 
             // Update the collisions
@@ -116,7 +122,10 @@ namespace Tetris
 
             // The lines have been processed, we can remove them
             ecb = ecbSystem.CreateCommandBuffer(state.WorldUnmanaged);
-            ecb.RemoveComponent<DetectedLinesBuffer>(SystemAPI.QueryBuilder().WithAll<DetectedLinesBuffer>().Build());
+            ecb.RemoveComponent<DetectedLinesBuffer>(SystemAPI.QueryBuilder()
+                .WithAll<DetectedLinesBuffer>()
+                .WithNone<WaitForAnimation>()
+                .Build());
         }
     }
 }

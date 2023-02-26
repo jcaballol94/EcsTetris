@@ -15,6 +15,8 @@ namespace Tetris
         public float moveRepeatDelay;
         public float moveRepeatPeriod;
 
+        public float removeLineDuration;
+
         public BlobAssetReference<GameModeAuthoring.SpeedsBlob> fallSpeed;
         public float fastFallMultiplier;
         public int dropLength;

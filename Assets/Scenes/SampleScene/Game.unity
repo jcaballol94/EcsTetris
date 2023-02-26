@@ -332,6 +332,7 @@ MonoBehaviour:
   - 60
   fastFallMultiplier: 2
   dropLength: 40
+  removeLineDuration: 2
   spawnPosition: {x: 4, y: 21}
   baseSpawnDelay: 0.16666667
   spawnDelayDelta: 0.033333335
