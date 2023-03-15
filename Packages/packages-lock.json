@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.jcaballol94.ecs-utils": {
+      "version": "git@github.com:jcaballol94/com.jcaballol94.ecs-utils.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "db72d56bc9c0fb05185e3e666b7d6292d65e2fdb"
+    },
     "com.unity.burst": {
       "version": "1.8.2",
       "depth": 1,
